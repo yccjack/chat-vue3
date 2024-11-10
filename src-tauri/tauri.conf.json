@@ -5,9 +5,9 @@
   "identifier": "com.gschaos.chat",
   "build": {
     "frontendDist": "../dist",
-    "devUrl": "http://localhost:8077",
-    "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build"
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "vite",
+    "beforeBuildCommand": "vite build"
   },
 
   "app": {
