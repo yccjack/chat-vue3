@@ -48,7 +48,7 @@
                                   style="box-sizing: border-box; display: inline-block; overflow: hidden; width: initial; height: initial; background: none; opacity: 1; border: 0px; margin: 0px; padding: 0px; position: relative; max-width: 100%;">
                                 <span
                                     style="box-sizing: border-box; display: block; width: initial; height: initial; background: none; opacity: 1; border: 0px; margin: 0px; padding: 0px; max-width: 100%;">
-                                  <img aria-hidden="true" :src="`/src/assets/imgs/human9.png`"
+                                  <img aria-hidden="true" :src="humanImage"
                                        alt="huamn"
                                        style="display: block; max-width: 100%; width: initial; height: initial; background: none; opacity: 1; border: 0px; margin: 0px; padding: 0px;">
                                 </span>
@@ -501,8 +501,8 @@ import modalA from "./components/modalA.vue";
 import announcement from "./components/announcement.vue";
 import axios from 'axios';
 import clipboard from 'vue-clipboard3'; // 默认导入
-import {getVersion, getName, getTauriVersion} from "@tauri-apps/api/app";
-
+import {getVersion} from "@tauri-apps/api/app";
+import imagePath from './assets/imgs/human9.png';
 // 定义响应式变量
 
 const appVersion = ref();
@@ -523,10 +523,11 @@ const navEle = ref(null);
 const inputChat = ref("");
 const slideNavContainer = ref(null);
 const cid = ref("");
-
+// 使用 ref 定义响应式变量
+const humanImage = ref(imagePath);
 const {toClipboard} = clipboard();
 
-function renderCodeBlock(codeHtml, language = "") {
+function renderCodeBlock(code,codeHtml, language = "") {
   return `<div class="bg-black mb-4 rounded-md">
     <div class="code_header flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans">
       <span>${language}</span>
@@ -536,7 +537,7 @@ function renderCodeBlock(codeHtml, language = "") {
           <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
         </svg>
         <span>Copy code</span>
-        <code style="display:none">${codeHtml}</code>
+        <code style="display:none">${code}</code>
       </button>
     </div>
     <div class="p-4 overflow-y-auto">
@@ -554,7 +555,7 @@ const marked = new MarkdownIt({
         ? hljs.highlight(code, { language }).value
         : hljs.highlightAuto(code).value;
 
-    return renderCodeBlock(codeHtml, language);
+    return renderCodeBlock(code,codeHtml, language);
   }
 
 });
