@@ -30,13 +30,13 @@
                       <div class="flex-1 leading-5">
                         <ul class="flex flex-col gap-3.5 w-full sm:max-w-md m-auto">
                           <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">
-                            修复了流式处理响应问题
+                            增加自动更新
                           </li>
-                          <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">Allows
+                          <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">
                             加快了回复速度
                           </li>
-                          <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">Trained
-                            修复了发送内容多但是现实不自动适应问题
+                          <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">
+                            升级框架版本
                           </li>
                         </ul>
                       </div>
