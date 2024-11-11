@@ -432,6 +432,9 @@
                   <polyline points="15 3 21 3 21 9"></polyline>
                   <line x1="10" y1="14" x2="21" y2="3"></line>
                 </svg>
+                应用名称：{{ appName }} <br/>当前版本：{{
+                  appVersion
+                }}
                 首页 &amp; FAQ</a>
             </nav>
 
@@ -501,9 +504,13 @@ import modalA from "./components/modalA.vue";
 import announcement from "./components/announcement.vue";
 import axios from 'axios';
 import clipboard from 'vue-clipboard3'; // 默认导入
-
+import {getVersion, getName, getTauriVersion} from "@tauri-apps/api/app";
 
 // 定义响应式变量
+
+const appVersion = ref();
+const appName = ref();
+const tauriVersion = ref();
 const theme = ref('light');
 const oldConv = ref(null);
 const popupShow = ref(false);
@@ -1169,5 +1176,11 @@ body {
 
 .w-180px {
   width: 180px;
+}
+/* 强制覆盖背景色和文本颜色 */
+::v-deep .ant-btn-primary {
+  background-color: #4CAF50 !important; /* 绿色背景 */
+  color: #007BFF !important; /* 蓝色文本 */
+  border: none !important;
 }
 </style>

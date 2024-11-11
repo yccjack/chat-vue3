@@ -3,33 +3,48 @@
     应用名称：{{ appName }} <br/>当前版本：{{
       appVersion
     }}<br/>当前tauri版本：{{ tauriVersion }}
+    <Modal v-model:open="open" title="更新窗口" @ok="handleOk"
+           :ok-button-props="{ disabled: isDownloading }"
+            :cancel-button-props="{ disabled: isDownloading }"
+           :maskClosable="false" >
+      <p>检测到新版本，是否立即更新?</p>
+      <!-- 进度条 -->
+      <div v-if="downloadProgress !== null">
+        <progress :value="downloadProgress" :max="100"></progress>
+        <p>{{ downloadProgress }}%</p>
+      </div>
+    </Modal>
   </div>
 </template>
 
 <script setup>
 import {check} from "@tauri-apps/plugin-updater";
 import {relaunch} from "@tauri-apps/plugin-process";
-import {Modal} from "ant-design-vue";
 import {onMounted, ref} from "vue";
 import {getVersion, getName, getTauriVersion} from "@tauri-apps/api/app";
-
+import { Modal } from "ant-design-vue";
 const appVersion = ref();
 const appName = ref();
 const tauriVersion = ref();
 const open = ref(false);
+const isDownloading = ref(false); // 控制按钮禁用的状态
+const update = await check();
 
+// 更新进度
+const downloadProgress = ref(null);  // 用于存储下载进度百分比
 const init = async () => {
   appVersion.value = await getVersion();
   appName.value = await getName();
   tauriVersion.value = await getTauriVersion();
-  await checkUpdate();
+  if(update){
+    open.value=true
+  }
 };
 
 const checkUpdate = async () => {
   try {
-    const update = await check();
-    console.log(update)
-    if(update){
+
+    if (update) {
       console.log(
           `found update ${update.version} from ${update.date} with notes ${update.body}`
       );
@@ -37,6 +52,7 @@ const checkUpdate = async () => {
       let contentLength = 0;
       // alternatively we could also call update.download() and update.install() separately
       await update.downloadAndInstall((event) => {
+        isDownloading.value = true; // 开始下载，禁用按钮
         switch (event.event) {
           case 'Started':
             contentLength = event.data.contentLength;
@@ -44,6 +60,7 @@ const checkUpdate = async () => {
             break;
           case 'Progress':
             downloaded += event.data.chunkLength;
+            downloadProgress.value = Math.floor((downloaded / contentLength) * 100);  // 更新下载进度
             console.log(`downloaded ${downloaded} from ${contentLength}`);
             break;
           case 'Finished':
@@ -58,6 +75,10 @@ const checkUpdate = async () => {
     console.error(error);
   }
 };
+const handleOk = async () => {
+  // 处理ok事件的代码
+  await checkUpdate()
+}
 
 onMounted(() => {
   init();
@@ -66,11 +87,11 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
-}
 
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #249b73);
+/* 强制覆盖背景色和文本颜色 */
+::v-deep .ant-btn-primary {
+  background-color: #4CAF50 !important; /* 绿色背景 */
+  color: #007BFF !important; /* 蓝色文本 */
+  border: none !important;
 }
 </style>

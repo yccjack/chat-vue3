@@ -126,5 +126,10 @@ function closePopup() {
 }
 </script>
 <style scoped lang="scss">
-
+/* 强制覆盖背景色和文本颜色 */
+::v-deep .ant-btn-primary {
+  background-color: #4CAF50 !important; /* 绿色背景 */
+  color: #007BFF !important; /* 蓝色文本 */
+  border: none !important;
+}
 </style>
