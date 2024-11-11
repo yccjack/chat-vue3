@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "chatAi",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "identifier": "com.gschaos.chat",
   "build": {
     "frontendDist": "../dist",
@@ -38,7 +38,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDkxOUNBNjZENjA1REMwMTkKUldRWndGMWdiYWFja2R4NjFMR0VoQ2Y4eXg2TnpQbytIS0EvMktyRWIwZzlrMU5Ub0hSMnZtaGYK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDJGREI2RDA2NUEzMjkwMDEKUldRQmtESmFCbTNiTHhzemE3NHhkd1ROWjRBM0R5VWRVWml1ZUpJZDZrbC9NbjhjOWJLNmtQN00K",
       "endpoints": [
         "https://gschaos.club/update_file/update.json"
       ],

@@ -202,27 +202,12 @@
                 <div class="flex ml-1 md:w-full md:m-auto md:mb-2 gap-0 md:gap-2 justify-center">
                   <button v-if="!convLoading && conversation.length > 0" @click.stop.prevent="chatRepeat"
                           id="chatRepeat" class="btn flex justify-center gap-2 btn-neutral border-0 md:border">
-                    <svg stroke="currentColor" fill="none" stroke-width="1.5" viewBox="0 0 24 24"
-                         stroke-linecap="round"
-                         stroke-linejoin="round" class="h-3 w-3" height="1em" width="1em"
-                         xmlns="http://www.w3.org/2000/svg">
-                      <polyline points="1 4 1 10 7 10"></polyline>
-                      <polyline points="23 20 23 14 17 14"></polyline>
-                      <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
-                    </svg>
-                    <p class="none">Regenerate response</p>
+                    重新作答
                   </button>
 
                   <button v-if="convLoading" @click.stop.prevent="stopChat" id="stopChat"
                           class="btn relative btn-neutral border-0 md:border">
-                    <div class="flex w-full items-center justify-center gap-2">
-                      <svg stroke="currentColor" fill="none" stroke-width="1.5" viewBox="0 0 24 24"
-                           stroke-linecap="round" stroke-linejoin="round" class="h-3 w-3" height="1em" width="1em"
-                           xmlns="http://www.w3.org/2000/svg">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                      </svg>
-                      Stop generating
-                    </div>
+                    停止回答[暂不可用]
                   </button>
 
                 </div>
@@ -275,7 +260,7 @@
                   <line x1="12" y1="5" x2="12" y2="19"></line>
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
-                New chat
+                新的对话
               </a>
 
               <!-- 对话列表 -->
@@ -539,56 +524,44 @@ const cid = ref("");
 
 const {toClipboard} = clipboard();
 
-const md = new MarkdownIt();
-
+function renderCodeBlock(codeHtml, language = "") {
+  return `<div class="bg-black mb-4 rounded-md">
+    <div class="code_header flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans">
+      <span>${language}</span>
+      <button onclick="copy(this)" class="flex ml-auto gap-2">
+        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+          <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+        </svg>
+        <span>Copy code</span>
+        <code style="display:none">${codeHtml}</code>
+      </button>
+    </div>
+    <div class="p-4 overflow-y-auto">
+      <code class="!whitespace-pre hljs language-${language}">${codeHtml}</code>
+    </div>
+  </div>`;
+}
 // 配置 markdown-it 实例
 const marked = new MarkdownIt({
   html: true,               // 允许 HTML 标签
   linkify: true,            // 将 URL 自动转换为链接
   typographer: true,        // 使用引号替换等
   highlight: (code, language) => {
-    var codeHtml = code
-    if (language) {
-      codeHtml = hljs.highlightAuto(code).value
-    }
-    if (language && hljs.getLanguage(language)) {
-      try {
-        return `<div class="bg-black mb-4 rounded-md">
-      <div class="code_header flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans">
-         <span>${language || ""}</span>
-        <button onclick="copy(this)" class="flex ml-auto gap-2">
-          <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-          </svg>
-          <span>Copy code</span>
-          <code style="display:none">${code}</code>
-        </button>
-      </div>
-      <div class="p-4 overflow-y-auto">
-        <code class="!whitespace-pre hljs language-${language}">${codeHtml}</code>
-      </div>
-    </div>`;
-      } catch (__) {
-      }
-    }
-    return `<div class="bg-black mb-4 rounded-md">
-      <div class="code_header flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans">
-        <button onClick="copy(code)" class="flex ml-auto gap-2">
-          <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
-               stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-          </svg>
-          <span>Copy code</span>
-          <code style="display:none">${code}</code>
-        </button>
-      </div>
-      <div class="p-4 overflow-y-auto">
-        <pre class="hljs"><code>${md.utils.escapeHtml(code)}</code></pre>
-      </div>
-    </div>`;
-  },
+    let codeHtml = language && hljs.getLanguage(language)
+        ? hljs.highlight(code, { language }).value
+        : hljs.highlightAuto(code).value;
+
+    return renderCodeBlock(codeHtml, language);
+  }
+
 });
+// 直接返回 highlight 函数生成的 HTML，避免 MarkdownIt 额外包裹 <code>
+marked.renderer.rules.fence = (tokens, idx) => {
+  const token = tokens[idx];
+  const language = token.info.trim();
+  return marked.options.highlight(token.content, language);
+};
 
 watchEffect(() => {
 
@@ -1076,7 +1049,8 @@ onMounted(() => {
   // 从 localStorage 获取 popupShow 状态
   const savedPopupShow = localStorage.getItem('popupShowV1.0');
   // 如果 savedPopupShow 不存在，表示是第一次弹窗
-  popupShow.value = savedPopupShow !== 'true';
+  // popupShow.value = savedPopupShow !== 'true';
+  popupShow.value=true
   var theme = localStorage.getItem("theme") || "light"
   changeTheme(theme);
   loadId();

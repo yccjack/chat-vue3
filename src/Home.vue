@@ -1,7 +1,7 @@
 <script setup>
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import { checkUpdate } from "@tauri-apps/api/updater";
+import { check } from "@tauri-apps/plugin-updater";
 import { onMounted, ref } from "vue";
 import Update from "./components/Update.vue";
 import { getVersion, getName, getTauriVersion } from "@tauri-apps/api/app";
@@ -13,14 +13,17 @@ const showUpdate = ref(false);
 
 const created = async () => {
   try {
-    const { shouldUpdate } = await checkUpdate();
-
-    if (shouldUpdate) {
+    const update = await check();
+    alert.log(update)
+    if (update) {
+      alert.log(
+          `found update ${update.version} from ${update.date} with notes ${update.body}`
+      );
       // 检测到新版本，显示更新组件
       showUpdate.value = true;
     }
   } catch (error) {
-    console.error(error);
+    alert.error(error);
   }
 };
 
@@ -37,9 +40,11 @@ onMounted(() => {
 </script>
 
 <template>
-  应用名称：{{ appName }} <br />当前版本：{{ appVersion
-  }}<br />当前tauri版本：{{ tauriVersion }}
-  <Update key="1" v-if="showUpdate" />
+  <div>
+    应用名称：{{ appName }} <br />当前版本：{{ appVersion
+    }}<br />当前tauri版本：{{ tauriVersion }}
+    <Update key="1" v-if="showUpdate" />
+  </div>
 </template>
 
 <style scoped>

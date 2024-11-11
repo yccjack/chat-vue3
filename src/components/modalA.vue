@@ -43,7 +43,10 @@
                     </div>
                     <div class="flex p-4 bg-gray-50 dark:bg-white/5 rounded-md items-center gap-4 min-h-[71px]">
                       <div class="w-10 text-2xl text-center">🔬</div>
-                      <div class="flex-1 leading-5">叫我超人！
+                      <div class="flex-1 leading-5">
+                        <Suspense>
+                          <Update />
+                        </Suspense>
                       </div>
                     </div>
                   </div>
@@ -95,6 +98,7 @@
 </template>
 <script setup>
 import {ref, watch} from 'vue';
+import Update from "../components/Update.vue";
 
 // 获取传递的 prop
 const props = defineProps({
