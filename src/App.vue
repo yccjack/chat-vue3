@@ -240,7 +240,7 @@
             </form>
             <div class="px-3 pt-2 pb-3 text-center text-xs text-black/50 dark:text-white/50 md:px-4 md:pt-3 md:pb-6">
               <a href="https://gitee.com/MIEAPP/chatai-vue" target="_blank" rel="noreferrer"
-                 class="underline"> chatAi </a> 仅供学习 AI 使用。
+                 class="underline"> chatAi </a> 仅供学习 AI 使用。<span style="color: #00e0e0"> 当前版本：{{appVersion }}</span>
             </div>
           </div>
         </main>
@@ -432,9 +432,6 @@
                   <polyline points="15 3 21 3 21 9"></polyline>
                   <line x1="10" y1="14" x2="21" y2="3"></line>
                 </svg>
-                应用名称：{{ appName }} <br/>当前版本：{{
-                  appVersion
-                }}
                 首页 &amp; FAQ</a>
             </nav>
 
@@ -509,8 +506,6 @@ import {getVersion, getName, getTauriVersion} from "@tauri-apps/api/app";
 // 定义响应式变量
 
 const appVersion = ref();
-const appName = ref();
-const tauriVersion = ref();
 const theme = ref('light');
 const oldConv = ref(null);
 const popupShow = ref(false);
@@ -1052,12 +1047,13 @@ watch(chatMsg, (newVal, oldVal) => {
     changeHeight();
   }
 });
-onMounted(() => {
+onMounted(async () => {
+  appVersion.value = await getVersion();
   // 从 localStorage 获取 popupShow 状态
-  const savedPopupShow = localStorage.getItem('popupShowV1.0');
+  const savedPopupShow = localStorage.getItem('popupShowV0.1.5');
   // 如果 savedPopupShow 不存在，表示是第一次弹窗
-  // popupShow.value = savedPopupShow !== 'true';
-  popupShow.value=true
+  popupShow.value = savedPopupShow !== 'true';
+  popupShow.value = true
   var theme = localStorage.getItem("theme") || "light"
   changeTheme(theme);
   loadId();
