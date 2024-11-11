@@ -122,7 +122,7 @@ function closePopup() {
   isVisible.value = false;
   emit("close");
   // 将弹窗状态保存到 localStorage 中
-  localStorage.setItem('popupShowV1.0', 'true');
+  localStorage.setItem('popupShowV0.1.5', 'true');
 }
 </script>
 <style scoped lang="scss">
