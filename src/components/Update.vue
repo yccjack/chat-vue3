@@ -55,7 +55,7 @@ const checkUpdate = async () => {
       await relaunch();
     }
   } catch (error) {
-    console.log.error(error);
+    console.error(error);
   }
 };
 
