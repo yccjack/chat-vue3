@@ -85,10 +85,14 @@
           </li>
         </ul>
       </div>
+      <Suspense>
+        <Update />
+      </Suspense>
     </div>
 </template>
 <script setup>
   import {ref} from 'vue';
+  import Update from "../components/Update.vue";
 
   // 定义传递的事件
   const emit = defineEmits(['update-chat-msg']);

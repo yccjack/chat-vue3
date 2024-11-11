@@ -1,8 +1,5 @@
 <template>
   <div>
-    应用名称：{{ appName }} <br/>当前版本：{{
-      appVersion
-    }}<br/>当前tauri版本：{{ tauriVersion }}
     <Modal v-model:open="open" title="更新窗口" @ok="handleOk"
            :ok-button-props="{ disabled: isDownloading }"
             :cancel-button-props="{ disabled: isDownloading }"

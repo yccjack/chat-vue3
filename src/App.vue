@@ -1053,7 +1053,6 @@ onMounted(async () => {
   const savedPopupShow = localStorage.getItem('popupShowV0.1.5');
   // 如果 savedPopupShow 不存在，表示是第一次弹窗
   popupShow.value = savedPopupShow !== 'true';
-  popupShow.value = true
   var theme = localStorage.getItem("theme") || "light"
   changeTheme(theme);
   loadId();

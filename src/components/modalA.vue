@@ -44,9 +44,9 @@
                     <div class="flex p-4 bg-gray-50 dark:bg-white/5 rounded-md items-center gap-4 min-h-[71px]">
                       <div class="w-10 text-2xl text-center">🔬</div>
                       <div class="flex-1 leading-5">
-                        <Suspense>
-                          <Update />
-                        </Suspense>
+                        应用名称：{{ appName }} <br/>当前版本：{{
+                          appVersion
+                        }}<br/>当前tauri版本：{{ tauriVersion }}
                       </div>
                     </div>
                   </div>
@@ -97,9 +97,11 @@
   </div>
 </template>
 <script setup>
-import {ref, watch} from 'vue';
-import Update from "../components/Update.vue";
-
+import {onMounted, ref, watch} from 'vue';
+import {getVersion, getName, getTauriVersion} from "@tauri-apps/api/app";
+const appVersion = ref();
+const appName = ref();
+const tauriVersion = ref();
 // 获取传递的 prop
 const props = defineProps({
   popupShow: {
@@ -124,6 +126,12 @@ function closePopup() {
   // 将弹窗状态保存到 localStorage 中
   localStorage.setItem('popupShowV0.1.5', 'true');
 }
+
+onMounted(async () => {
+  appVersion.value = await getVersion();
+  appName.value = await getName();
+  tauriVersion.value = await getTauriVersion();
+});
 </script>
 <style scoped lang="scss">
 </style>
