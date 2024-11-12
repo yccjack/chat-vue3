@@ -501,11 +501,11 @@ import modalA from "./components/modalA.vue";
 import announcement from "./components/announcement.vue";
 import axios from 'axios';
 import clipboard from 'vue-clipboard3'; // 默认导入
-import {getVersion} from "@tauri-apps/api/app";
 import imagePath from './assets/imgs/human9.png';
 // 定义响应式变量
 
 const appVersion = ref();
+const apiUrl = ref();
 const theme = ref('light');
 const oldConv = ref(null);
 const popupShow = ref(false);
@@ -581,7 +581,7 @@ function autoResize() {
 }
 
 function stopChat() {
-  axios.put(`http://chat.gschaos.club/api/stop/chat/${cid.value}`, {})
+  axios.put(`http://${apiUrl.value}/stop/chat/${cid.value}`, {})
       .then((result) => {
         var rconv = conversation.value[conversation.value.length - 1];
         rconv["loading"] = false;
@@ -696,7 +696,7 @@ function suitable(idx, conv, suit) {
   }
   conv.suitable[conv.idx] = suit
 
-  axios.put(`http://chat.gschaos.club/api/ai/suitable/${cid.value}`, cdate)
+  axios.put(`http://${apiUrl.value}/ai/suitable/${cid.value}`, cdate)
       .then((result) => {
 
         refreshConversation()
@@ -750,7 +750,7 @@ function chatRepeat() {
   try {
     var idx = rconv.idx;
     // 使用 Axios 发送 GET 请求，接收流式数据
-    fetch('http://chat.gschaos.club/api/chat/repeat/' + cid.value, {
+    fetch(`http://${apiUrl.value}/chat/repeat/${cid.value}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
@@ -827,7 +827,7 @@ function send() {
 
   try {
     // 使用 Axios 发送 GET 请求，接收流式数据
-    fetch('http://chat.gschaos.club/api/chat/' + cid.value, {
+    fetch(`http://${apiUrl.value}/chat/${ cid.value}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
@@ -903,7 +903,7 @@ function newChat() {
 }
 
 function loadId() {
-  axios.post(`http://chat.gschaos.club/api/generate/id`, {})
+  axios.post(`http://${apiUrl.value}/generate/id`, {})
       .then((result) => {
         var resp = result.data;
 
@@ -952,7 +952,7 @@ function selectConversation(conv, loadConv) {
     return;
   }
 
-  axios.get(`http://chat.gschaos.club/api/conv/${conv.id}`)
+  axios.get(`http://${apiUrl.value}/conv/${conv.id}`)
       .then((result) => {
         var resp = result.data;
         var content = resp.data;
@@ -1005,8 +1005,7 @@ function cancelDelConv(idx, conv) {
 }
 
 function loadAvatar() {
-  let avatar = localStorage.getItem("avatar") || Math.ceil(Math.random() * 9);
-  avatarIdx.value = avatar;
+  avatarIdx.value = localStorage.getItem("avatar") || Math.ceil(Math.random() * 9);
 }
 
 const chatContainer = ref(null)
@@ -1049,7 +1048,8 @@ watch(chatMsg, (newVal, oldVal) => {
   }
 });
 onMounted(async () => {
-  appVersion.value = await getVersion();
+  appVersion.value =`${import.meta.env.VITE_APP_VERSION}`;
+  apiUrl.value = `${import.meta.env.VITE_API_URL}`;
   // 从 localStorage 获取 popupShow 状态
   const savedPopupShow = localStorage.getItem('popupShowV0.1.5');
   // 如果 savedPopupShow 不存在，表示是第一次弹窗
