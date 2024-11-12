@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "chatAi",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "identifier": "com.gschaos.chat",
   "build": {
     "frontendDist": "../dist",
@@ -9,7 +9,6 @@
     "beforeDevCommand": "npx vite",
     "beforeBuildCommand": "npx vite build"
   },
-
   "app": {
     "windows": [
       {
@@ -34,7 +33,12 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "windows": {
+      "wix": {
+        "language": "zh-CN"
+      }
+    }
   },
   "plugins": {
     "updater": {

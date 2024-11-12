@@ -96,7 +96,7 @@
 </template>
 <script setup>
 import {onMounted, ref, watch} from 'vue';
-const appVersion = ref();
+const appVersion = ref(__APP_VERSION__);
 // 获取传递的 prop
 const props = defineProps({
   popupShow: {
@@ -123,7 +123,7 @@ function closePopup() {
 }
 
 onMounted(async () => {
-  appVersion.value =`${import.meta.env.VITE_APP_VERSION}`;
+console.log(__APP_VERSION__)
 });
 </script>
 <style scoped lang="scss">
