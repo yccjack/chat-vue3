@@ -112,7 +112,6 @@ function inputChat(msg) {
 
 }
 onMounted(async () => {
-  console.log(isTauri.call())
   if (isTauri.call()) {
     import("../components/Update.vue").then((module) => {
       Update.value = module.default;

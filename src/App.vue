@@ -433,6 +433,16 @@
                   <line x1="10" y1="14" x2="21" y2="3"></line>
                 </svg>
                 首页 &amp; FAQ</a>
+
+              <a v-if="!isTauri.call()" :href="deskApp" target="_blank"
+                 class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm">
+                <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
+                     stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path opacity="0.5" d="M22 16.0003V15.0003C22 12.1718 21.9998 10.7581 21.1211 9.8794C20.2424 9.00072 18.8282 9.00072 15.9998 9.00072H7.99977C5.17135 9.00072 3.75713 9.00072 2.87845 9.8794C2 10.7579 2 12.1711 2 14.9981V15.0003V16.0003C2 18.8287 2 20.2429 2.87868 21.1216C3.75736 22.0003 5.17157 22.0003 8 22.0003H16H16C18.8284 22.0003 20.2426 22.0003 21.1213 21.1216C22 20.2429 22 18.8287 22 16.0003Z" fill="#1C274C"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 1.25C11.5858 1.25 11.25 1.58579 11.25 2L11.25 12.9726L9.56943 11.0119C9.29986 10.6974 8.82639 10.661 8.51189 10.9306C8.1974 11.2001 8.16098 11.6736 8.43054 11.9881L11.4305 15.4881C11.573 15.6543 11.781 15.75 12 15.75C12.2189 15.75 12.4269 15.6543 12.5694 15.4881L15.5694 11.9881C15.839 11.6736 15.8026 11.2001 15.4881 10.9306C15.1736 10.661 14.7001 10.6974 14.4305 11.0119L12.75 12.9726L12.75 2C12.75 1.58579 12.4142 1.25 12 1.25Z" fill="#1C274C"/>
+                  </svg>
+                <span style="color: #00a67d">桌面端下载地址</span></a>
             </nav>
 
           </div>
@@ -503,8 +513,9 @@ import axios from 'axios';
 import clipboard from 'vue-clipboard3'; // 默认导入
 import imagePath from './assets/imgs/human9.png';
 // 定义响应式变量
-
+import {isTauri} from "@tauri-apps/api/core";
 const appVersion = ref();
+const deskApp = ref("https://gschaos.club/update_file/chatAi_0.1.5_x64_en-US.msi");
 const apiUrl = ref();
 const theme = ref('light');
 const oldConv = ref(null);
@@ -1062,7 +1073,7 @@ onMounted(async () => {
 
   let chatDivEle = chatContainer.value;
   chatDivEle.addEventListener('scroll', isScrollAndNotBottom, true)
-
+  deskApp.value = `https://gschaos.club/update_file/chatAi_${appVersion.value}_x64_en-US.msi`
   window.copy = vueCopy
 });
 
