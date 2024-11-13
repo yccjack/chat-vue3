@@ -6,6 +6,10 @@
       <div class="flex h-full flex-1 flex-col md:pl-[260px]">
         <sidebar
             :title_chat="chatTitle"
+            :newConv="pushNewConv"
+            :conversationLen="conversation.length"
+            @update_parent_new_chat="newChat"
+            @update_parent_openSidebar="selectConversation"
         ></sidebar>
         <main class="relative h-full w-full transition-width flex flex-col overflow-hidden items-stretch flex-1">
           <!-- 聊天窗 -->
@@ -229,12 +233,11 @@
       <!-- 菜单导航 -->
       <div class="dark hidden bg-gray-900 md:fixed md:inset-y-0 md:flex md:w-[260px] md:flex-col">
         <div class="flex h-full min-h-0 flex-col ">
-          <div :ref="menu" class="scrollbar-trigger flex h-full w-full flex-1 items-start border-white/20">
+          <div  class="scrollbar-trigger flex h-full w-full flex-1 items-start border-white/20">
             <mNav
                 :newConv="pushNewConv"
                 :conversationLen="conversation.length"
                 @update_parent_new_chat="newChat"
-                @update_parent_cid="handleCid"
                 @update_parent_openSidebar="selectConversation"
             ></mNav>
           </div>
@@ -350,17 +353,6 @@ function stopChat() {
         var rconv = conversation.value[conversation.value.length - 1];
         rconv["loading"] = false;
         convLoading.value = false;
-
-        if (conversation.value.length === 2 && rconv["speeches"].length === 1) {
-          var newConv = {
-            "id": cid.value,
-            "title": title.value
-          }
-
-          generateConvTitle(newConv);
-          pushNewConv.value = newConv
-          selectConversation(newConv, false);
-        }
       })
       .catch((err) => {
         console.error(err)
@@ -491,9 +483,7 @@ function chatRepeat() {
   if (convLoading.value) {
     return
   }
-
   convLoading.value = true;
-
   var rconv = conversation.value[conversation.value.length - 1];
   rconv["idx"] = rconv["suitable"].length;
   rconv["loading"] = true;
@@ -640,6 +630,7 @@ function newChat() {
     return
   }
   chatTitle.value = "新的对话";
+  loadId()
 }
 
 function selectConversation(conv, loadConv = false) {
@@ -664,6 +655,18 @@ function selectConversation(conv, loadConv = false) {
 }
 
 
+//触发新对话，获取随机的id，
+function loadId() {
+  axios.post(`http://${apiUrl.value}/generate/id`, {})
+      .then((result) => {
+        var resp = result.data;
+        cid.value = resp.data
+        conversation.value = []
+      })
+      .catch((err) => {
+        console.error(err)
+      });
+}
 function loadAvatar() {
   avatarIdx.value = localStorage.getItem("avatar") || Math.ceil(Math.random() * 9);
 }
@@ -702,10 +705,6 @@ function isScrollAndNotBottom() {
   isShowGoBottom.value = true;
 }
 
-function handleCid(arg) {
-  cid.value = arg
-  conversation.value = []
-}
 
 watch(chatMsg, (newVal, oldVal) => {
   if (newVal !== oldVal) {
@@ -720,7 +719,7 @@ onMounted(async () => {
   popupShow.value = savedPopupShow !== 'true';
   var theme = localStorage.getItem("theme") || "light"
   changeTheme(theme);
-  // loadId();
+  loadId();
   // loadConversations();
   loadAvatar();
 

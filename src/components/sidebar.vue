@@ -1,4 +1,3 @@
-
 <template>
   <div
       class="sticky top-0 z-10 flex items-center border-b border-white/20 bg-gray-800 pl-1 pt-1 text-gray-200 sm:pl-3 md:hidden">
@@ -48,14 +47,14 @@
                         </svg>
                       </button>
                     </div>
-                    <div  style="width:320px"
+                    <div style="width:320px"
                          class="flex h-full flex-1 items-start border-white/20">
                       <mNav
                           :newConv="props.newConv"
                           :conversationLen="props.conversationLen"
+                          :sidebarNewChat=sidebarNewChat
                           @update_parent_new_chat="newChat"
-                          @update_parent_cid="handleCid"
-                          @update_parent_openSidebar="selectConversation"
+                          @update_parent_openSidebar="notifyParentUpdateSelect"
                       ></mNav>
                     </div>
                   </div>
@@ -72,48 +71,59 @@
 </template>
 <script setup>
 
-import {onMounted, ref,watch} from "vue";
+import {onMounted, ref, watch} from "vue";
 import mNav from "./mNav.vue";
+
 const showSlide = ref(false);
 const menu = ref(null);
 const chatTitle = ref("");
-const conversations = ref([]);
+const sidebarNewChat = ref(1);
 
 const props = defineProps({
   //发生的新对话标题
   newConv: {
-    type: {},
-    default: ''
+    type: Object,
+    default: {}
   },
   //新对话内容的长度
   conversationLen: {
     type: Number,
     default: 0
   },
-  title_chat:{
+  title_chat: {
     type: String,
     default: '新的对话'
   }
 });
 
 onMounted(async () => {
-  chatTitle.value=props.title_chat
+  chatTitle.value = props.title_chat
 });
 // 观察 popupShow prop 的变化
 watch(() => props.title_chat, (val) => {
-  chatTitle.value=val
+  chatTitle.value = val
 });
 
+const emit = defineEmits(['update_parent_new_chat', 'update_parent_openSidebar']);
+
+function notifyParentUpdateSelect(conv, loadConv) {
+  emit("update_parent_openSidebar", conv, loadConv)
+  closeShowSlide()
+}
 
 function newChat() {
   if (props.conversationLen === 0) {
     return
   }
+  sidebarNewChat.value += 1;
   chatTitle.value = "新的对话";
+  emit("update_parent_new_chat", "")
 }
+
 function showSlideMethod() {
   showSlide.value = true;
 }
+
 function closeShowSlide() {
   showSlide.value = false;
 }

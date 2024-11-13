@@ -210,16 +210,21 @@ const convTitletmp = ref('');
 const props = defineProps({
   //发生的新对话标题
   newConv: {
-    type: {},
-    default: ''
+    type: Object,
+    default: {}
   },
   //新对话内容的长度
   conversationLen: {
     type: Number,
     default: 0
+  },
+  //是否存在来自sidebar的引用
+  sidebarNewChat: {
+    type: Number,
+    default: 0
   }
 });
-const emit = defineEmits(['update_parent_new_chat', 'update_parent_cid', 'update_parent_openSidebar']);
+const emit = defineEmits(['update_parent_new_chat', 'update_parent_openSidebar']);
 const conversations = ref([]);
 const theme = ref('light');
 const oldConv = ref(null);
@@ -306,7 +311,7 @@ function selectConversation(conv, loadConv) {
     return;
   }
   //父组件更新chatTitle,调用conv接口
-  emit('update_parent_openSidebar', conv,loadConv);
+  emit('update_parent_openSidebar', conv, loadConv);
 }
 
 //触发新对话，
@@ -321,25 +326,25 @@ function newChat() {
     delete conv.selected;
     delete conv.delete;
   }
-  loadId()
+  emit('update_parent_new_chat', "");
 }
 
-//触发新对话，获取随机的id，告知父组件
-function loadId() {
-  axios.post(`http://${apiUrl.value}/generate/id`, {})
-      .then((result) => {
-        var resp = result.data;
-        emit('update_parent_cid', resp.data);
-      })
-      .catch((err) => {
-        console.error(err)
-      });
-}
 
 // 观察 popupShow prop 的变化
 watch(() => props.newConv, (val) => {
   conversations.value.unshift(val);
   saveConversations();
+});
+// 观察 popupShow prop 的变化
+watch(() => props.sidebarNewChat, (val) => {
+  //如果是来自sidebar触发的newChat事件，这里需要将选中数据解除，但是不需要通知父组件，通知由sidebar执行
+  document.title = "新的对话";
+  for (let idx in conversations.value) {
+    var conv = conversations.value[idx];
+    delete conv.editable;
+    delete conv.selected;
+    delete conv.delete;
+  }
 });
 
 onMounted(async () => {
@@ -347,7 +352,6 @@ onMounted(async () => {
   deskApp.value = `https://gschaos.club/update_file/chatAi_${appVersion.value}_x64_zh-CN.msi`
   const theme = localStorage.getItem("theme") || "light";
   changeTheme(theme);
-  loadId();
   loadConversations();
 });
 </script>
