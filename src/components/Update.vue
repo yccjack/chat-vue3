@@ -20,7 +20,6 @@ import {relaunch} from "@tauri-apps/plugin-process";
 import {onMounted, ref} from "vue";
 import {getVersion, getName, getTauriVersion} from "@tauri-apps/api/app";
 import { Modal } from "ant-design-vue";
-const appVersion = ref(__APP_VERSION__);
 const appName = ref();
 const tauriVersion = ref();
 const open = ref(false);

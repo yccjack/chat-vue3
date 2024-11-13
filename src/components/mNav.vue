@@ -306,7 +306,7 @@ function selectConversation(conv, loadConv) {
   }
   conv.selected = true
   oldConv.value = conv;
-  document.title = conv.title || "chatAi";
+  document.title = conv.title || "Y-Chat";
   if (!loadConv) {
     return;
   }
@@ -349,7 +349,7 @@ watch(() => props.sidebarNewChat, (val) => {
 
 onMounted(async () => {
   apiUrl.value = __APP_API_RUI__;
-  deskApp.value = `https://gschaos.club/update_file/chatAi_${appVersion.value}_x64_zh-CN.msi`
+  deskApp.value = `https://gschaos.club/update_file/Y-Chat_${appVersion.value}_x64_zh-CN.msi`
   const theme = localStorage.getItem("theme") || "light";
   changeTheme(theme);
   loadConversations();

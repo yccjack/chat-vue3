@@ -271,7 +271,7 @@ import clipboard from 'vue-clipboard3'; // 默认导入
 import imagePath from './assets/imgs/human9.png';
 
 const appVersion = ref(__APP_VERSION__);
-const deskApp = ref("https://gschaos.club/update_file/chatAi_0.1.5_x64_en-US.msi");
+const deskApp = ref("https://gschaos.club/update_file/Y-Chat_0.1.5_x64_en-US.msi");
 const apiUrl = ref();
 const theme = ref('light');
 const title = ref("新的对话")
@@ -630,7 +630,7 @@ function newChat() {
 }
 
 function selectConversation(conv, loadConv = false) {
-  chatTitle.value = conv.title || "chatAi";
+  chatTitle.value = conv.title || "Y-Chat";
   if (!loadConv) {
     return;
   }
@@ -721,7 +721,7 @@ onMounted(async () => {
 
   let chatDivEle = chatContainer.value;
   chatDivEle.addEventListener('scroll', isScrollAndNotBottom, true)
-  deskApp.value = `https://gschaos.club/update_file/chatAi_${appVersion.value}_x64_zh-CN.msi`
+  deskApp.value = `https://gschaos.club/update_file/Y-Chat_${appVersion.value}_x64_zh-CN.msi`
   window.copy = vueCopy
 });
 

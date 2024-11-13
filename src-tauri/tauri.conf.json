@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "chatAi",
-  "version": "0.1.8",
+  "productName": "Y-Chat",
+  "version": "0.2.0",
   "identifier": "com.gschaos.chat",
   "build": {
     "frontendDist": "../dist",
