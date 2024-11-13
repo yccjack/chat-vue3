@@ -4,31 +4,9 @@
     <modalA :popupShow="popupShow" @close="popupShow = false"></modalA>
     <div class="overflow-hidden w-full h-full relative">
       <div class="flex h-full flex-1 flex-col md:pl-[260px]">
-        <div
-            class="sticky top-0 z-10 flex items-center border-b border-white/20 bg-gray-800 pl-1 pt-1 text-gray-200 sm:pl-3 md:hidden">
-          <div>
-            <button @click="showSlideMethod" type="button"
-                    class="-ml-0.5 -mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-md hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white dark:hover:text-white"><span
-                class="sr-only">Open sidebar</span>
-              <svg stroke="currentColor" fill="none" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round"
-                   stroke-linejoin="round" class="h-6 w-6" height="1em" width="1em"
-                   xmlns="http://www.w3.org/2000/svg">
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-              </svg>
-            </button>
-          </div>
-          <h1 class="flex-1 text-center text-base font-normal">{{ chatTitle }}</h1>
-          <button @click.stop="newChat" type="button" class="px-3">
-            <svg stroke="currentColor" fill="none" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round"
-                 stroke-linejoin="round" class="h-6 w-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-          </button>
-        </div>
-
+        <sidebar
+            :title_chat="chatTitle"
+        ></sidebar>
         <main class="relative h-full w-full transition-width flex flex-col overflow-hidden items-stretch flex-1">
           <!-- 聊天窗 -->
           <div class="flex-1 overflow-hidden">
@@ -207,7 +185,7 @@
 
                   <button v-if="convLoading" @click.stop.prevent="stopChat" id="stopChat"
                           class="btn relative btn-neutral border-0 md:border">
-                    停止回答[暂不可用]
+                    停止作答
                   </button>
 
                 </div>
@@ -240,63 +218,31 @@
             </form>
             <div class="px-3 pt-2 pb-3 text-center text-xs text-black/50 dark:text-white/50 md:px-4 md:pt-3 md:pb-6">
               <a href="https://gitee.com/MIEAPP/chatai-vue" target="_blank" rel="noreferrer"
-                 class="underline"> chatAi </a> 仅供学习 AI 使用。<span style="color: #00e0e0"> 当前版本：{{appVersion }}</span>
+                 class="underline"> chatAi </a> 仅供学习 AI 使用。<span style="color: #00e0e0"> 当前版本：{{
+                appVersion
+              }}</span>
             </div>
           </div>
         </main>
       </div>
 
       <!-- 菜单导航 -->
-      <mNav
-      :newConv="pushNewConv"
-      :conversationLen="conversation.length"
-      @update_parent_new_chat="newChat"
-      @update_parent_cid="handleCid"
-      @update_parent_openSidebar="selectConversation"
-      ></mNav>
-    </div>
-    <div class="absolute top-0 left-0 right-0 z-[2]"></div>
-  </div>
-
-  <div v-show="showSlide" class="semi-portal" style="z-index: 1000;">
-    <div class="">
-      <div class="semi-modal-mask"></div>
-      <div role="none" class="semi-modal-wrap">
-        <div class="semi-modal semi-modal-small" id="dialog-3" style="width: 0px;">
-          <div role="dialog" aria-modal="true" aria-labelledby="semi-modal-title" aria-describedby="semi-modal-body"
-               class="semi-modal-content">
-            <div class="semi-modal-body-wrapper">
-              <div class="semi-modal-body" x-semi-prop="children">
-                <div class="fixed inset-0 z-40 flex">
-                  <div class="relative flex w-full max-w-xs flex-1 flex-col bg-gray-900 translate-x-0"
-                       id="headlessui-dialog-panel-:r1:" data-headlessui-state="open">
-                    <div class="absolute top-0 right-0 -mr-12 pt-2 opacity-100">
-                      <button @click="closeShowSlide" type="button"
-                              class="ml-1 flex h-10 w-10 items-center justify-center focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"><span
-                          class="sr-only">Close sidebar</span>
-                        <svg stroke="currentColor" fill="none" stroke-width="1.5" viewBox="0 0 24 24"
-                             stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-white" height="1em"
-                             width="1em" xmlns="http://www.w3.org/2000/svg">
-                          <line x1="18" y1="6" x2="6" y2="18"></line>
-                          <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                      </button>
-                    </div>
-                    <div ref="slideNavContainer" style="width:320px"
-                         class="flex h-full flex-1 items-start border-white/20">
-                    </div>
-                  </div>
-                  <div @click="closeShowSlide" style="width:calc(100% - 320px)" class="flex-shrink-0"></div>
-                </div>
-              </div>
-            </div>
+      <div class="dark hidden bg-gray-900 md:fixed md:inset-y-0 md:flex md:w-[260px] md:flex-col">
+        <div class="flex h-full min-h-0 flex-col ">
+          <div :ref="menu" class="scrollbar-trigger flex h-full w-full flex-1 items-start border-white/20">
+            <mNav
+                :newConv="pushNewConv"
+                :conversationLen="conversation.length"
+                @update_parent_new_chat="newChat"
+                @update_parent_cid="handleCid"
+                @update_parent_openSidebar="selectConversation"
+            ></mNav>
           </div>
         </div>
       </div>
     </div>
-
+    <div class="absolute top-0 left-0 right-0 z-[2]"></div>
   </div>
-
   <div portal-container="">
           <span
               class="pointer-events-none fixed inset-0 z-[60] mx-auto my-2 flex max-w-[560px] flex-col items-stretch justify-start md:pb-5">
@@ -309,6 +255,7 @@
 
 <script setup>
 import mNav from "./components/mNav.vue";
+import sidebar from "./components/sidebar.vue";
 import {nextTick, onMounted, ref, watch, watchEffect} from "vue";
 import MarkdownIt from 'markdown-it';
 import hljs from 'highlight.js'
@@ -319,23 +266,21 @@ import announcement from "./components/announcement.vue";
 import axios from 'axios';
 import clipboard from 'vue-clipboard3'; // 默认导入
 import imagePath from './assets/imgs/human9.png';
-// 定义响应式变量
-import {isTauri} from "@tauri-apps/api/core";
+
 const appVersion = ref(__APP_VERSION__);
 const deskApp = ref("https://gschaos.club/update_file/chatAi_0.1.5_x64_en-US.msi");
 const apiUrl = ref();
 const theme = ref('light');
-const oldConv = ref(null);
+const title = ref("新的对话")
 const popupShow = ref(false);
 const avatarIdx = ref(1);
 const pushNewConv = ref({});
 const conversation = ref([]);
 const chatMsg = ref('');
-const chatTitle = ref('New chat');
+const chatTitle = ref('新的对话');
 const convLoading = ref(false);
 const showSlide = ref(false);
 const isShowGoBottom = ref(false);
-const convTitletmp = ref('');
 const menu = ref(null);
 const navEle = ref(null);
 const inputChat = ref("");
@@ -345,7 +290,7 @@ const cid = ref("");
 const humanImage = ref(imagePath);
 const {toClipboard} = clipboard();
 
-function renderCodeBlock(code,codeHtml, language = "") {
+function renderCodeBlock(code, codeHtml, language = "") {
   return `<div class="bg-black mb-4 rounded-md">
     <div class="code_header flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans">
       <span>${language}</span>
@@ -363,6 +308,7 @@ function renderCodeBlock(code,codeHtml, language = "") {
     </div>
   </div>`;
 }
+
 // 配置 markdown-it 实例
 const marked = new MarkdownIt({
   html: true,               // 允许 HTML 标签
@@ -370,10 +316,10 @@ const marked = new MarkdownIt({
   typographer: true,        // 使用引号替换等
   highlight: (code, language) => {
     let codeHtml = language && hljs.getLanguage(language)
-        ? hljs.highlight(code, { language }).value
+        ? hljs.highlight(code, {language}).value
         : hljs.highlightAuto(code).value;
 
-    return renderCodeBlock(code,codeHtml, language);
+    return renderCodeBlock(code, codeHtml, language);
   }
 
 });
@@ -399,7 +345,7 @@ function autoResize() {
 }
 
 function stopChat() {
-  axios.put(`http://${apiUrl.value}/stop/chat/${cid.value}`, {})
+  axios.post(`http://${apiUrl.value}/stop/chat/${cid.value}`, {})
       .then((result) => {
         var rconv = conversation.value[conversation.value.length - 1];
         rconv["loading"] = false;
@@ -408,7 +354,7 @@ function stopChat() {
         if (conversation.value.length === 2 && rconv["speeches"].length === 1) {
           var newConv = {
             "id": cid.value,
-            "title": "New chat"
+            "title": title.value
           }
 
           generateConvTitle(newConv);
@@ -420,16 +366,6 @@ function stopChat() {
         console.error(err)
       });
 
-}
-
-function closeShowSlide() {
-  showSlide.value = false;
-  menu.valueOf.appendChild(navEle.value);
-}
-
-function showSlideMethod() {
-  showSlide.value = true;
-  slideNavContainer.valueappendChild(navEle.value);
 }
 
 function changeHeight() {
@@ -644,7 +580,7 @@ function send() {
 
   try {
     // 使用 Axios 发送 GET 请求，接收流式数据
-    fetch(`http://${apiUrl.value}/chat/${ cid.value}`, {
+    fetch(`http://${apiUrl.value}/chat/${cid.value}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
@@ -670,10 +606,10 @@ function send() {
           if (first) {
             var newConv = {
               "id": cid.value,
-              "title": "新的对话"
+              "title": title.value
             };
             generateConvTitle(newConv);
-            pushNewConv.value=newConv
+            pushNewConv.value = newConv
             selectConversation(newConv, false);
             refreshConversation(); // 修正拼写错误
             first = false; // 标记为非首次
@@ -706,7 +642,7 @@ function newChat() {
   chatTitle.value = "新的对话";
 }
 
-function selectConversation(conv,loadConv=false) {
+function selectConversation(conv, loadConv = false) {
   chatTitle.value = conv.title || "chatAi";
   if (!loadConv) {
     return;
@@ -766,9 +702,9 @@ function isScrollAndNotBottom() {
   isShowGoBottom.value = true;
 }
 
-function handleCid(arg){
-  cid.value=arg
-  conversation.value=[]
+function handleCid(arg) {
+  cid.value = arg
+  conversation.value = []
 }
 
 watch(chatMsg, (newVal, oldVal) => {
