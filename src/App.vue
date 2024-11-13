@@ -282,12 +282,8 @@ const conversation = ref([]);
 const chatMsg = ref('');
 const chatTitle = ref('新的对话');
 const convLoading = ref(false);
-const showSlide = ref(false);
 const isShowGoBottom = ref(false);
-const menu = ref(null);
-const navEle = ref(null);
 const inputChat = ref("");
-const slideNavContainer = ref(null);
 const cid = ref("");
 // 使用 ref 定义响应式变量
 const humanImage = ref(imagePath);
