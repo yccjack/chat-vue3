@@ -218,7 +218,7 @@ const convTitletmp = ref('');
 const props = defineProps({
   //发生的新对话标题
   newConv: {
-    type: String,
+    type: {},
     default: ''
   },
   //新对话内容的长度
@@ -314,11 +314,10 @@ function selectConversation(conv, loadConv) {
     return;
   }
   //父组件更新chatTitle,调用conv接口
-  emit('update_parent_openSidebar', conv);
+  emit('update_parent_openSidebar', conv,loadConv);
 }
 
 function newChat() {
-  console.log(props.conversationLen + "新的对话")
   if (props.conversationLen === 0) {
     return
   }

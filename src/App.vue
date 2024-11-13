@@ -706,8 +706,11 @@ function newChat() {
   chatTitle.value = "新的对话";
 }
 
-function selectConversation(conv) {
+function selectConversation(conv,loadConv=false) {
   chatTitle.value = conv.title || "chatAi";
+  if (!loadConv) {
+    return;
+  }
   axios.get(`http://${apiUrl.value}/conv/${conv.id}`)
       .then((result) => {
         var resp = result.data;
@@ -763,9 +766,6 @@ function isScrollAndNotBottom() {
   isShowGoBottom.value = true;
 }
 
-function handleUpdate(arg){
-  console.log(arg)
-}
 function handleCid(arg){
   cid.value=arg
   conversation.value=[]
