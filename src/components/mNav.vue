@@ -20,7 +20,7 @@
           <div class="flex-col flex-1 overflow-y-auto border-b border-white/20" style="padding-bottom: 5px;">
             <div class="flex flex-col gap-2 text-gray-100 text-sm">
 
-              <template v-for="(convs, cidx) in chatList">
+              <template v-for="(convs, cidx) in conversations">
 
                 <div v-if="convs.editable"
                      class="m-focus flex py-3 px-3 items-center gap-3 relative rounded-md cursor-pointer hover:pr-14 break-all pr-14 bg-gray-800 hover:bg-gray-800">
@@ -64,7 +64,7 @@
                     <line x1="10" y1="11" x2="10" y2="17"></line>
                     <line x1="14" y1="11" x2="14" y2="17"></line>
                   </svg>
-                  <div class="flex-1 text-ellipsis max-h-5 overflow-hidden break-all relative">Delete "{{
+                  <div class="flex-1 text-ellipsis max-h-5 overflow-hidden break-all relative">删除 "{{
                       convs.title
                     }}"?
                     <div class="absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l from-gray-800"></div>
@@ -192,8 +192,12 @@
             <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
                  stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em"
                  xmlns="http://www.w3.org/2000/svg">
-              <path opacity="0.5" d="M22 16.0003V15.0003C22 12.1718 21.9998 10.7581 21.1211 9.8794C20.2424 9.00072 18.8282 9.00072 15.9998 9.00072H7.99977C5.17135 9.00072 3.75713 9.00072 2.87845 9.8794C2 10.7579 2 12.1711 2 14.9981V15.0003V16.0003C2 18.8287 2 20.2429 2.87868 21.1216C3.75736 22.0003 5.17157 22.0003 8 22.0003H16H16C18.8284 22.0003 20.2426 22.0003 21.1213 21.1216C22 20.2429 22 18.8287 22 16.0003Z" fill="#1C274C"/>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 1.25C11.5858 1.25 11.25 1.58579 11.25 2L11.25 12.9726L9.56943 11.0119C9.29986 10.6974 8.82639 10.661 8.51189 10.9306C8.1974 11.2001 8.16098 11.6736 8.43054 11.9881L11.4305 15.4881C11.573 15.6543 11.781 15.75 12 15.75C12.2189 15.75 12.4269 15.6543 12.5694 15.4881L15.5694 11.9881C15.839 11.6736 15.8026 11.2001 15.4881 10.9306C15.1736 10.661 14.7001 10.6974 14.4305 11.0119L12.75 12.9726L12.75 2C12.75 1.58579 12.4142 1.25 12 1.25Z" fill="#1C274C"/>
+              <path opacity="0.5"
+                    d="M22 16.0003V15.0003C22 12.1718 21.9998 10.7581 21.1211 9.8794C20.2424 9.00072 18.8282 9.00072 15.9998 9.00072H7.99977C5.17135 9.00072 3.75713 9.00072 2.87845 9.8794C2 10.7579 2 12.1711 2 14.9981V15.0003V16.0003C2 18.8287 2 20.2429 2.87868 21.1216C3.75736 22.0003 5.17157 22.0003 8 22.0003H16H16C18.8284 22.0003 20.2426 22.0003 21.1213 21.1216C22 20.2429 22 18.8287 22 16.0003Z"
+                    fill="#1C274C"/>
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M12 1.25C11.5858 1.25 11.25 1.58579 11.25 2L11.25 12.9726L9.56943 11.0119C9.29986 10.6974 8.82639 10.661 8.51189 10.9306C8.1974 11.2001 8.16098 11.6736 8.43054 11.9881L11.4305 15.4881C11.573 15.6543 11.781 15.75 12 15.75C12.2189 15.75 12.4269 15.6543 12.5694 15.4881L15.5694 11.9881C15.839 11.6736 15.8026 11.2001 15.4881 10.9306C15.1736 10.661 14.7001 10.6974 14.4305 11.0119L12.75 12.9726L12.75 2C12.75 1.58579 12.4142 1.25 12 1.25Z"
+                    fill="#1C274C"/>
             </svg>
             <span style="color: #00a67d">桌面端下载地址</span></a>
         </nav>
@@ -207,25 +211,28 @@
 import {isTauri} from "@tauri-apps/api/core";
 import {onMounted, ref, watch} from 'vue';
 import axios from "axios";
+
 const appVersion = ref(__APP_VERSION__);
 const convTitletmp = ref('');
 // 获取传递的 prop
 const props = defineProps({
-  conversations: {
-    type: Array,
-    default: [],
-  },
-  apiUrl:{
+  //发生的新对话标题
+  newConv: {
     type: String,
-    default: "",
+    default: ''
+  },
+  //新对话内容的长度
+  conversationLen: {
+    type: Number,
+    default: 0
   }
 });
-const emit = defineEmits(['update_parent_new_chat','update_parent_cid','update_parent_openSidebar']);
-const chatList = ref(props.conversations);
+const emit = defineEmits(['update_parent_new_chat', 'update_parent_cid', 'update_parent_openSidebar']);
+const conversations = ref([]);
 const theme = ref('light');
 const oldConv = ref(null);
 const deskApp = ref("");
-
+const apiUrl = ref();
 
 function changeTheme(newTheme) {
   theme.value = newTheme;
@@ -235,8 +242,9 @@ function changeTheme(newTheme) {
   html.style.colorScheme = newTheme;
   localStorage.setItem('theme', newTheme);
 }
+
 function clearConversations() {
-  chatList.value = []
+  conversations.value = []
   saveConversations();
 }
 
@@ -246,14 +254,24 @@ function titleInputBlur(idx, conv) {
     cancelChangeConvTitle(idx, conv);
   }, 100);
 }
+
 function cancelChangeConvTitle(idx, conv) {
   conv.editable = false;
-  chatList.value[idx] = conv;
+  conversations.value[idx] = conv;
+}
+
+function editTitle(idx, conv) {
+  convTitletmp.value = conv.title;
+  conv.editable = true;
+  conversations.value[idx] = conv;
+  setTimeout(() => {
+    document.getElementById("titleInput").focus();
+  }, 150)
 }
 
 function loadConversations() {
   let convs = localStorage.getItem("conversations") || "[]";
-  chatList.value = JSON.parse(convs);
+  conversations.value = JSON.parse(convs);
 }
 
 function changeConvTitle(idx, conv) {
@@ -261,10 +279,11 @@ function changeConvTitle(idx, conv) {
   saveConversations();
   cancelChangeConvTitle(idx, conv)
 }
+
 function saveConversations() {
-  var conversations_put = JSON.parse(JSON.stringify(chatList.value));
+  const conversations_put = JSON.parse(JSON.stringify(conversations.value));
   for (let idx in conversations_put) {
-    var conv = conversations_put[idx];
+    const conv = conversations_put[idx];
     delete conv.editable;
     delete conv.selected;
     delete conv.delete;
@@ -272,14 +291,17 @@ function saveConversations() {
   let convs = JSON.stringify(conversations_put);
   localStorage.setItem("conversations", convs);
 }
+
 function cancelDelConv(idx, conv) {
   conv.delete = false;
-  chatList.value[idx] = conv;
+  conversations.value[idx] = conv;
 }
+
 function delConv(cidx) {
-  chatList.value.splice(cidx, 1);
+  conversations.value.splice(cidx, 1);
   saveConversations();
 }
+
 function selectConversation(conv, loadConv) {
   // 如果 oldConv 已经有值，且 oldConv.value 不是 null，则将其 selected 设置为 false
   if (oldConv.value !== null && oldConv.value !== undefined) {
@@ -292,14 +314,27 @@ function selectConversation(conv, loadConv) {
     return;
   }
   //父组件更新chatTitle,调用conv接口
-  emit('update_parent_openSidebar', "");
+  emit('update_parent_openSidebar', conv);
 }
+
 function newChat() {
-  emit('update_parent_new_chat', "");
+  console.log(props.conversationLen + "新的对话")
+  if (props.conversationLen === 0) {
+    return
+  }
+  document.title = "新的对话";
+  for (let idx in conversations.value) {
+    var conv = conversations.value[idx];
+    delete conv.editable;
+    delete conv.selected;
+    delete conv.delete;
+  }
+  loadId()
 }
+
 //todo
 function loadId() {
-  axios.post(`http://${props.apiUrl}/generate/id`, {})
+  axios.post(`http://${apiUrl.value}/generate/id`, {})
       .then((result) => {
         var resp = result.data;
         emit('update_parent_cid', resp.data);
@@ -308,14 +343,17 @@ function loadId() {
         console.error(err)
       });
 }
+
 // 观察 popupShow prop 的变化
-watch(() => props.conversations, (val) => {
-  chatList.value = val;
+watch(() => props.newConv, (val) => {
+  conversations.value.unshift(val);
+  saveConversations();
 });
 
 onMounted(async () => {
+  apiUrl.value = __APP_API_RUI__;
   deskApp.value = `https://gschaos.club/update_file/chatAi_${appVersion.value}_x64_zh-CN.msi`
-  var theme = localStorage.getItem("theme") || "light"
+  const theme = localStorage.getItem("theme") || "light";
   changeTheme(theme);
   loadId();
   loadConversations();
