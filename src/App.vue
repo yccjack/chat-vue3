@@ -710,7 +710,7 @@ watch(chatMsg, (newVal, oldVal) => {
 onMounted(async () => {
   apiUrl.value = __APP_API_RUI__;
   // 从 localStorage 获取 popupShow 状态
-  const savedPopupShow = localStorage.getItem('popupShowV0.1.5');
+  const savedPopupShow = localStorage.getItem(`popupShow${__APP_VERSION__}`);
   // 如果 savedPopupShow 不存在，表示是第一次弹窗
   popupShow.value = savedPopupShow !== 'true';
   var theme = localStorage.getItem("theme") || "light"

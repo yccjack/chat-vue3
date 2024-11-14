@@ -30,9 +30,9 @@
           "如何成为上帝"
           →
         </button>
-        <button @click="inputChat('工作，消费主义和新穷人?')"
+        <button @click="inputChat('我是谁，我在哪')"
                 class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900">
-          "工作，消费主义和新穷人?" →
+          "我是谁，我在哪" →
         </button>
       </ul>
     </div>
@@ -69,7 +69,7 @@
           <line x1="12" y1="9" x2="12" y2="13"></line>
           <line x1="12" y1="17" x2="12.01" y2="17"></line>
         </svg>
-        有所不为
+        .
       </h2>
       <ul class="flex flex-col gap-3.5 w-full sm:max-w-md m-auto">
         <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">

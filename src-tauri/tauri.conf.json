@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Y-Chat",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "identifier": "com.gschaos.chat",
   "build": {
     "frontendDist": "../dist",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "ChatY",
+        "title": "Y-Chat",
         "width": 1200,
         "height": 800,
         "resizable": true,

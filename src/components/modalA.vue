@@ -29,15 +29,7 @@
                       <div class="w-10 text-2xl text-center">🚨</div>
                       <div class="flex-1 leading-5">
                         <ul class="flex flex-col gap-3.5 w-full sm:max-w-md m-auto">
-                          <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">
-                            增加自动更新
-                          </li>
-                          <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">
-                            加快了回复速度
-                          </li>
-                          <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">
-                            升级框架版本
-                          </li>
+                          <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md" v-for="(item, index) in update_node" :key="index">{{ item }}</li>
                         </ul>
                       </div>
                     </div>
@@ -97,6 +89,8 @@
 <script setup>
 import {onMounted, ref, watch} from 'vue';
 const appVersion = ref(__APP_VERSION__);
+const update_node = JSON.parse(__UPDATE_NODE__);
+
 // 获取传递的 prop
 const props = defineProps({
   popupShow: {
@@ -119,7 +113,7 @@ function closePopup() {
   isVisible.value = false;
   emit("close");
   // 将弹窗状态保存到 localStorage 中
-  localStorage.setItem('popupShowV0.1.5', 'true');
+  localStorage.setItem(`popupShow${__APP_VERSION__}`, 'true');
 }
 
 onMounted(async () => {
