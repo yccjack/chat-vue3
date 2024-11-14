@@ -8,8 +8,6 @@
       <div style="color: #2e95d3">
         <ul>
           <li>最新版本： {{update.version}},发布时间： {{update.date}}</li>
-
-          <li v-for="(item, index) in update_node" :key="index">{{ item }}</li>
         </ul>
       </div>
       <!-- 进度条 -->
@@ -32,7 +30,6 @@ const tauriVersion = ref();
 const open = ref(false);
 const isDownloading = ref(false); // 控制按钮禁用的状态
 const update = await check();
-const update_node = JSON.parse(__UPDATE_NODE__);
 // 更新进度
 const downloadProgress = ref(null);  // 用于存储下载进度百分比
 const init = async () => {
@@ -47,10 +44,6 @@ const checkUpdate = async () => {
   try {
 
     if (update) {
-      alert(update)
-      alert(
-          `found update ${update.version} from ${update.date} with notes ${update.body}`
-      );
       let downloaded = 0;
       let contentLength = 0;
       // alternatively we could also call update.download() and update.install() separately

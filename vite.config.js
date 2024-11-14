@@ -37,6 +37,6 @@ export default defineConfig({
     }, define: {
         __APP_VERSION__: JSON.stringify(version),
         __APP_API_RUI__: JSON.stringify('chat.gschaos.club/api'),
-        __UPDATE_NODE__: JSON.stringify('["更换了图标","更换了应用名称","更新老版本无法自动卸载，还请手动卸载"]')
+        __UPDATE_NODE__: JSON.stringify('["更换了图标","更换了应用名称","更新0.1.*版本的无法自动卸载，还请手动卸载"]')
     },
 })
