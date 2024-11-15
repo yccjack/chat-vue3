@@ -33,10 +33,22 @@ jobs:
           cache: "npm"
       - name: Install frontend dependencies
         run: npm install
+      # 修复环境变量传递并添加调试步骤
       - name: Debug environment
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
         run: |
-          echo "Private key loaded: ${TAURI_SIGNING_PRIVATE_KEY:+YES}"
-          echo "Private key password loaded: ${TAURI_SIGNING_PRIVATE_KEY_PASSWORD:+YES}"
+          if [ -n "$TAURI_SIGNING_PRIVATE_KEY" ]; then
+            echo "Private key loaded: YES"
+          else
+            echo "Private key loaded: NO"
+          fi
+          if [ -n "$TAURI_SIGNING_PRIVATE_KEY_PASSWORD" ]; then
+            echo "Private key password loaded: YES"
+          else
+            echo "Private key password loaded: NO"
+          fi
       # 使用tauri actions
       - name: Build the app
         id: build
