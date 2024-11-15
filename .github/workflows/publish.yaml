@@ -1,4 +1,4 @@
-name: Release
+  name: Release
 on:
   push:
     tags:
@@ -12,26 +12,35 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ['windows-latest', 'macos-latest']
+        platform: ['windows-latest']
 
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Rust setup
-        uses: dtolnay/rust-toolchain@stable
-      
+
+      # Set up Node.js environment
       - name: Install pnpm
         run: npm install -g pnpm
+
       - name: Sync node version and setup cache
         uses: actions/setup-node@v3
         with:
           node-version: "lts/*"
           cache: "pnpm"
+
+      # Install frontend dependencies
       - name: Install frontend dependencies
         run: pnpm install --no-frozen-lockfile
+
+      # Build the frontend app with Vite
       - name: Build the app
-        id: build
+        run: pnpm build
+
+      # If using Tauri, build the Tauri app
+      - name: Build Tauri app
+        if: ${{ matrix.platform == 'windows-latest' || matrix.platform == 'macos-latest' }}
+        id: tauri-build
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -44,8 +53,8 @@ jobs:
           releaseDraft: true
           prerelease: false
 
+      # Upload release assets (e.g., after building the app)
       - name: Upload assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/updater.mjs
-        
