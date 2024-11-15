@@ -1,6 +1,6 @@
 <template>
   <!-- 菜单导航 -->
-  <nav class="flex h-full flex-1 flex-col space-y-1 p-2">
+  <nav class="highlight flex h-full flex-1 flex-col space-y-1 p-2">
     <a @click.stop="newChat"
        class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm mb-2 flex-shrink-0 border border-white/20">
       <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
@@ -224,7 +224,7 @@ const props = defineProps({
     default: 0
   }
 });
-const emit = defineEmits(['update_parent_new_chat', 'update_parent_openSidebar']);
+const emit = defineEmits(['update_parent_new_chat', 'update_parent_openSidebar',"clear_current_chat"]);
 const conversations = ref([]);
 const theme = ref('light');
 const oldConv = ref(null);
@@ -241,8 +241,19 @@ function changeTheme(newTheme) {
 }
 
 function clearConversations() {
+  const conversationIds = conversations.value.map(conversation => conversation.id);
+  const data = {
+    "ids": conversationIds
+  };
+  axios.post(`http://${apiUrl.value}/chat/clear`,data)
+      .then((result) => {
+
+      })
+      .catch((err) => {
+      });
   conversations.value = []
   saveConversations();
+  emit('clear_current_chat');
 }
 
 

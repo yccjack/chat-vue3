@@ -1,7 +1,7 @@
 {
   "name": "y-chat",
   "private": true,
-  "version": "0.2.3",
+  "version": "0.2.4",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,8 @@
     "tauri": "tauri",
     "tauri:dev": "vite build && tauri dev",
     "tauri:build": "vite build && tauri build",
-    "pub": "node ./updateVersion.js && tauri build && node ./publish.js"
+    "pub": "node ./updateVersion.js && tauri build --release && node ./publish.js",
+    "pub_release": "node ./updateVersion.js && cargo tauri build && node ./publish.js"
   },
   "dependencies": {
     "@better-scroll/core": "^2.3.1",
