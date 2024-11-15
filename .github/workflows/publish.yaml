@@ -39,16 +39,16 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
         run: |
-          if [ -n "$TAURI_SIGNING_PRIVATE_KEY" ]; then
-            echo "Private key loaded: YES"
-          else
-            echo "Private key loaded: NO"
-          fi
-          if [ -n "$TAURI_SIGNING_PRIVATE_KEY_PASSWORD" ]; then
-            echo "Private key password loaded: YES"
-          else
-            echo "Private key password loaded: NO"
-          fi
+          if ($env:TAURI_SIGNING_PRIVATE_KEY) {
+            Write-Host "Private key loaded: YES"
+          } else {
+            Write-Host "Private key loaded: NO"
+          }
+          if ($env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD) {
+            Write-Host "Private key password loaded: YES"
+          } else {
+            Write-Host "Private key password loaded: NO"
+          }
       # 使用tauri actions
       - name: Build the app
         id: build
