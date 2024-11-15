@@ -40,7 +40,7 @@ jobs:
       # 使用tauri actions
       - name: Build the app
         id: build
-        uses: tauri-apps/tauri-action@v2
+        uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # 使用之前配置的私钥
