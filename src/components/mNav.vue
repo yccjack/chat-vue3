@@ -201,7 +201,7 @@
 <script setup>
 
 import {isTauri} from "@tauri-apps/api/core";
-import {onMounted, ref, watch} from 'vue';
+import {onMounted, ref, watch,nextTick } from 'vue';
 import axios from "axios";
 
 const appVersion = ref(__APP_VERSION__);
@@ -268,7 +268,21 @@ function editTitle(idx, conv) {
 
 function loadConversations() {
   let convs = localStorage.getItem("conversations") || "[]";
-  conversations.value = JSON.parse(convs);
+  let latestSelect = localStorage.getItem("conversations_latest_select");
+  let jsonData = JSON.parse(convs);
+  conversations.value =jsonData
+  if(latestSelect){
+    for (let idx in jsonData) {
+      const conv = jsonData[idx];
+      if(latestSelect===conv.id){
+        selectConversation(conv,true)
+        break
+      }
+    }
+
+  }
+
+
 }
 
 function changeConvTitle(idx, conv) {
@@ -307,11 +321,14 @@ function selectConversation(conv, loadConv) {
   conv.selected = true
   oldConv.value = conv;
   document.title = conv.title || "Y-Chat";
+  localStorage.setItem("conversations_latest_select", conv.id);
   if (!loadConv) {
     return;
   }
-  //父组件更新chatTitle,调用conv接口
-  emit('update_parent_openSidebar', conv, loadConv);
+  // 使用 nextTick 确保父组件已经渲染完毕
+  nextTick(() => {
+    emit('update_parent_openSidebar', conv, loadConv);
+  });
 }
 
 //触发新对话，
@@ -334,6 +351,7 @@ function newChat() {
 watch(() => props.newConv, (val) => {
   conversations.value.unshift(val);
   saveConversations();
+  selectConversation(val,false)
 });
 // 观察 popupShow prop 的变化
 watch(() => props.sidebarNewChat, (val) => {
