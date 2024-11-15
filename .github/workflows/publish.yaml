@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ['windows-latest', 'macos-latest']
+        platform: ['windows-latest']
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -40,7 +40,7 @@ jobs:
 
       # If using Tauri, build the Tauri app
       - name: Build Tauri app
-        if: ${{ matrix.platform == 'windows-latest' || matrix.platform == 'macos-latest' }}
+        if: ${{ matrix.platform == 'windows-latest' }}
         id: tauri-build
         uses: tauri-apps/tauri-action@v0
         env:
