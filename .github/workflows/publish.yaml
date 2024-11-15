@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ['windows-latest']
+        platform: ['windows-latest', 'macos-latest']
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -20,26 +20,27 @@ jobs:
         uses: actions/checkout@v3
 
       # Set up Node.js environment
-      - name: Install pnpm
-        run: npm install -g pnpm
+      - name: Install npm
+        run: npm install -g npm
 
+      # Sync node version and setup cache
       - name: Sync node version and setup cache
         uses: actions/setup-node@v3
         with:
           node-version: "lts/*"
-          cache: "pnpm"
+          cache: "npm"
 
       # Install frontend dependencies
       - name: Install frontend dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: npm install
 
       # Build the frontend app with Vite
       - name: Build the app
-        run: pnpm build
+        run: npm run build
 
       # If using Tauri, build the Tauri app
       - name: Build Tauri app
-        if: ${{ matrix.platform == 'windows-latest' }}
+        if: ${{ matrix.platform == 'windows-latest' || matrix.platform == 'macos-latest' }}
         id: tauri-build
         uses: tauri-apps/tauri-action@v0
         env:
