@@ -1,0 +1,51 @@
+name: Release
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ['windows-latest', 'macos-latest']
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Rust setup
+        uses: dtolnay/rust-toolchain@stable
+      
+      - name: Install pnpm
+        run: npm install -g pnpm
+      - name: Sync node version and setup cache
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+          cache: "pnpm"
+      - name: Install frontend dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Build the app
+        id: build
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "ComfyUI Startup v__VERSION__"
+          releaseBody: "See the assets to download and install this version."
+          releaseDraft: true
+          prerelease: false
+
+      - name: Upload assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/updater.mjs
+        
