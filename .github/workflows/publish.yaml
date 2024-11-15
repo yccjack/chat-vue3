@@ -56,9 +56,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # 使用之前配置的私钥
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          # 使用之前配置的私钥密码
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
+          TAURI_SIGNING_PRIVATE_KEY: 'dW50cnVzdGVkIGNvbW1lbnQ6IHJzaWduIGVuY3J5cHRlZCBzZWNyZXQga2V5ClJXUlRZMEl5TGtzVUttbG1QUGdXQXppOWhmeTRzbm9STENpOHlRckdsQXJXc20vZkoyMEFBQkFBQUFBQUFBQUFBQUlBQUFBQTN6bjhzK1Y5dnZBaDZ4ZElsVGx3UHVIdTc3RSt1MTF6L1hpVWs5YkNqTElNTG9jUEk4MjFOK1Z4TjI1WnJ1alcrbDg1dXBQK1VQMWQ5bEpPaGlTU2N5QzdwSEtUdlEzbHk3ZjZEZTRISElNYk13Q21RSjhHc0E3SmhmaVp6Y3ZubUdkU05JeEJBdDg9Cg=='
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: '13155488593'
         with:
           tagName: ${{ github.ref_name }}
           releaseName: "app_v__VERSION__"
