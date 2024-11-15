@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         # 我这里只需要两个平台，完整的可以参考官方的workflow
-        platform: ['windows-latest', 'macos-latest']
+        platform: ['windows-latest']
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -30,13 +30,17 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "lts/*"
-          cache: "pnpm"
+          cache: "npm"
       - name: Install frontend dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: npm install
+      - name: Debug environment
+        run: |
+          echo "Private key loaded: ${TAURI_SIGNING_PRIVATE_KEY:+YES}"
+          echo "Private key password loaded: ${TAURI_SIGNING_PRIVATE_KEY_PASSWORD:+YES}"
       # 使用tauri actions
       - name: Build the app
         id: build
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # 使用之前配置的私钥
