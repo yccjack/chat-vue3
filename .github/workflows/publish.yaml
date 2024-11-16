@@ -8,9 +8,10 @@ on:
 
 jobs:
   release:
-    # 由于需要创建release所以需要设置写入权限
     permissions:
-      contents: write
+      contents: read  # 允许读取仓库内容，包括 Releases
+      issues: write    # 如果需要操作 Issue
+      pull-requests: write  # 如果需要操作 Pull Requests
     strategy:
       fail-fast: false
       matrix:
@@ -36,8 +37,8 @@ jobs:
       # 修复环境变量传递并添加调试步骤
       - name: Debug environment
         env:
-          TAURI_SIGNING_PRIVATE_KEY: 'dW50cnVzdGVkIGNvbW1lbnQ6IHJzaWduIGVuY3J5cHRlZCBzZWNyZXQga2V5ClJXUlRZMEl5TGtzVUttbG1QUGdXQXppOWhmeTRzbm9STENpOHlRckdsQXJXc20vZkoyMEFBQkFBQUFBQUFBQUFBQUlBQUFBQTN6bjhzK1Y5dnZBaDZ4ZElsVGx3UHVIdTc3RSt1MTF6L1hpVWs5YkNqTElNTG9jUEk4MjFOK1Z4TjI1WnJ1alcrbDg1dXBQK1VQMWQ5bEpPaGlTU2N5QzdwSEtUdlEzbHk3ZjZEZTRISElNYk13Q21RSjhHc0E3SmhmaVp6Y3ZubUdkU05JeEJBdDg9Cg=='
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: '13155488593'
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
         run: |
           if ($env:TAURI_SIGNING_PRIVATE_KEY) {
             Write-Host "Private key loaded: YES"
@@ -56,17 +57,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # 使用之前配置的私钥
-          TAURI_SIGNING_PRIVATE_KEY: 'dW50cnVzdGVkIGNvbW1lbnQ6IHJzaWduIGVuY3J5cHRlZCBzZWNyZXQga2V5ClJXUlRZMEl5TGtzVUttbG1QUGdXQXppOWhmeTRzbm9STENpOHlRckdsQXJXc20vZkoyMEFBQkFBQUFBQUFBQUFBQUlBQUFBQTN6bjhzK1Y5dnZBaDZ4ZElsVGx3UHVIdTc3RSt1MTF6L1hpVWs5YkNqTElNTG9jUEk4MjFOK1Z4TjI1WnJ1alcrbDg1dXBQK1VQMWQ5bEpPaGlTU2N5QzdwSEtUdlEzbHk3ZjZEZTRISElNYk13Q21RSjhHc0E3SmhmaVp6Y3ZubUdkU05JeEJBdDg9Cg=='
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: '13155488593'
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: ${{ github.ref_name }}
           releaseName: "app_v__VERSION__"
-          releaseBody: "See the assets to download and install this version."
+          releaseBody: ""
           releaseDraft: true
           prerelease: false
       - name: Install GitHub Actions dependencies
         run: npm install @actions/github @actions/core
-        
+
       - name: Upload assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
