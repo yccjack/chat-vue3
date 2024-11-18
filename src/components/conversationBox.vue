@@ -181,7 +181,7 @@ function renderCodeBlock(code, codeHtml, language = "") {
       </button>
     </div>
     <div class="p-4 overflow-y-auto">
-    <pre class="!whitespace-pre hljs ${language}" >
+    <pre class=" hljs ${language}" >
       <code >${codeHtml}</code></pre>
     </div>
   </div>`;

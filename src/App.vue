@@ -307,7 +307,6 @@ function send() {
 
   convLoading.value = true;
   var chat_msg = chatMsg.value;
-  chat_msg = chat_msg.trim().replace(/\n/g, "")
   chatMsg.value = ""
 
   var first = conversation.value.length === 0;
