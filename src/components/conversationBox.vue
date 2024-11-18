@@ -1,5 +1,3 @@
-
-
 <template>
   <template v-for="(conv, idx) in props.conversation">
     <!-- human -->
@@ -23,9 +21,11 @@
         <div
             class="relative flex w-[calc(100%-50px)] flex-col gap-1 md:gap-3 lg:w-[calc(100%-115px)]">
           <div class="flex flex-grow flex-col gap-3">
-            <div class="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap">{{
-                conv.speech
-              }}
+            <div class="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap">
+              <div v-html="mdToHtml(conv.speech, conv)"
+                   :class="{ 'result-streaming': conv.loading }"
+                   class="markdown prose w-full break-words dark:prose-invert light">
+              </div>
             </div>
           </div>
           <div v-if="false"
@@ -157,6 +157,7 @@ function last(conv) {
   conv.idx--;
 
 }
+
 function next(conv) {
   if (conv.idx === conv["speeches"].length - 1) {
     return;
@@ -175,11 +176,12 @@ function renderCodeBlock(code, codeHtml, language = "") {
           <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
         </svg>
         <span>复制代码</span>
-        <code style="display:none">${code}</code>
+         <pre><code style="display:none">${code}</code></pre>
       </button>
     </div>
     <div class="p-4 overflow-y-auto">
-      <code class="!whitespace-pre hljs language-${language}">${codeHtml}</code>
+    <pre class="!whitespace-pre hljs language-${language}" >
+      <code >${codeHtml}</code></pre>
     </div>
   </div>`;
 }
@@ -204,6 +206,7 @@ marked.renderer.rules.fence = (tokens, idx) => {
   const language = token.info.trim();
   return marked.options.highlight(token.content, language);
 };
+
 function countAndConcat(str, substr) {
   // 使用正则表达式的全局匹配来查找子字符串
   const matches = str.match(new RegExp(substr, 'g'));
@@ -215,11 +218,12 @@ function countAndConcat(str, substr) {
   // 根据判断结果返回相应的字符串
   return isOdd ? str + "\n" + substr : str;
 }
+
 function mdToHtml(md, conv) {
+  console.log(md)
   if (md === "") {
     return "<p></p>"
   }
-
   md = countAndConcat(md, "```")
   return marked.render(md);
 }
@@ -241,5 +245,9 @@ function suitable(idx, conv, suit) {
 }
 </script>
 <style scoped lang="scss">
-
+/* 去掉 <pre> 标签的默认边距 */
+pre {
+  margin: 0; /* 去掉所有边距 */
+  padding: 0; /* 如果需要，也可以去掉内边距 */
+}
 </style>
