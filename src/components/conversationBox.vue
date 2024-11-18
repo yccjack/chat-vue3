@@ -220,7 +220,6 @@ function countAndConcat(str, substr) {
 }
 
 function mdToHtml(md, conv) {
-  console.log(md)
   if (md === "") {
     return "<p></p>"
   }
