@@ -139,6 +139,7 @@ import {ref} from "vue";
 import imagePath from "../assets/imgs/human9.png";
 import MarkdownIt from "markdown-it";
 import hljs from "highlight.js";
+import 'highlight.js/styles/github.css'; // 使用 GitHub 主题样式
 import axios from "axios";
 
 const humanImage = ref(imagePath);
@@ -180,7 +181,7 @@ function renderCodeBlock(code, codeHtml, language = "") {
       </button>
     </div>
     <div class="p-4 overflow-y-auto">
-    <pre class="!whitespace-pre hljs language-${language}" >
+    <pre class=" hljs ${language}" >
       <code >${codeHtml}</code></pre>
     </div>
   </div>`;
