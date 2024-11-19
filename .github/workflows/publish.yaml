@@ -76,10 +76,19 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
         run: npm install @actions/github @actions/core
-
+      - name: Get latest tag
+        id: get_tag
+        run: |
+          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          echo "Latest tag: $latest_tag"
+          echo "latest_tag=$latest_tag" >> $GITHUB_ENV
+      - name: Use latest tag
+        run: |
+          echo "The latest tag is ${{ env.latest_tag }}"
       - name: Upload assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LATEST_TAG: ${{ env.latest_tag }}
         # 运行自己的脚本
         run: node scripts/updater.mjs
 
