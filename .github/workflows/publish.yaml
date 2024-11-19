@@ -39,17 +39,17 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
         run: |
           Write-Host "Debugging Secrets and Environment Variables"
-          if (-not $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD) {
-            Write-Host "TAURI_SIGNING_PRIVATE_KEY_PASSWORD is missing!"
-            exit 1
-          } else {
-            Write-Host "TAURI_SIGNING_PRIVATE_KEY_PASSWORD exists."
-          }
           if (-not $env:TAURI_SIGNING_PRIVATE_KEY) {
             Write-Host "TAURI_SIGNING_PRIVATE_KEY is missing!"
             exit 1
           } else {
             Write-Host "TAURI_SIGNING_PRIVATE_KEY exists."
+          }
+          if (-not $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD) {
+            Write-Host "TAURI_SIGNING_PRIVATE_KEY_PASSWORD is missing!"
+            exit 1
+          } else {
+            Write-Host "TAURI_SIGNING_PRIVATE_KEY_PASSWORD exists."
           }
 
       # 使用tauri actions
