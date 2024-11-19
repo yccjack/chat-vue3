@@ -9,9 +9,10 @@ on:
 jobs:
   release:
     permissions:
-      contents: read  # 允许读取仓库内容，包括 Releases
-      issues: write    # 如果需要操作 Issue
-      pull-requests: write  # 如果需要操作 Pull Requests
+      contents: write
+      packages: write
+      issues: write
+      pull-requests: write
     strategy:
       fail-fast: false
       matrix:
@@ -37,18 +38,20 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
         run: |
-          if ($env:TAURI_SIGNING_PRIVATE_KEY) {
-            Write-Host "Private key loaded: YES"
-          } else {
-            Write-Host "Private key loaded: NO"
+          Write-Host "Debugging Secrets and Environment Variables"
+          if (-not $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD) {
+            Write-Host "TAURI_SIGNING_PRIVATE_KEY_PASSWORD is missing!"
             exit 1
-          }
-          if ($env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD) {
-            Write-Host "Private key password loaded: YES"
           } else {
-            Write-Host "Private key password loaded: NO"
-            exit 1
+            Write-Host "TAURI_SIGNING_PRIVATE_KEY_PASSWORD exists."
           }
+          if (-not $env:TAURI_SIGNING_PRIVATE_KEY) {
+            Write-Host "TAURI_SIGNING_PRIVATE_KEY is missing!"
+            exit 1
+          } else {
+            Write-Host "TAURI_SIGNING_PRIVATE_KEY exists."
+          }
+
       # 使用tauri actions
       - name: Build the app
         id: build
@@ -65,6 +68,11 @@ jobs:
           releaseDraft: true
           prerelease: false
       - name: Install GitHub Actions dependencies
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # 使用之前配置的私钥
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
         run: npm install @actions/github @actions/core
 
       - name: Upload assets
