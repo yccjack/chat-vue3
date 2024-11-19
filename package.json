@@ -31,8 +31,7 @@
     "recorder-core": "^1.1.21021500",
     "sass-loader": "^16.0.3",
     "vue": "^3.5.12",
-    "vue-clipboard3": "^2.0.0",
-    "vue-markdown": "^2.2.4"
+    "vue-clipboard3": "^2.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.4",
