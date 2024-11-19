@@ -37,12 +37,12 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
         run: |
-          if ($env:TAURI_PRIVATE_KEY) {
+          if ($env:TAURI_SIGNING_PRIVATE_KEY) {
             Write-Host "Private key loaded: YES"
           } else {
             Write-Host "Private key loaded: NO"
           }
-          if ($env:TAURI_PRIVATE_KEY_PASSWORD) {
+          if ($env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD) {
             Write-Host "Private key password loaded: YES"
           } else {
             Write-Host "Private key password loaded: NO"
