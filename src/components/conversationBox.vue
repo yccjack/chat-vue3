@@ -180,9 +180,11 @@ function renderCodeBlock(code, codeHtml, language = "") {
          <pre><code style="display:none">${code}</code></pre>
       </button>
     </div>
-    <div class="p-4 overflow-y-auto">
-    <pre class=" !whitespace-pre hljs language-${language}" >s
-      <code >${codeHtml}</code></pre>
+
+    <div class="hljs-code " style="display:inline">
+      <pre class="not-prose " style="display:inline;margin-top=0">
+        <code class="hljs !whitespace-pre ${language}" >${codeHtml}</code>
+      </pre>
     </div>
   </div>`;
 }
