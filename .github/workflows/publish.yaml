@@ -41,11 +41,13 @@ jobs:
             Write-Host "Private key loaded: YES"
           } else {
             Write-Host "Private key loaded: NO"
+            exit 1
           }
           if ($env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD) {
             Write-Host "Private key password loaded: YES"
           } else {
             Write-Host "Private key password loaded: NO"
+            exit 1
           }
       # 使用tauri actions
       - name: Build the app
