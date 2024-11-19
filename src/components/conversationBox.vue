@@ -179,10 +179,8 @@ function renderCodeBlock(code, codeHtml, language = "") {
       </button>
     </div>
 
-    <div class="hljs-code " style="display:inline">
-      <pre class="not-prose " style="display:inline;margin-top=0">
-        <code class="hljs !whitespace-pre ${language}" >${codeHtml}</code>
-      </pre>
+    <div style="margin: 10px 0 20px 10px;">
+      <pre class="hljs !whitespace-pre language-${language}" ><code>${codeHtml}</code></pre>
     </div>
   </div>`;
 }

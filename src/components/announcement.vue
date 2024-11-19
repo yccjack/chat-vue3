@@ -30,7 +30,7 @@
           "如何成为上帝"
           →
         </button>
-        <button @click="inputChat('我是谁，我在哪')"
+        <button @click="inputChat('讲一个笑话')"
                 class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900">
           "我是谁，我在哪" →
         </button>
@@ -83,22 +83,11 @@
         </li>
       </ul>
     </div>
-    <!-- 只在 Update 被成功导入时才渲染 -->
-    <Suspense v-if="Update">
-      <template #default>
-        <component :is="Update" />
-      </template>
-      <template #fallback>
-        <div>Loading...</div> <!-- 可选的加载提示 -->
-      </template>
-    </Suspense>
-
   </div>
 </template>
 <script setup>
 import {onMounted, ref} from 'vue';
-import {isTauri} from "@tauri-apps/api/core";
-const Update = ref(null);
+
 // 定义传递的事件
 const emit = defineEmits(['update-chat-msg']);
 
@@ -112,11 +101,7 @@ function inputChat(msg) {
 
 }
 onMounted(async () => {
-  if (isTauri.call()) {
-    import("../components/Update.vue").then((module) => {
-      Update.value = module.default;
-    });
-  }
+
 });
 </script>
 <style scoped lang="scss">

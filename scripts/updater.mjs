@@ -7,11 +7,10 @@ if (!process.env.GITHUB_TOKEN) {
     throw new Error("GITHUB_TOKEN is not defined. Ensure it is set in the environment.");
 }
 const updateRelease = async () => {
-    const latestTag = process.env.LATEST_TAG; // 获取传递的 tag
     const { data: release } = await octokit.rest.repos.getReleaseByTag({
         owner: context.repo.owner,
         repo: context.repo.repo,
-        tag: latestTag,
+        tag: "updater",
     });
     const deletePromises = release.assets
         .filter((item) => item.name === "latest.json")

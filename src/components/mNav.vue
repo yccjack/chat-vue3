@@ -196,6 +196,15 @@
               fill="#1C274C"/>
       </svg>
       <span style="color: #00a67d">桌面端下载地址</span></a>
+    <!-- 只在 Update 被成功导入时才渲染 -->
+    <Suspense v-if="Update">
+      <template #default>
+        <component :is="Update" />
+      </template>
+      <template #fallback>
+        <div>Loading...</div> <!-- 可选的加载提示 -->
+      </template>
+    </Suspense>
   </nav>
 </template>
 <script setup>
@@ -203,6 +212,7 @@
 import {isTauri} from "@tauri-apps/api/core";
 import {onMounted, ref, watch,nextTick } from 'vue';
 import axios from "axios";
+const Update = ref(null);
 
 const appVersion = ref(__APP_VERSION__);
 const convTitletmp = ref('');
@@ -377,6 +387,11 @@ watch(() => props.sidebarNewChat, (val) => {
 });
 
 onMounted(async () => {
+  if (isTauri.call()) {
+    import("../components/Update.vue").then((module) => {
+      Update.value = module.default;
+    });
+  }
   apiUrl.value = __APP_API_RUI__;
   deskApp.value = `https://gschaos.club/update_file/Y-Chat_${appVersion.value}_x64_zh-CN.msi`
   const theme = localStorage.getItem("theme") || "light";
