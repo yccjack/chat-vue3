@@ -60,11 +60,10 @@ jobs:
         id: get_tag
         shell: pwsh
         run: |
-          $latest_tag = git describe --tags --abbrev=0
+          $latest_tag = git tag --sort=-creatordate | Select-Object -First 1
           if (-not $latest_tag) {
-              Write-Host "No tags found. Using commit description."
-              $latest_tag = git describe --tags --always
-              exit 1
+              Write-Host "No tags found. Using commit hash."
+              $latest_tag = git rev-parse HEAD  # 获取当前提交的哈希值
           }
           echo "LATEST_TAG=$latest_tag" >> $env:GITHUB_ENV
       # 使用tauri actions
