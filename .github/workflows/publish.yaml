@@ -79,9 +79,8 @@ jobs:
       - name: Get latest tag
         id: get_tag
         run: |
-          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
-          echo "Latest tag: $latest_tag"
-          echo "latest_tag=$latest_tag" >> $GITHUB_ENV
+          $latest_tag = git describe --tags (git rev-list --tags --max-count=1)
+          echo "latest_tag=$latest_tag" >> $env:GITHUB_ENV
       - name: Use latest tag
         run: |
           echo "The latest tag is ${{ env.latest_tag }}"
