@@ -53,7 +53,20 @@ jobs:
           } else {
             Write-Host "TAURI_SIGNING_PRIVATE_KEY_PASSWORD exists."
           }
+      - name: Fetch tags
+        run: git fetch --tags
 
+      - name: Get latest tag
+        id: get_tag
+        shell: pwsh
+        run: |
+          $latest_tag = git describe --tags --abbrev=0
+          if (-not $latest_tag) {
+              Write-Host "No tags found. Using commit description."
+              $latest_tag = git describe --tags --always
+              exit 1
+          }
+          echo "LATEST_TAG=$latest_tag" >> $env:GITHUB_ENV
       # 使用tauri actions
       - name: Build the app
         id: build
@@ -76,20 +89,6 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
         run: npm install @actions/github @actions/core
-      - name: Fetch tags
-        run: git fetch --tags
-
-      - name: Get latest tag
-        id: get_tag
-        shell: pwsh
-        run: |
-          $latest_tag = git describe --tags --abbrev=0
-          if (-not $latest_tag) {
-              Write-Host "No tags found. Using commit description."
-              $latest_tag = git describe --tags --always
-              exit 1
-          }
-          echo "LATEST_TAG=$latest_tag" >> $env:GITHUB_ENV
       - name: Upload assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
