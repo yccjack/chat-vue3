@@ -18,21 +18,28 @@
           <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
           <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
         </svg>
-        简单例子
+       <span class="text-red-300"> 简单例子</span>
       </h2>
-      <ul class="flex flex-col gap-3.5 w-full sm:max-w-md m-auto">
+      <ul class="flex flex-col gap-3.5 w-full sm:max-w-md m-auto" >
         <button @click="inputChat('随机给我一组双色球的号码')"
                 class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900">
-          "随机给我一组双色球的号码" →
+          <span class="text-blue-500">"随机给我一组双色球的号码" →</span>
         </button>
         <button @click="inputChat('如何成为上帝?')"
                 class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900">
-          "如何成为上帝"
-          →
+          <span class="text-blue-500">"如何成为上帝"→</span>
+
         </button>
-        <button @click="inputChat('讲一个笑话')"
+        <button @click="inputChat('你的任务是以小红书博主的文章结构，以我给出的主题写一篇帖子推荐。你的回答应包括使用表情符号来增加趣味和互动，以及与每个段落相匹配的图片。'+
+        '请以一个引人入胜的介绍开始，为你的推荐设定基调。然后，提供至少三个与主题相关的段落，突出它们的独特特点和吸引力。在你的写作中使用表情符号，使它更加引人入胜和有趣。'+
+'          对于每个段落，请提供一个与描述内容相匹配的图片。这些图片应该视觉上吸引人，并帮助你的描述更加生动形象。我给出的主题是：'+
+'          睁眼看世界')"
                 class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900">
-          "我是谁，我在哪" →
+          <span class="text-blue-500"> "你的任务是以小红书博主的文章结构，以我给出的主题写一篇帖子推荐。你的回答应包括使用表情符号来增加趣味和互动，以及与每个段落相匹配的图片。
+          请以一个引人入胜的介绍开始，为你的推荐设定基调。然后，提供至少三个与主题相关的段落，突出它们的独特特点和吸引力。在你的写作中使用表情符号，使它更加引人入胜和有趣。
+            对于每个段落，请提供一个与描述内容相匹配的图片。这些图片应该视觉上吸引人，并帮助你的描述更加生动形象。我给出的主题是：
+        <span class="text-red-300">睁眼看世界 </span>
+          " →</span>
         </button>
       </ul>
     </div>
@@ -48,13 +55,10 @@
       </h2>
       <ul class="flex flex-col gap-3.5 w-full sm:max-w-md m-auto">
         <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">
-          可能记住用户之前在对话中话
+          <span class="text-yellow-900">  记住用户之前在对话中话,因为API的Token缘故,此Chat的对话可能无法记住上面的对话.</span>
         </li>
         <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">
-          可能允许用户提供后续修正
-        </li>
-        <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">
-          请不要较真
+          <span class="text-yellow-900">  请不要较真,对于AI,如果不自定义身份,它将不存在感情基调,请不要因为它的回答多次不满足而心生怨气.</span>
         </li>
       </ul>
     </div>
@@ -69,17 +73,17 @@
           <line x1="12" y1="9" x2="12" y2="13"></line>
           <line x1="12" y1="17" x2="12.01" y2="17"></line>
         </svg>
-        .
+        不完美
       </h2>
       <ul class="flex flex-col gap-3.5 w-full sm:max-w-md m-auto">
         <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">
-          可能偶尔生成错误信息
+          <span class="text-green-600">  可能偶尔生成错误信息 </span>
         </li>
         <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">
-          偶尔产生有害或有偏见的内容
+          <span class="text-green-600">    偶尔产生有害或有偏见的内容</span>
         </li>
         <li class="w-full bg-gray-50 dark:bg-white/5 p-3 rounded-md">
-          非实时内容
+          <span class="text-green-600">  非实时内容</span>
         </li>
       </ul>
     </div>
