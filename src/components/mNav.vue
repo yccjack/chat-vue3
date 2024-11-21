@@ -255,7 +255,7 @@ function clearConversations() {
   const data = {
     "ids": conversationIds
   };
-  axios.post(`http://${apiUrl.value}/chat/clear`,data)
+  axios.post(`https://${apiUrl.value}/chat/clear`,data)
       .then((result) => {
 
       })
