@@ -101,15 +101,18 @@
       </div>
 
       <!-- 菜单导航 -->
-      <div class="dark hidden bg-gray-900 md:fixed md:inset-y-0 md:flex md:w-[260px] md:flex-col box-sh">
+      <div class="hidden  md:fixed md:inset-y-0 md:flex md:w-[260px] md:flex-col box-sh "
+           :class="{ 'bg-gray-800': theme==='dark', 'nav-bk': theme==='light' }"
+      >
         <div class="flex h-full min-h-0 flex-col ">
-          <div class="scrollbar-trigger flex h-full w-full flex-1 items-start border-white/20">
+          <div class="scrollbar-trigger flex h-full w-full flex-1 items-start ">
             <mNav
                 :newConv="pushNewConv"
                 :conversationLen="conversation.length"
                 @update_parent_new_chat="newChat"
                 @update_parent_openSidebar="selectConversation"
                 @clear_current_chat="newChat"
+                @update_theme="updateTheme"
             ></mNav>
           </div>
         </div>
@@ -489,12 +492,20 @@ function isScrollAndNotBottom() {
   }
   isShowGoBottom.value = true;
 }
+function updateTheme(arg){
+  theme.value=arg
+}
 
 watch(chatMsg, (newVal, oldVal) => {
   if (newVal !== oldVal) {
     changeHeight();
+    // 当 chatMsg 变化时调用 autoResize
+    nextTick(() => {
+      autoResize();
+    })
   }
 });
+
 onMounted(async () => {
   apiUrl.value = __APP_API_RUI__;
   // 从 localStorage 获取 popupShow 状态
@@ -622,5 +633,8 @@ body {
 
 .box-sh {
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5); /* 添加阴影 */
+}
+.nav-bk {
+  background-color: #EEE9E9
 }
 </style>
