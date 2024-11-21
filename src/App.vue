@@ -140,7 +140,7 @@ import axios from 'axios';
 import clipboard from 'vue-clipboard3'; // 默认导入
 
 const appVersion = ref(__APP_VERSION__);
-const deskApp = ref("https://gschaos.club/update_file/Y-Chat_0.1.5_x64_en-US.msi");
+const deskApp = ref("https://gschaos.club/update_file/Y-Chat_0.2.6_x64_en-US.msi");
 const apiUrl = ref();
 const theme = ref('light');
 const title = ref("新的对话")
@@ -175,7 +175,7 @@ function autoResize() {
 }
 
 function stopChat() {
-  axios.post(`http://${apiUrl.value}/stop/chat/${cid.value}`, {})
+  axios.post(`https://${apiUrl.value}/stop/chat/${cid.value}`, {})
       .then((result) => {
         var rconv = conversation.value[conversation.value.length - 1];
         rconv["loading"] = false;
@@ -253,7 +253,7 @@ function chatRepeat() {
   try {
     var idx = rconv.idx;
     // 使用 Axios 发送 GET 请求，接收流式数据
-    fetch(`http://${apiUrl.value}/chat/repeat/${cid.value}`, {
+    fetch(`https://${apiUrl.value}/chat/repeat/${cid.value}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
@@ -331,7 +331,7 @@ function send() {
 
   try {
     // 使用 Axios 发送 GET 请求，接收流式数据
-    fetch(`http://${apiUrl.value}/chat/${cid.value}`, {
+    fetch(`https://${apiUrl.value}/chat/${cid.value}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
@@ -401,7 +401,7 @@ function selectConversation(conv, loadConv = false) {
   if (!loadConv) {
     return;
   }
-  axios.get(`http://${apiUrl.value}/conv/${conv.id}`)
+  axios.get(`https://${apiUrl.value}/conv/${conv.id}`)
       .then((result) => {
         var resp = result.data;
         var content = resp.data;
@@ -421,7 +421,7 @@ function selectConversation(conv, loadConv = false) {
 
 //触发新对话，获取随机的id，
 function loadId() {
-  axios.post(`http://${apiUrl.value}/generate/id`, {})
+  axios.post(`https://${apiUrl.value}/generate/id`, {})
       .then((result) => {
         var resp = result.data;
         cid.value = resp.data
