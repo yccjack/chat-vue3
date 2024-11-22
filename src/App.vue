@@ -368,7 +368,7 @@ function send() {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
       }, body: JSON.stringify({
         prompt: chat_msg,
-        character: currentCharacter
+        character: currentCharacter.value
       })
     }).then(response => {
       // 处理流式数据

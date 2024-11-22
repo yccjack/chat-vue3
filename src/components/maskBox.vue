@@ -13,7 +13,7 @@
     <ul class="flex flex-wrap gap-3.5 w-full">
       <li v-for="character in characters" :key="character.name"
           class="w-auto">
-        <button @click="inputChat(character.id)"
+        <button @click="inputChat(character.des,character.id)"
                 :style="{ backgroundColor: getSoftColor(), color: '#333' }"
                 class="bg-gray-50 dark:bg-white/5 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900"
                 style="white-space: nowrap; display: inline-block;">
