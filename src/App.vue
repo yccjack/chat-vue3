@@ -166,7 +166,7 @@ const avatarIdx = ref(1);
 const pushNewConv = ref({});
 const conversation = ref([]);
 const chatMsg = ref('');
-const currentCharacter = ref('');
+const currentCharacter = ref(-1);
 const chatTitle = ref('新的对话');
 const convLoading = ref(false);
 const isShowGoBottom = ref(false);
@@ -285,6 +285,9 @@ function chatRepeat() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
+      },
+      data:{
+        character:currentCharacter
       }
     }).then(response => {
       // 处理流式数据
@@ -539,7 +542,7 @@ onMounted(async () => {
   const savedPopupShow = localStorage.getItem(`popupShow${__APP_VERSION__}`);
   // 如果 savedPopupShow 不存在，表示是第一次弹窗
   popupShow.value = savedPopupShow !== 'true';
-  getCharacterInfo();
+
   loadId();
   loadAvatar();
   let chatDivEle = chatContainer.value;
@@ -549,7 +552,7 @@ onMounted(async () => {
   if (chatContainer.value) {
     chatContainer.value.addEventListener('scroll', onScroll);
   }
-
+  getCharacterInfo();
 });
 
 </script>
