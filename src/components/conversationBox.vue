@@ -21,9 +21,8 @@
         <div
             class="relative flex w-[calc(100%-50px)] flex-col gap-1 md:gap-3 lg:w-[calc(100%-115px)]">
           <div class="flex flex-grow flex-col gap-3">
-            <div class="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap">{{
-                conv.speech
-              }}
+            <div class="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap"  :style="{  color: '#047366' }">
+              {{conv.speech }}
             </div>
           </div>
           <div v-if="false"
@@ -165,6 +164,12 @@ function next(conv) {
 
 }
 
+function getSoftColor() {
+  const r = Math.floor(200 + Math.random() * 55); // 高亮的红色分量
+  const g = Math.floor(200 + Math.random() * 55); // 高亮的绿色分量
+  const b = Math.floor(200 + Math.random() * 55); // 高亮的蓝色分量
+  return `rgb(${r}, ${g}, ${b})`; // 生成柔和的浅色背景
+}
 function renderCodeBlock(code, codeHtml, language = "") {
   return `<div class="bg-black mb-4 rounded-md">
     <div class="code_header flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans">
