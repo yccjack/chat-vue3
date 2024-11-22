@@ -31,18 +31,25 @@
   <!--  </div>-->
 </template>
 <script setup>
-import {onMounted, ref} from 'vue';
-import characterData from '../assets/character.json'; // 直接导入 JSON
+import { onMounted, ref, watch} from 'vue';
+
+const props = defineProps({
+  //发生的新对话标题
+  characterData: {
+    type: Array,
+    default: []
+  },
+});
 // 定义传递的事件
 const emit = defineEmits(['update-chat-msg']);
-const characters = ref(characterData) // 将 JSON 数据赋值到 characters
+const characters = ref(props.characterData) // 将 JSON 数据赋值到 characters
 // 定义响应式变量
 const exMsg = ref('');
 
 // 输入消息并传递给父组件
-function inputChat(msg) {
+function inputChat(msg,character='') {
   exMsg.value = msg;
-  emit('update-chat-msg', exMsg.value); // 通过事件传递数据到父组件
+  emit('update-chat-msg', exMsg.value,character); // 通过事件传递数据到父组件
 
 }
 
@@ -52,7 +59,13 @@ function getSoftColor() {
   const b = Math.floor(200 + Math.random() * 55); // 高亮的蓝色分量
   return `rgb(${r}, ${g}, ${b})`; // 生成柔和的浅色背景
 }
-
+watch(props.characterData, (newVal, oldVal) => {
+  console.log(newVal)
+  if (newVal !== oldVal) {
+    console.log(newVal)
+    characters.value = newVal.value
+  }
+});
 onMounted(async () => {
 
 });

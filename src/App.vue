@@ -32,8 +32,10 @@
                   ></conversationBox>
                   <div v-if="conversation.length === 0"
                        class="text-gray-800 w-full md:max-w-2xl lg:max-w-3xl md:h-full md:flex md:flex-col px-6 dark:text-gray-100 flex-wrap">
-<!--                    <announcement @update-chat-msg="updateChatMsg"></announcement>-->
-                    <maskBox @update-chat-msg="updateChatMsg"></maskBox>
+                    <!--                    <announcement @update-chat-msg="updateChatMsg"></announcement>-->
+                    <maskBox
+                        :characterData="character"
+                        @update-chat-msg="updateChatMsg" />
                   </div>
 
                   <div class="w-full h-32 md:h-48 flex-shrink-0"></div>
@@ -73,16 +75,18 @@
                   </button>
 
                 </div>
-                <div class="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
-  <textarea v-model="chatMsg"
-            ref="inputChat"
-            @keydown="judgeInput"
-            @input="autoResize"
-            tabindex="0"
-            data-id="root"
-            style="overflow-y: auto; resize: none; min-height: 3rem; max-height: 12rem;"
-            rows="1"
-            class="m-0 w-full resize-none border-0 bg-transparent p-0 pl-2 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent md:pl-0"></textarea>
+                <div
+                    class="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
+            <textarea v-model="chatMsg"
+                      ref="inputChat"
+                      @keydown="judgeInput"
+                      @input="autoResize"
+                      tabindex="0"
+                      data-id="root"
+                      style="overflow-y: auto; resize: none; min-height: 3rem; max-height: 12rem;"
+                      rows="1"
+                      class="m-0 w-full resize-none border-0 bg-transparent p-0 pl-2 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent md:pl-0">
+            </textarea>
                   <button @click.stop.prevent="send"
                           :disabled="convLoading"
                           class="absolute p-1 rounded-md text-gray-500 bottom-1.5 right-1 md:bottom-2.5 md:right-2 hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent">
@@ -149,7 +153,6 @@ import {nextTick, onMounted, ref, watch, watchEffect} from "vue";
 import './assets/index.css'
 import 'highlight.js/styles/github.css';
 import modalA from "./components/modalA.vue";
-import announcement from "./components/announcement.vue";
 import axios from 'axios';
 import clipboard from 'vue-clipboard3'; // 默认导入
 
@@ -163,6 +166,7 @@ const avatarIdx = ref(1);
 const pushNewConv = ref({});
 const conversation = ref([]);
 const chatMsg = ref('');
+const currentCharacter = ref('');
 const chatTitle = ref('新的对话');
 const convLoading = ref(false);
 const isShowGoBottom = ref(false);
@@ -173,13 +177,15 @@ const isUserScrolling = ref(false);
 const isAutoScrolling = ref(true);
 const lastScrollTop = ref(0);
 const {toClipboard} = clipboard();
+const character = ref([])
 
 watchEffect(() => {
 
 });
 
-function updateChatMsg(message) {
+function updateChatMsg(message,character) {
   chatMsg.value = message; // 将子组件传递的值赋值给父组件的 chatMsg
+  currentCharacter.value=character
 }
 
 function autoResize() {
@@ -189,7 +195,7 @@ function autoResize() {
 }
 
 function stopChat() {
-  axios.post(`https://${apiUrl.value}/stop/chat/${cid.value}`, {})
+  axios.post(`${apiUrl.value}/stop/chat/${cid.value}`, {})
       .then((result) => {
         var rconv = conversation.value[conversation.value.length - 1];
         rconv["loading"] = false;
@@ -220,7 +226,15 @@ function resetHeight() {
   elem.style.height = '24px';
   elem.style["overflow-y"] = 'hidden';
 }
-
+function getCharacterInfo(){
+  axios.post(`${apiUrl.value}/chat/character`, {})
+      .then((result) => {
+        character.value=result.data.data
+      })
+      .catch((err) => {
+        console.error(err)
+      });
+}
 // vueCopy 方法
 const vueCopy = (node) => {
   const code = node.getElementsByTagName("code")[0].innerHTML;
@@ -267,7 +281,7 @@ function chatRepeat() {
   try {
     var idx = rconv.idx;
     // 使用 Axios 发送 GET 请求，接收流式数据
-    fetch(`https://${apiUrl.value}/chat/repeat/${cid.value}`, {
+    fetch(`${apiUrl.value}/chat/repeat/${cid.value}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
@@ -345,12 +359,13 @@ function send() {
 
   try {
     // 使用 Axios 发送 GET 请求，接收流式数据
-    fetch(`https://${apiUrl.value}/chat/${cid.value}`, {
+    fetch(`${apiUrl.value}/chat/${cid.value}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
       }, body: JSON.stringify({
-        prompt: chat_msg
+        prompt: chat_msg,
+        character: currentCharacter
       })
     }).then(response => {
       // 处理流式数据
@@ -415,7 +430,7 @@ function selectConversation(conv, loadConv = false) {
   if (!loadConv) {
     return;
   }
-  axios.get(`https://${apiUrl.value}/conv/${conv.id}`)
+  axios.get(`${apiUrl.value}/conv/${conv.id}`)
       .then((result) => {
         var resp = result.data;
         var content = resp.data;
@@ -435,7 +450,7 @@ function selectConversation(conv, loadConv = false) {
 
 //触发新对话，获取随机的id，
 function loadId() {
-  axios.post(`https://${apiUrl.value}/generate/id`, {})
+  axios.post(`${apiUrl.value}/generate/id`, {})
       .then((result) => {
         var resp = result.data;
         cid.value = resp.data
@@ -503,8 +518,9 @@ function isScrollAndNotBottom() {
   }
   isShowGoBottom.value = true;
 }
-function updateTheme(arg){
-  theme.value=arg
+
+function updateTheme(arg) {
+  theme.value = arg
 }
 
 watch(chatMsg, (newVal, oldVal) => {
@@ -523,6 +539,7 @@ onMounted(async () => {
   const savedPopupShow = localStorage.getItem(`popupShow${__APP_VERSION__}`);
   // 如果 savedPopupShow 不存在，表示是第一次弹窗
   popupShow.value = savedPopupShow !== 'true';
+  getCharacterInfo();
   loadId();
   loadAvatar();
   let chatDivEle = chatContainer.value;
@@ -532,6 +549,7 @@ onMounted(async () => {
   if (chatContainer.value) {
     chatContainer.value.addEventListener('scroll', onScroll);
   }
+
 });
 
 </script>
@@ -645,10 +663,15 @@ body {
 .box-sh {
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5); /* 添加阴影 */
 }
+
 .nav-bk {
   background-color: #EEE9E9
 }
+
 .flex-wrap {
-  display: flex; flex-wrap: wrap; gap: 1rem; width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 100%;
 }
 </style>

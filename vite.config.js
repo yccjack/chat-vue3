@@ -36,7 +36,7 @@ export default defineConfig({
         '@': path.resolve(__dirname, './src')
     }, define: {
         __APP_VERSION__: JSON.stringify(version),
-        __APP_API_RUI__: JSON.stringify('chat.gschaos.club/api'),
+        __APP_API_RUI__: JSON.stringify('http://127.0.0.1:8383'),
         __UPDATE_NODE__: JSON.stringify('["所有请求使用SSL加密处理","增加侧边栏的主题切换","新增跟随系统自动切换主题(咱不可关闭)"]'),
     },
 })
