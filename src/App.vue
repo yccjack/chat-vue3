@@ -122,6 +122,7 @@
           <div class="scrollbar-trigger flex h-full w-full flex-1 items-start ">
             <mNav
                 :newConv="pushNewConv"
+                :characterId="currentCharacter"
                 :conversationLen="conversation.length"
                 @update_parent_new_chat="newChat"
                 @update_parent_openSidebar="selectConversation"
@@ -287,7 +288,7 @@ function chatRepeat() {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
       },
       data:{
-        character:currentCharacter
+        character:conversation[0].characterId
       }
     }).then(response => {
       // 处理流式数据
@@ -352,7 +353,8 @@ function send() {
     "loading": true,
     "speaker": "ai",
     "suitable": [0],
-    "speeches": [""]
+    "speeches": [""],
+    "characterId": currentCharacter.value
   }
   conversation.value.push(conv)
 
@@ -368,7 +370,7 @@ function send() {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
       }, body: JSON.stringify({
         prompt: chat_msg,
-        character: currentCharacter.value
+        character: conv.characterId
       })
     }).then(response => {
       // 处理流式数据
@@ -390,7 +392,8 @@ function send() {
           if (first) {
             var newConv = {
               "id": cid.value,
-              "title": title.value
+              "title": title.value,
+              "characterId": currentCharacter.value
             };
             generateConvTitle(newConv);
             pushNewConv.value = newConv
@@ -430,6 +433,7 @@ function newChat() {
 
 function selectConversation(conv, loadConv = false) {
   chatTitle.value = conv.title || "Y-Chat";
+  currentCharacter.value = conv.characterId || -1;
   if (!loadConv) {
     return;
   }
