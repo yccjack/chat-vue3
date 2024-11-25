@@ -412,7 +412,7 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e =
 onMounted(async () => {
   if (isTauri.call()) {
     import("../components/Update.vue").then((module) => {
-      Update.value = module.default;
+      Update.value = markRaw(module.default);
     });
   }
   apiUrl.value = __APP_API_RUI__;
