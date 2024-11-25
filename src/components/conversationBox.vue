@@ -132,7 +132,7 @@
   </template>
 </template>
 <script setup>
-import {ref} from "vue";
+import {ref,onUpdated} from "vue";
 import imagePath from "../assets/imgs/human9.png";
 import MarkdownIt from "markdown-it";
 import hljs from "highlight.js";
@@ -147,7 +147,9 @@ const props = defineProps({
     default: {}
   },
 });
-
+onUpdated(() => {
+  console.log("对话框被渲染")
+});
 function last(conv) {
   if (conv.idx === 0) {
     return;
@@ -162,13 +164,6 @@ function next(conv) {
   }
   conv.idx++;
 
-}
-
-function getSoftColor() {
-  const r = Math.floor(200 + Math.random() * 55); // 高亮的红色分量
-  const g = Math.floor(200 + Math.random() * 55); // 高亮的绿色分量
-  const b = Math.floor(200 + Math.random() * 55); // 高亮的蓝色分量
-  return `rgb(${r}, ${g}, ${b})`; // 生成柔和的浅色背景
 }
 function renderCodeBlock(code, codeHtml, language = "") {
   return `<div class="bg-black mb-4 rounded-md">

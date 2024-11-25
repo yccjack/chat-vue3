@@ -1,5 +1,4 @@
 import { createApp } from 'vue'
-import './assets/style.css'
 import App from './App.vue'
 import axios from 'axios'
 import Antd from "ant-design-vue";

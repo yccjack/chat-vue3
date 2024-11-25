@@ -64,7 +64,10 @@ watch(
     () => props.characterData, // 监视 props.characterData 的变化
     (newVal, oldVal) => {
       if (newVal !== oldVal) {
-        characters.value = [...newVal]; // 更新 characters
+        if(props.characterData){
+          characters.value = [...newVal]; // 更新 characters
+        }
+
       }
     },
     { deep: true } // 如果 characterData 是一个深层嵌套数组，考虑使用 deep 选项

@@ -287,9 +287,9 @@ function chatRepeat() {
       headers: {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
       },
-      data:{
-        character:conversation[0].characterId
-      }
+      body: JSON.stringify({
+        character: conversation[0] && conversation[0].characterId ? conversation[0].characterId : ""
+      })
     }).then(response => {
       // 处理流式数据
       const reader = response.body.getReader();

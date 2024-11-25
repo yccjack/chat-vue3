@@ -224,7 +224,7 @@
 <script setup>
 
 import {isTauri} from "@tauri-apps/api/core";
-import {onMounted, ref, watch, nextTick} from 'vue';
+import {onMounted, ref, watch, nextTick,onUpdated} from 'vue';
 import axios from "axios";
 
 const Update = ref(null);
@@ -272,7 +272,7 @@ function clearConversations() {
   const data = {
     "ids": conversationIds
   };
-  axios.post(`https://${apiUrl.value}/chat/clear`, data)
+  axios.post(`${apiUrl.value}/chat/clear`, data)
       .then((result) => {
 
       })
@@ -413,7 +413,7 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e =
 onMounted(async () => {
   if (isTauri.call()) {
     import("../components/Update.vue").then((module) => {
-      Update.value = markRaw(module.default);
+      Update.value = module.default;
     });
   }
   apiUrl.value = __APP_API_RUI__;
@@ -424,6 +424,9 @@ onMounted(async () => {
   }
   changeTheme(theme);
   loadConversations();
+});
+onUpdated(() => {
+  console.log("导航栏被创建")
 });
 </script>
 <style scoped lang="scss">
