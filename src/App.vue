@@ -2,15 +2,6 @@
   <div id="__next">
     <!-- 弹窗 -->
     <modalA :popupShow="popupShow" @close="popupShow = false"></modalA>
-    <div class="hidden  md:fixed md:inset-y-0 md:flex md:w-[260px] md:flex-col box-sh "
-    >
-      <div class="flex h-full min-h-0 flex-col ">
-        <div class="scrollbar-trigger flex h-full w-full flex-1 items-start ">
-          <mask></mask>
-        </div>
-      </div>
-    </div>
-
     <div class="overflow-hidden w-full h-full relative">
       <div class="flex h-full flex-1 flex-col md:pl-[260px]">
         <sidebar
@@ -31,8 +22,8 @@
                       :conversation="conversation"
                   ></conversationBox>
                   <div v-if="conversation.length === 0"
-                       class="text-gray-800 w-full md:max-w-2xl lg:max-w-3xl md:h-full md:flex md:flex-col px-6 dark:text-gray-100 flex-wrap">
-                    <!--                    <announcement @update-chat-msg="updateChatMsg"></announcement>-->
+                       class="text-gray-800 w-full md:max-w-2xl lg:max-w-3xl md:h-full md:flex md:flex-col px-6 dark:text-gray-100">
+<!--                    <announcement @update-chat-msg="updateChatMsg"></announcement>-->
                     <maskBox
                         :characterData="character"
                         @update-chat-msg="updateChatMsg" />
@@ -77,16 +68,15 @@
                 </div>
                 <div
                     class="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
-            <textarea v-model="chatMsg"
-                      ref="inputChat"
-                      @keydown="judgeInput"
-                      @input="autoResize"
-                      tabindex="0"
-                      data-id="root"
-                      style="overflow-y: auto; resize: none; min-height: 3rem; max-height: 12rem;"
-                      rows="1"
-                      class="m-0 w-full resize-none border-0 bg-transparent p-0 pl-2 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent md:pl-0">
-            </textarea>
+                    <textarea v-model="chatMsg"
+                              ref="inputChat"
+                              @keydown="judgeInput"
+                              @input="autoResize"
+                              tabindex="0"
+                              data-id="root"
+                              style="overflow-y: hidden; resize: none;"
+                              rows="1"
+                              class="m-0 w-full resize-none border-0 bg-transparent p-0 pl-2 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent md:pl-0"></textarea>
                   <button @click.stop.prevent="send"
                           :disabled="convLoading"
                           class="absolute p-1 rounded-md text-gray-500 bottom-1.5 right-1 md:bottom-2.5 md:right-2 hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent">
@@ -101,7 +91,6 @@
                     </svg>
                   </button>
                 </div>
-
               </div>
             </form>
             <div class="px-3 pt-2 pb-3 text-center text-xs text-black/50 dark:text-white/50 md:px-4 md:pt-3 md:pb-6">
@@ -115,11 +104,9 @@
       </div>
 
       <!-- 菜单导航 -->
-      <div class="hidden  md:fixed md:inset-y-0 md:flex md:w-[260px] md:flex-col box-sh "
-           :class="{ 'bg-gray-800': theme==='dark', 'nav-bk': theme==='light' }"
-      >
+      <div class="dark hidden bg-gray-900 md:fixed md:inset-y-0 md:flex md:w-[260px] md:flex-col box-sh">
         <div class="flex h-full min-h-0 flex-col ">
-          <div class="scrollbar-trigger flex h-full w-full flex-1 items-start ">
+          <div class="scrollbar-trigger flex h-full w-full flex-1 items-start border-white/20">
             <mNav
                 :newConv="pushNewConv"
                 :characterId="currentCharacter"
@@ -127,7 +114,6 @@
                 @update_parent_new_chat="newChat"
                 @update_parent_openSidebar="selectConversation"
                 @clear_current_chat="newChat"
-                @update_theme="updateTheme"
             ></mNav>
           </div>
         </div>
@@ -524,10 +510,6 @@ function isScrollAndNotBottom() {
     return;
   }
   isShowGoBottom.value = true;
-}
-
-function updateTheme(arg) {
-  theme.value = arg
 }
 
 watch(chatMsg, (newVal, oldVal) => {

@@ -1,10 +1,8 @@
 <template>
   <!-- 菜单导航 -->
-  <nav class="flex h-full flex-1 flex-col space-y-1 p-2">
+  <nav class="highlight flex h-full flex-1 flex-col space-y-1 p-2">
     <a @click.stop="newChat"
-       class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 cursor-pointer text-sm mb-2 flex-shrink-0 border "
-       :class="{' text-black/50 border-black/10':theme==='light','text-white border-white/20': theme==='dark'}"
-    >
+       class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm mb-2 flex-shrink-0 border border-white/20">
       <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
            stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em"
            xmlns="http://www.w3.org/2000/svg">
@@ -15,18 +13,13 @@
     </a>
 
     <!-- 对话列表 -->
-    <div class="flex-col flex-1 overflow-y-auto border-b"
-         :class="{' border-black/10':theme==='light',' border-white/20': theme==='dark'}"
-    >
-      <div class="flex flex-col  gap-2 text-sm "
-           :class="{' text-black/50':theme==='light','text-gray-100': theme==='dark'}"
-      >
+    <div class="flex-col flex-1 overflow-y-auto border-b border-white/20" style="padding-bottom: 5px;">
+      <div class="flex flex-col gap-2 text-gray-100 text-sm">
+
         <template v-for="(convs, cidx) in conversations">
 
           <div v-if="convs.editable"
-               class="m-focus flex py-3 px-3 items-center gap-3 relative rounded-md cursor-pointer hover:pr-14 break-all pr-14 "
-               :class="{'bg-gray-200 hover:bg-gray-200':theme==='light','bg-gray-800 hover:bg-gray-800': theme==='dark'}"
-          >
+               class="m-focus flex py-3 px-3 items-center gap-3 relative rounded-md cursor-pointer hover:pr-14 break-all pr-14 bg-gray-800 hover:bg-gray-800">
             <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
                  stroke-linecap="round"
                  stroke-linejoin="round" class="h-4 w-4 flex-shrink-0" height="1em" width="1em"
@@ -93,9 +86,8 @@
 
 
           <a v-else @click.stop.prevent="selectConversation(convs, true)"
-             :class="{ 'bg-gray-600 hover:bg-gray-800 pr-14  dark:bg-white/10': convs.selected&&theme==='dark', 'hover:bg-[#2A2B32] hover:pr-4': theme==='dark'&&!convs.selected ,
-              'bg-red-100 hover:bg-white/20 pr-14  dark:bg-white/10': convs.selected&&theme==='light', ' hover:bg-white/20 hover:pr-4': theme==='light'&&!convs.selected}"
-             class="flex py-3 px-3 items-center gap-3 relative rounded-md cursor-pointer break-all group shadow-md border border-black/10">
+             :class="{ 'bg-gray-800 hover:bg-gray-800 pr-14': convs.selected, 'hover:bg-[#2A2B32] hover:pr-4': !convs.selected }"
+             class="flex py-3 px-3 items-center gap-3 relative rounded-md cursor-pointer break-all group">
             <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
                  stroke-linecap="round"
                  stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em"
@@ -103,12 +95,14 @@
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z">
               </path>
             </svg>
-            <div class="flex-1 text-ellipsis max-h-5 overflow-hidden break-all relative  ">
+            <div class="flex-1 text-ellipsis max-h-5 overflow-hidden break-all relative">
               {{ convs.title }}
+              <div
+                  :class="{ 'from-gray-800': convs.selected, 'from-gray-900 group-hover:from-[#2A2B32]': !convs.selected }"
+                  class="absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l">
+              </div>
             </div>
-            <div v-show="convs.selected" class="absolute flex right-1 z-10  visible"
-                 :class="{' text-gray-800':theme==='light','text-gray-300': theme==='dark'}"
-            >
+            <div v-show="convs.selected" class="absolute flex right-1 z-10 text-gray-300 visible">
               <button @click="editTitle(cidx, convs)" class="p-1 hover:text-white">
                 <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
                      stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em"
@@ -137,9 +131,7 @@
     </div>
 
     <a v-if="conversations.length>0" @click.stop.prevent="clearConversations"
-       class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 cursor-pointer text-sm"
-       :class="{' text-black/50':theme==='light','text-white': theme==='dark'}"
-    >
+       class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm">
 
 
       <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
@@ -154,9 +146,7 @@
       清空对话
     </a>
     <a v-if="theme === 'light'" @click="changeTheme('dark')"
-       class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 cursor-pointer text-sm"
-       :class="{' text-black/50':theme==='light','text-white': theme==='dark'}"
-    >
+       class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm">
       <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
            stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em"
            xmlns="http://www.w3.org/2000/svg">
@@ -166,9 +156,7 @@
     </a>
 
     <a v-if="theme === 'dark'" @click="changeTheme('light')"
-       class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200  cursor-pointer text-sm"
-       :class="{' text-black/50':theme==='light','text-white': theme==='dark'}"
-    >
+       class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm">
       <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
            stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em"
            xmlns="http://www.w3.org/2000/svg">
@@ -185,9 +173,7 @@
       高亮主题</a>
 
     <a href="https://gschaos.club" target="_blank"
-       class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 cursor-pointer text-sm"
-       :class="{' text-black/50':theme==='light','text-white': theme==='dark'}"
-    >
+       class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm">
       <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
            stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em"
            xmlns="http://www.w3.org/2000/svg">
@@ -213,7 +199,7 @@
     <!-- 只在 Update 被成功导入时才渲染 -->
     <Suspense v-if="Update">
       <template #default>
-        <component :is="Update"/>
+        <component :is="Update" />
       </template>
       <template #fallback>
         <div>Loading...</div> <!-- 可选的加载提示 -->
@@ -224,9 +210,8 @@
 <script setup>
 
 import {isTauri} from "@tauri-apps/api/core";
-import {onMounted, ref, watch, nextTick} from 'vue';
+import {onMounted, ref, watch,nextTick } from 'vue';
 import axios from "axios";
-
 const Update = ref(null);
 
 const appVersion = ref(__APP_VERSION__);
@@ -249,13 +234,12 @@ const props = defineProps({
     default: 0
   }
 });
-const emit = defineEmits(['update_parent_new_chat', 'update_parent_openSidebar', "clear_current_chat", "update_theme"]);
+const emit = defineEmits(['update_parent_new_chat', 'update_parent_openSidebar',"clear_current_chat"]);
 const conversations = ref([]);
 const theme = ref('light');
 const oldConv = ref(null);
 const deskApp = ref("");
 const apiUrl = ref();
-const characterValue = ref(props.characterId);
 
 function changeTheme(newTheme) {
   theme.value = newTheme;
@@ -264,7 +248,6 @@ function changeTheme(newTheme) {
   html.classList.add(newTheme);
   html.style.colorScheme = newTheme;
   localStorage.setItem('theme', newTheme);
-  emit("update_theme", newTheme)
 }
 
 function clearConversations() {
@@ -272,7 +255,7 @@ function clearConversations() {
   const data = {
     "ids": conversationIds
   };
-  axios.post(`https://${apiUrl.value}/chat/clear`, data)
+  axios.post(`${apiUrl.value}/chat/clear`, data)
       .then((result) => {
 
       })
@@ -308,12 +291,12 @@ function loadConversations() {
   let convs = localStorage.getItem("conversations") || "[]";
   let latestSelect = localStorage.getItem("conversations_latest_select");
   let jsonData = JSON.parse(convs);
-  conversations.value = jsonData
-  if (latestSelect) {
+  conversations.value =jsonData
+  if(latestSelect){
     for (let idx in jsonData) {
       const conv = jsonData[idx];
-      if (latestSelect === conv.id) {
-        selectConversation(conv, true)
+      if(latestSelect===conv.id){
+        selectConversation(conv,true)
         break
       }
     }
@@ -384,15 +367,12 @@ function newChat() {
   emit('update_parent_new_chat', "");
 }
 
-// 函数：检测系统主题
-function detectSystemTheme() {
-  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
+
 // 观察 popupShow prop 的变化
 watch(() => props.newConv, (val) => {
   conversations.value.unshift(val);
   saveConversations();
-  selectConversation(val, false)
+  selectConversation(val,false)
 });
 // 观察 popupShow prop 的变化
 watch(() => props.sidebarNewChat, (val) => {
@@ -405,11 +385,7 @@ watch(() => props.sidebarNewChat, (val) => {
     delete conv.delete;
   }
 });
-// 监听系统主题变化
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-  const newTheme = e.matches ? 'dark' : 'light';
-  changeTheme(newTheme);
-});
+
 onMounted(async () => {
   if (isTauri.call()) {
     import("../components/Update.vue").then((module) => {
@@ -418,10 +394,7 @@ onMounted(async () => {
   }
   apiUrl.value = __APP_API_RUI__;
   deskApp.value = `https://gschaos.club/update_file/Y-Chat_${appVersion.value}_x64_zh-CN.msi`
-  let theme = detectSystemTheme();
-  if(!theme){
-    theme = localStorage.getItem("theme") || "light";
-  }
+  const theme = localStorage.getItem("theme") || "light";
   changeTheme(theme);
   loadConversations();
 });
