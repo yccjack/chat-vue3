@@ -2,15 +2,6 @@
   <div id="__next">
     <!-- 弹窗 -->
     <modalA :popupShow="popupShow" @close="popupShow = false"></modalA>
-    <div class="hidden  md:fixed md:inset-y-0 md:flex md:w-[260px] md:flex-col box-sh "
-    >
-      <div class="flex h-full min-h-0 flex-col ">
-        <div class="scrollbar-trigger flex h-full w-full flex-1 items-start ">
-          <mask></mask>
-        </div>
-      </div>
-    </div>
-
     <div class="overflow-hidden w-full h-full relative">
       <div class="flex h-full flex-1 flex-col md:pl-[260px]">
         <sidebar
@@ -156,7 +147,11 @@ import 'highlight.js/styles/github.css';
 import modalA from "./components/modalA.vue";
 import axios from 'axios';
 import clipboard from 'vue-clipboard3'; // 默认导入
+import { throttle } from 'lodash';
 
+const updateConversation = throttle(() => {
+  conversation.value = [...conversation.value]; // 触发更新
+}, 100); // 每 100ms 触发一次
 const appVersion = ref(__APP_VERSION__);
 const deskApp = ref("https://gschaos.club/update_file/Y-Chat_0.2.6_x64_en-US.msi");
 const apiUrl = ref();
@@ -173,13 +168,10 @@ const convLoading = ref(false);
 const isShowGoBottom = ref(false);
 const inputChat = ref("");
 const cid = ref("");
-//如果用户使用滚轮，则停止向下自动滚动
-const isUserScrolling = ref(false);
-const isAutoScrolling = ref(true);
-const lastScrollTop = ref(0);
+
 const {toClipboard} = clipboard();
 const character = ref([])
-
+const decoder = new TextDecoder("utf-8");
 watchEffect(() => {
 
 });
@@ -201,7 +193,6 @@ function stopChat() {
         var rconv = conversation.value[conversation.value.length - 1];
         rconv["loading"] = false;
         convLoading.value = false;
-        isUserScrolling.value = false
       })
       .catch((err) => {
         console.error(err)
@@ -299,14 +290,12 @@ function chatRepeat() {
           if (done) {
             rconv["loading"] = false;
             convLoading.value = false;
-            isUserScrolling.value = false
             return;
           }
           const chunk = decoder.decode(value, {stream: true});
           // 直接更新 speeches 数组的第一个元素，确保响应式
           rconv.speeches[idx] += chunk;
           conversation.value[conversation.value.length - 1] = rconv;
-          isAutoScrolling.value = true;
           handleScrollBottom();
           readStream();
         });
@@ -358,8 +347,6 @@ function send() {
   }
   conversation.value.push(conv)
 
-  // 滚动到最下面
-  isAutoScrolling.value = true;
   handleScrollBottom();
 
   try {
@@ -375,20 +362,21 @@ function send() {
     }).then(response => {
       // 处理流式数据
       const reader = response.body.getReader();
-      const decoder = new TextDecoder("utf-8");
+
       const readStream = () => {
         reader.read().then(({done, value}) => {
           if (done) {
             conv["loading"] = false;
             convLoading.value = false;
-            isUserScrolling.value = false
             return;
           }
           const chunk = decoder.decode(value, {stream: true});
           // 直接更新 speeches 数组的第一个元素，确保响应式
           conv.speeches[0] = conv.speeches[0] + chunk;
           conversation.value[conversation.value.length - 1] = conv;
-          conversation.value = [...conversation.value]; // 触发响应式更新
+          conversation.value[conversation.value.length - 1].speeches = [
+            ...conversation.value[conversation.value.length - 1].speeches,
+          ];
           if (first) {
             var newConv = {
               "id": cid.value,
@@ -401,7 +389,6 @@ function send() {
             // 修正拼写错误
             first = false; // 标记为非首次
           }
-          isAutoScrolling.value = true;
           handleScrollBottom();
           readStream();
         });
@@ -444,7 +431,6 @@ function selectConversation(conv, loadConv = false) {
 
         cid.value = conv.id;
         conversation.value = initConvs(content.conversation.convs)
-        isAutoScrolling.value = true;
         handleScrollBottom();
         setTimeout(() => {
           isScrollAndNotBottom();
@@ -477,34 +463,13 @@ const chatContainer = ref(null)
 function handleScrollBottom() {
   nextTick(() => {
     // 确保 chatContainer.value 已经被正确设置
-    if (chatContainer.value && !isUserScrolling.value) {
+    if (chatContainer.value ) {
       let scrollElem = chatContainer.value;
-      const currentScrollTop = scrollElem.scrollTop;
       scrollElem.scrollTo({top: scrollElem.scrollHeight, behavior: 'smooth'});
-      // 更新 lastScrollTop
-      lastScrollTop.value = scrollElem.scrollTop;
     }
   });
 }
 
-// 监听用户的滚动事件
-const onScroll = () => {
-  // 获取当前滚动位置
-  let scrollElem = chatContainer.value;
-  const currentScrollTop = scrollElem.scrollTop;
-  if (currentScrollTop < lastScrollTop.value) {
-    // 用户向上滚动，停止自动滚动
-    isUserScrolling.value = true;
-    isAutoScrolling.value = false;
-  }
-  // 更新 lastScrollTop
-  lastScrollTop.value = currentScrollTop;
-  // 延时重置标志位
-  clearTimeout(window.scrollTimeout);
-  window.scrollTimeout = setTimeout(() => {
-    isUserScrolling.value = false; // 停止滚动一段时间后，允许自动滚动
-  }, 3000); // 3秒后重置标志位
-};
 
 function isScrollAndNotBottom() {
   let chatDivEle = chatContainer.value;
@@ -546,16 +511,12 @@ onMounted(async () => {
   const savedPopupShow = localStorage.getItem(`popupShow${__APP_VERSION__}`);
   // 如果 savedPopupShow 不存在，表示是第一次弹窗
   popupShow.value = savedPopupShow !== 'true';
-
   loadId();
   loadAvatar();
-  let chatDivEle = chatContainer.value;
-  chatDivEle.addEventListener('scroll', isScrollAndNotBottom, true)
+  // let chatDivEle = chatContainer.value;
+  // chatDivEle.addEventListener('scroll', isScrollAndNotBottom, true)
   deskApp.value = `https://gschaos.club/update_file/Y-Chat_${appVersion.value}_x64_zh-CN.msi`
   window.copy = vueCopy
-  if (chatContainer.value) {
-    chatContainer.value.addEventListener('scroll', onScroll);
-  }
   getCharacterInfo();
 });
 

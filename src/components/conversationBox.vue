@@ -1,5 +1,5 @@
 <template>
-  <template v-for="(conv, idx) in props.conversation">
+  <div style="width: 100%" v-for="(conv, idx) in props.conversation">
     <!-- human -->
     <div v-if="conv.speaker === 'human'"
          class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group dark:bg-gray-800">
@@ -129,13 +129,12 @@
         </div>
       </div>
     </div>
-  </template>
+  </div>
 </template>
 <script setup>
 import {ref} from "vue";
 import imagePath from "../assets/imgs/human9.png";
 import MarkdownIt from "markdown-it";
-import hljs from "highlight.js";
 import 'highlight.js/styles/github.css'; // 使用 GitHub 主题样式
 import axios from "axios";
 
@@ -196,11 +195,8 @@ const marked = new MarkdownIt({
   linkify: true,            // 将 URL 自动转换为链接
   typographer: true,        // 使用引号替换等
   highlight: (code, language) => {
-    let codeHtml = language && hljs.getLanguage(language)
-        ? hljs.highlight(code, {language}).value
-        : hljs.highlightAuto(code).value;
 
-    return renderCodeBlock(code, codeHtml, language);
+    return renderCodeBlock(code, code, language);
   }
 
 });
