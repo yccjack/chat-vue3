@@ -1,5 +1,5 @@
 <template>
-  <template v-for="(conv, idx) in props.conversation">
+  <template v-for="(conv, idx) in props.conversation" :key="conv.createTime">
     <!-- human -->
     <div v-if="conv.speaker === 'human'"
          class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group dark:bg-gray-800">
