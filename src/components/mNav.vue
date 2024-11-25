@@ -255,6 +255,7 @@ const theme = ref('light');
 const oldConv = ref(null);
 const deskApp = ref("");
 const apiUrl = ref();
+const characterValue = ref(props.characterId);
 
 function changeTheme(newTheme) {
   theme.value = newTheme;
