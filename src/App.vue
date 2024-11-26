@@ -278,7 +278,7 @@ function chatRepeat() {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
       },
       data:{
-        character:conversation[0].characterId
+        character:conversation[0].characterId?conversation[0].characterId:""
       }
     }).then(response => {
       // 处理流式数据
@@ -290,12 +290,16 @@ function chatRepeat() {
             rconv["loading"] = false;
             convLoading.value = false;
             isUserScrolling.value = false
+            conversation.value[conversation.value.length - 1] = rconv;
             return;
           }
           const chunk = decoder.decode(value, {stream: true});
           // 直接更新 speeches 数组的第一个元素，确保响应式
           rconv.speeches[idx] += chunk;
-          conversation.value[conversation.value.length - 1] = rconv;
+          if(rconv.speeches[0].length%20===0){
+            // 替换整个 speeches 数组，确保响应式
+            conversation.value[conversation.value.length - 1] = rconv;
+          }
           isAutoScrolling.value = true;
           handleScrollBottom();
           readStream();
