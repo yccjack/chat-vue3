@@ -231,7 +231,7 @@ function suitable(idx, conv, suit) {
   }
   conv.suitable[conv.idx] = suit
 
-  axios.put(`https://${apiUrl.value}/ai/suitable/${cid.value}`, cdate)
+  axios.put(`${apiUrl.value}/ai/suitable/${cid.value}`, cdate)
       .then((result) => {
 
       })
