@@ -21,9 +21,8 @@
         <div
             class="relative flex w-[calc(100%-50px)] flex-col gap-1 md:gap-3 lg:w-[calc(100%-115px)]">
           <div class="flex flex-grow flex-col gap-3">
-            <div class="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap"
-                 :style="{  color: '#047366' }">
-              {{ conv.speech }}
+            <div class="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap"  :style="{  color: '#047366' }">
+              {{conv.speech }}
             </div>
           </div>
           <div v-if="false"
@@ -92,7 +91,7 @@
           <div class="flex flex-grow flex-col gap-3">
             <!--  whitespace-pre-wrap -->
             <div class="min-h-[20px] flex flex-col items-start gap-4">
-              <div v-html="conv.speeches[conv.idx].htmlContent"
+              <div v-html="mdToHtml(conv.speeches[conv.idx], conv)"
                    :class="{ 'result-streaming': conv.loading }"
                    class="markdown prose w-full break-words dark:prose-invert light">
               </div>
@@ -133,13 +132,13 @@
   </div>
 </template>
 <script setup>
-import {ref,watch } from "vue";
+import {ref} from "vue";
 import imagePath from "../assets/imgs/human9.png";
 import MarkdownIt from "markdown-it";
+import hljs from "highlight.js";
 import 'highlight.js/styles/github.css'; // 使用 GitHub 主题样式
 import axios from "axios";
-// 用来存储 Markdown 渲染结果
-const renderedHtml = ref('');
+
 const humanImage = ref(imagePath);
 const props = defineProps({
   //发生的新对话标题
@@ -164,49 +163,40 @@ function next(conv) {
   conv.idx++;
 
 }
-// 每次更新时处理渲染
-watch(
-    () => props.conversation,
-    async (newConv) => {
-      // 遍历所有会话
-      for (let conv of newConv) {
-        console.log(conv)
-        if (conv.speeches[conv.idx]) {
-          // 渲染 Markdown 到 HTML
-          const htmlContent = await renderCodeBlockAsync(conv.speeches[conv.idx], conv.speeches[conv.idx], 'javascript');
-          // 更新响应式数据
-          conv.speeches[conv.idx] = { htmlContent };
-        }
-      }
-    },
-    { deep: true } // 深度监听会话变化
-);
-async  function renderCodeBlockAsync(code, codeHtml, language = "") {
-  return `
-    <div class="bg-black mb-4 rounded-md">
-      <div class="code_header flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans">
-        <span>${language}</span>
-        <button onclick="copy(this)" class="flex ml-auto gap-2">
-          <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-          </svg>
-          <span>复制代码</span>
-          <pre><code style="display:none">${code}</code></pre>
-        </button>
-      </div>
-      <div style="margin: 10px 0 20px 10px;">
-        <pre class="hljs !whitespace-pre language-${language}" ><code>${codeHtml}</code></pre>
-      </div>
+
+function renderCodeBlock(code, codeHtml, language = "") {
+  return `<div class="bg-black mb-4 rounded-md">
+    <div class="code_header flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans">
+      <span>${language}</span>
+      <button onclick="copy(this)" class="flex ml-auto gap-2">
+        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+          <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+        </svg>
+        <span>复制代码</span>
+         <pre><code style="display:none">${code}</code></pre>
+      </button>
     </div>
-  `;
+
+    <div style="margin: 10px 0 20px 10px;">
+      <pre class="hljs !whitespace-pre language-${language}" ><code>${codeHtml}</code></pre>
+    </div>
+  </div>`;
 }
 
 // 配置 markdown-it 实例
 const marked = new MarkdownIt({
-  highlight: async (code, language) => {
-    return await renderCodeBlockAsync(code, code, language);
+  html: false,               // 允许 HTML 标签
+  linkify: true,            // 将 URL 自动转换为链接
+  typographer: true,        // 使用引号替换等
+  highlight: (code, language) => {
+    let codeHtml = language && hljs.getLanguage(language)
+        ? hljs.highlight(code, {language}).value
+        : hljs.highlightAuto(code).value;
+
+    return renderCodeBlock(code, codeHtml, language);
   }
+
 });
 // 直接返回 highlight 函数生成的 HTML，避免 MarkdownIt 额外包裹 <code>
 marked.renderer.rules.fence = (tokens, idx) => {
@@ -215,14 +205,22 @@ marked.renderer.rules.fence = (tokens, idx) => {
   return marked.options.highlight(token.content, language);
 };
 
-async function mdToHtml(md, conv) {
+function countAndConcat(str, substr) {
+  // 使用正则表达式的全局匹配来查找子字符串
+  const matches = str.match(new RegExp(substr, 'g'));
+
+  // 判断子字符串的个数是奇数还是偶数
+  const count = matches ? matches.length : 0;
+  const isOdd = count % 2 === 1;
+  // 根据判断结果返回相应的字符串
+  return isOdd ? str + "\n" + substr : str;
+}
+
+function mdToHtml(md, conv) {
   if (md === "") {
     return "<p></p>"
   }
-  // Markdown 渲染
-  const html = await marked.render(md);
-  console.log(html)
-  return html
+  return marked.render(md);
 }
 
 function suitable(idx, conv, suit) {

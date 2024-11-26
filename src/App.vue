@@ -68,15 +68,16 @@
                 </div>
                 <div
                     class="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
-                    <textarea v-model="chatMsg"
-                              ref="inputChat"
-                              @keydown="judgeInput"
-                              @input="autoResize"
-                              tabindex="0"
-                              data-id="root"
-                              style="overflow-y: hidden; resize: none;"
-                              rows="1"
-                              class="m-0 w-full resize-none border-0 bg-transparent p-0 pl-2 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent md:pl-0"></textarea>
+            <textarea v-model="chatMsg"
+                      ref="inputChat"
+                      @keydown="judgeInput"
+                      @input="autoResize"
+                      tabindex="0"
+                      data-id="root"
+                      style="overflow-y: auto; resize: none; min-height: 3rem; max-height: 12rem;"
+                      rows="1"
+                      class="m-0 w-full resize-none border-0 bg-transparent p-0 pl-2 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent md:pl-0">
+            </textarea>
                   <button @click.stop.prevent="send"
                           :disabled="convLoading"
                           class="absolute p-1 rounded-md text-gray-500 bottom-1.5 right-1 md:bottom-2.5 md:right-2 hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent">
@@ -104,9 +105,11 @@
       </div>
 
       <!-- 菜单导航 -->
-      <div class="dark hidden bg-gray-900 md:fixed md:inset-y-0 md:flex md:w-[260px] md:flex-col box-sh">
+      <div class="hidden  md:fixed md:inset-y-0 md:flex md:w-[260px] md:flex-col box-sh "
+           :class="{ 'bg-gray-800': theme==='dark', 'nav-bk': theme==='light' }"
+      >
         <div class="flex h-full min-h-0 flex-col ">
-          <div class="scrollbar-trigger flex h-full w-full flex-1 items-start border-white/20">
+          <div class="scrollbar-trigger flex h-full w-full flex-1 items-start ">
             <mNav
                 :newConv="pushNewConv"
                 :characterId="currentCharacter"
@@ -114,6 +117,7 @@
                 @update_parent_new_chat="newChat"
                 @update_parent_openSidebar="selectConversation"
                 @clear_current_chat="newChat"
+                @update_theme="updateTheme"
             ></mNav>
           </div>
         </div>
@@ -142,11 +146,7 @@ import 'highlight.js/styles/github.css';
 import modalA from "./components/modalA.vue";
 import axios from 'axios';
 import clipboard from 'vue-clipboard3'; // 默认导入
-import { throttle } from 'lodash';
 
-const updateConversation = throttle(() => {
-  conversation.value = [...conversation.value]; // 触发更新
-}, 100); // 每 100ms 触发一次
 const appVersion = ref(__APP_VERSION__);
 const deskApp = ref("https://gschaos.club/update_file/Y-Chat_0.2.6_x64_en-US.msi");
 const apiUrl = ref();
@@ -163,11 +163,13 @@ const convLoading = ref(false);
 const isShowGoBottom = ref(false);
 const inputChat = ref("");
 const cid = ref("");
-
+//如果用户使用滚轮，则停止向下自动滚动
+const isUserScrolling = ref(false);
+const isAutoScrolling = ref(true);
+const lastScrollTop = ref(0);
 const {toClipboard} = clipboard();
 const character = ref([])
-const decoder = new TextDecoder("utf-8");
-const temValue =ref("")
+
 watchEffect(() => {
 
 });
@@ -189,6 +191,7 @@ function stopChat() {
         var rconv = conversation.value[conversation.value.length - 1];
         rconv["loading"] = false;
         convLoading.value = false;
+        isUserScrolling.value = false
       })
       .catch((err) => {
         console.error(err)
@@ -286,12 +289,14 @@ function chatRepeat() {
           if (done) {
             rconv["loading"] = false;
             convLoading.value = false;
+            isUserScrolling.value = false
             return;
           }
           const chunk = decoder.decode(value, {stream: true});
           // 直接更新 speeches 数组的第一个元素，确保响应式
           rconv.speeches[idx] += chunk;
           conversation.value[conversation.value.length - 1] = rconv;
+          isAutoScrolling.value = true;
           handleScrollBottom();
           readStream();
         });
@@ -343,6 +348,8 @@ function send() {
   }
   conversation.value.push(conv)
 
+  // 滚动到最下面
+  isAutoScrolling.value = true;
   handleScrollBottom();
 
   try {
@@ -358,15 +365,13 @@ function send() {
     }).then(response => {
       // 处理流式数据
       const reader = response.body.getReader();
-
+      const decoder = new TextDecoder("utf-8");
       const readStream = () => {
         reader.read().then(({done, value}) => {
           if (done) {
             conv["loading"] = false;
             convLoading.value = false;
-            conversation.value[conversation.value.length - 1].speeches = [
-              ...conversation.value[conversation.value.length - 1].speeches,
-            ];
+            isUserScrolling.value = false
             return;
           }
           const chunk = decoder.decode(value, {stream: true});
@@ -377,11 +382,6 @@ function send() {
             conversation.value[conversation.value.length - 1].speeches = [
               conv.speeches[0]
             ];
-            nextTick(() => {
-              console.log('DOM 已更新');
-            });
-          }else{
-            console.log(conversation.value[conversation.value.length - 1].speeches[0])
           }
           if (first) {
             var newConv = {
@@ -395,6 +395,7 @@ function send() {
             // 修正拼写错误
             first = false; // 标记为非首次
           }
+          isAutoScrolling.value = true;
           handleScrollBottom();
           readStream();
         });
@@ -437,6 +438,7 @@ function selectConversation(conv, loadConv = false) {
 
         cid.value = conv.id;
         conversation.value = initConvs(content.conversation.convs)
+        isAutoScrolling.value = true;
         handleScrollBottom();
         setTimeout(() => {
           isScrollAndNotBottom();
@@ -469,13 +471,34 @@ const chatContainer = ref(null)
 function handleScrollBottom() {
   nextTick(() => {
     // 确保 chatContainer.value 已经被正确设置
-    if (chatContainer.value ) {
+    if (chatContainer.value && !isUserScrolling.value) {
       let scrollElem = chatContainer.value;
+      const currentScrollTop = scrollElem.scrollTop;
       scrollElem.scrollTo({top: scrollElem.scrollHeight, behavior: 'smooth'});
+      // 更新 lastScrollTop
+      lastScrollTop.value = scrollElem.scrollTop;
     }
   });
 }
 
+// 监听用户的滚动事件
+const onScroll = () => {
+  // 获取当前滚动位置
+  let scrollElem = chatContainer.value;
+  const currentScrollTop = scrollElem.scrollTop;
+  if (currentScrollTop < lastScrollTop.value) {
+    // 用户向上滚动，停止自动滚动
+    isUserScrolling.value = true;
+    isAutoScrolling.value = false;
+  }
+  // 更新 lastScrollTop
+  lastScrollTop.value = currentScrollTop;
+  // 延时重置标志位
+  clearTimeout(window.scrollTimeout);
+  window.scrollTimeout = setTimeout(() => {
+    isUserScrolling.value = false; // 停止滚动一段时间后，允许自动滚动
+  }, 3000); // 3秒后重置标志位
+};
 
 function isScrollAndNotBottom() {
   let chatDivEle = chatContainer.value;
@@ -497,6 +520,10 @@ function isScrollAndNotBottom() {
   isShowGoBottom.value = true;
 }
 
+function updateTheme(arg) {
+  theme.value = arg
+}
+
 watch(chatMsg, (newVal, oldVal) => {
   if (newVal !== oldVal) {
     changeHeight();
@@ -513,12 +540,16 @@ onMounted(async () => {
   const savedPopupShow = localStorage.getItem(`popupShow${__APP_VERSION__}`);
   // 如果 savedPopupShow 不存在，表示是第一次弹窗
   popupShow.value = savedPopupShow !== 'true';
+
   loadId();
   loadAvatar();
-  // let chatDivEle = chatContainer.value;
-  // chatDivEle.addEventListener('scroll', isScrollAndNotBottom, true)
+  let chatDivEle = chatContainer.value;
+  chatDivEle.addEventListener('scroll', isScrollAndNotBottom, true)
   deskApp.value = `https://gschaos.club/update_file/Y-Chat_${appVersion.value}_x64_zh-CN.msi`
   window.copy = vueCopy
+  if (chatContainer.value) {
+    chatContainer.value.addEventListener('scroll', onScroll);
+  }
   getCharacterInfo();
 });
 
