@@ -68,15 +68,16 @@
                 </div>
                 <div
                     class="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
-                    <textarea v-model="chatMsg"
-                              ref="inputChat"
-                              @keydown="judgeInput"
-                              @input="autoResize"
-                              tabindex="0"
-                              data-id="root"
-                              style="overflow-y: hidden; resize: none;"
-                              rows="1"
-                              class="m-0 w-full resize-none border-0 bg-transparent p-0 pl-2 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent md:pl-0"></textarea>
+            <textarea v-model="chatMsg"
+                      ref="inputChat"
+                      @keydown="judgeInput"
+                      @input="autoResize"
+                      tabindex="0"
+                      data-id="root"
+                      style="overflow-y: auto; resize: none; min-height: 3rem; max-height: 12rem;"
+                      rows="1"
+                      class="m-0 w-full resize-none border-0 bg-transparent p-0 pl-2 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent md:pl-0">
+            </textarea>
                   <button @click.stop.prevent="send"
                           :disabled="convLoading"
                           class="absolute p-1 rounded-md text-gray-500 bottom-1.5 right-1 md:bottom-2.5 md:right-2 hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent">
@@ -104,9 +105,11 @@
       </div>
 
       <!-- 菜单导航 -->
-      <div class="dark hidden bg-gray-900 md:fixed md:inset-y-0 md:flex md:w-[260px] md:flex-col box-sh">
+      <div class="hidden  md:fixed md:inset-y-0 md:flex md:w-[260px] md:flex-col box-sh "
+           :class="{ 'bg-gray-800': theme==='dark', 'nav-bk': theme==='light' }"
+      >
         <div class="flex h-full min-h-0 flex-col ">
-          <div class="scrollbar-trigger flex h-full w-full flex-1 items-start border-white/20">
+          <div class="scrollbar-trigger flex h-full w-full flex-1 items-start ">
             <mNav
                 :newConv="pushNewConv"
                 :characterId="currentCharacter"
@@ -114,6 +117,7 @@
                 @update_parent_new_chat="newChat"
                 @update_parent_openSidebar="selectConversation"
                 @clear_current_chat="newChat"
+                @update_theme="updateTheme"
             ></mNav>
           </div>
         </div>
@@ -373,8 +377,12 @@ function send() {
           const chunk = decoder.decode(value, {stream: true});
           // 直接更新 speeches 数组的第一个元素，确保响应式
           conv.speeches[0] = conv.speeches[0] + chunk;
-          conversation.value[conversation.value.length - 1] = conv;
-          conversation.value = [...conversation.value]; // 触发响应式更新
+          if(conv.speeches[0].length%20===0){
+            // 替换整个 speeches 数组，确保响应式
+            conversation.value[conversation.value.length - 1].speeches = [
+              conv.speeches[0]
+            ];
+          }
           if (first) {
             var newConv = {
               "id": cid.value,
@@ -510,6 +518,10 @@ function isScrollAndNotBottom() {
     return;
   }
   isShowGoBottom.value = true;
+}
+
+function updateTheme(arg) {
+  theme.value = arg
 }
 
 watch(chatMsg, (newVal, oldVal) => {

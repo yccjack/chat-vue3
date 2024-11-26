@@ -1,5 +1,5 @@
 <template>
-  <template v-for="(conv, idx) in props.conversation">
+  <div style="width: 100%" v-for="(conv, idx) in props.conversation" :key="idx">
     <!-- human -->
     <div v-if="conv.speaker === 'human'"
          class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group dark:bg-gray-800">
@@ -129,7 +129,7 @@
         </div>
       </div>
     </div>
-  </template>
+  </div>
 </template>
 <script setup>
 import {ref} from "vue";
@@ -164,12 +164,6 @@ function next(conv) {
 
 }
 
-function getSoftColor() {
-  const r = Math.floor(200 + Math.random() * 55); // 高亮的红色分量
-  const g = Math.floor(200 + Math.random() * 55); // 高亮的绿色分量
-  const b = Math.floor(200 + Math.random() * 55); // 高亮的蓝色分量
-  return `rgb(${r}, ${g}, ${b})`; // 生成柔和的浅色背景
-}
 function renderCodeBlock(code, codeHtml, language = "") {
   return `<div class="bg-black mb-4 rounded-md">
     <div class="code_header flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans">
@@ -192,7 +186,7 @@ function renderCodeBlock(code, codeHtml, language = "") {
 
 // 配置 markdown-it 实例
 const marked = new MarkdownIt({
-  html: true,               // 允许 HTML 标签
+  html: false,               // 允许 HTML 标签
   linkify: true,            // 将 URL 自动转换为链接
   typographer: true,        // 使用引号替换等
   highlight: (code, language) => {
@@ -218,7 +212,6 @@ function countAndConcat(str, substr) {
   // 判断子字符串的个数是奇数还是偶数
   const count = matches ? matches.length : 0;
   const isOdd = count % 2 === 1;
-
   // 根据判断结果返回相应的字符串
   return isOdd ? str + "\n" + substr : str;
 }
@@ -227,7 +220,6 @@ function mdToHtml(md, conv) {
   if (md === "") {
     return "<p></p>"
   }
-  md = countAndConcat(md, "```")
   return marked.render(md);
 }
 
