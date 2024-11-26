@@ -501,7 +501,7 @@ const onScroll = () => {
   clearTimeout(window.scrollTimeout);
   window.scrollTimeout = setTimeout(() => {
     isUserScrolling.value = false; // 停止滚动一段时间后，允许自动滚动
-  }, 3000); // 3秒后重置标志位
+  }, 10000); // 10秒后重置标志位
 };
 
 function isScrollAndNotBottom() {
