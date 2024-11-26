@@ -372,6 +372,10 @@ function send() {
             conv["loading"] = false;
             convLoading.value = false;
             isUserScrolling.value = false
+            // 替换整个 speeches 数组，确保响应式
+            conversation.value[conversation.value.length - 1].speeches = [
+              conv.speeches[0]
+            ];
             return;
           }
           const chunk = decoder.decode(value, {stream: true});
