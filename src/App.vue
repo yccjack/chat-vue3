@@ -167,6 +167,7 @@ const cid = ref("");
 const {toClipboard} = clipboard();
 const character = ref([])
 const decoder = new TextDecoder("utf-8");
+const temValue =ref("")
 watchEffect(() => {
 
 });
@@ -363,15 +364,25 @@ function send() {
           if (done) {
             conv["loading"] = false;
             convLoading.value = false;
+            conversation.value[conversation.value.length - 1].speeches = [
+              ...conversation.value[conversation.value.length - 1].speeches,
+            ];
             return;
           }
           const chunk = decoder.decode(value, {stream: true});
           // 直接更新 speeches 数组的第一个元素，确保响应式
           conv.speeches[0] = conv.speeches[0] + chunk;
-          conversation.value[conversation.value.length - 1] = conv;
-          conversation.value[conversation.value.length - 1].speeches = [
-            ...conversation.value[conversation.value.length - 1].speeches,
-          ];
+          if(conv.speeches[0].length%20===0){
+            // 替换整个 speeches 数组，确保响应式
+            conversation.value[conversation.value.length - 1].speeches = [
+              conv.speeches[0]
+            ];
+            nextTick(() => {
+              console.log('DOM 已更新');
+            });
+          }else{
+            console.log(conversation.value[conversation.value.length - 1].speeches[0])
+          }
           if (first) {
             var newConv = {
               "id": cid.value,
