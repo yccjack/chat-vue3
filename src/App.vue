@@ -301,13 +301,13 @@ function chatRepeat() {
     return
   }
   convLoading.value = true;
+  isAiReceive.value=true;
   var rconv = conversation.value[conversation.value.length - 1];
   rconv["idx"] = rconv["suitable"].length;
   rconv["loading"] = true;
   rconv["suitable"].push(0);
   rconv["speeches"]="";
   try {
-    var idx = rconv.idx;
     // 使用 Axios 发送 GET 请求，接收流式数据
     fetch(`${apiUrl.value}/chat/repeat/${cid.value}`, {
       method: 'POST',
@@ -324,10 +324,10 @@ function chatRepeat() {
       const readStream = () => {
         reader.read().then(({done, value}) => {
           if (done) {
-            conv["loading"] = false;
+            rconv["loading"] = false;
             convLoading.value = false;
             // 替换整个 speeches 数组，确保响应式
-            conv.speeches = tempSpeeches.value
+            rconv.speeches = tempSpeeches.value
             isAiReceive.value=false
             return;
           }
