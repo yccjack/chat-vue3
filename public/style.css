@@ -5,3 +5,11 @@
     border-color: #d9d9d9;
     box-shadow: 0 2px 0 rgba(0, 0, 0, 0.02);
 }
+
+.h-4 {
+    height: 1rem;
+}
+
+.w-4 {
+    width: 1rem;
+}

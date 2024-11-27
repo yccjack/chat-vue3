@@ -37,6 +37,6 @@ export default defineConfig({
     }, define: {
         __APP_VERSION__: JSON.stringify(version),
         __APP_API_RUI__: JSON.stringify('https://chat.gschaos.club/api'),
-        __UPDATE_NODE__: JSON.stringify('["修复0.3.0版本的严重bug","修复解析代码bug","修复漏洞"]'),
+        __UPDATE_NODE__: JSON.stringify('["修复0.3.0版本的严重bug","修复解析代码bug","修复漏洞","修复解析到HTML标签导致页面错乱的问题"]'),
     },
 })

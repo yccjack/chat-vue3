@@ -197,7 +197,7 @@
       </svg>
       首页 &amp; FAQ</a>
 
-    <a v-if="!isTauri.call()" :href="deskApp" target="_blank"
+    <a v-if="!isTauri()" :href="deskApp" target="_blank"
        class="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm">
       <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
            stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em"
@@ -210,24 +210,15 @@
               fill="#1C274C"/>
       </svg>
       <span style="color: #00a67d">桌面端下载地址</span></a>
-    <!-- 只在 Update 被成功导入时才渲染 -->
-    <Suspense v-if="Update">
-      <template #default>
-        <component :is="Update"/>
-      </template>
-      <template #fallback>
-        <div>Loading...</div> <!-- 可选的加载提示 -->
-      </template>
-    </Suspense>
+
   </nav>
 </template>
 <script setup>
 
-import {isTauri} from "@tauri-apps/api/core";
+
 import {onMounted, ref, watch, nextTick} from 'vue';
 import axios from "axios";
-
-const Update = ref(null);
+import {isTauri} from "@tauri-apps/api/core";
 
 const appVersion = ref(__APP_VERSION__);
 const convTitletmp = ref('');
@@ -255,7 +246,6 @@ const theme = ref('light');
 const oldConv = ref(null);
 const deskApp = ref("");
 const apiUrl = ref();
-const characterValue = ref(props.characterId);
 
 function changeTheme(newTheme) {
   theme.value = newTheme;
@@ -411,11 +401,7 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e =
   changeTheme(newTheme);
 });
 onMounted(async () => {
-  if (isTauri.call()) {
-    import("../components/Update.vue").then((module) => {
-      Update.value = module.default;
-    });
-  }
+
   apiUrl.value = __APP_API_RUI__;
   deskApp.value = `https://gschaos.club/update_file/Y-Chat_${appVersion.value}_x64_zh-CN.msi`
   let theme = detectSystemTheme();
