@@ -238,6 +238,11 @@ const props = defineProps({
   sidebarNewChat: {
     type: Number,
     default: 0
+  } ,
+  //角色id
+  characterId: {
+    type: Number,
+    default: -1
   }
 });
 const emit = defineEmits(['update_parent_new_chat', 'update_parent_openSidebar', "clear_current_chat", "update_theme"]);
@@ -384,6 +389,7 @@ watch(() => props.newConv, (val) => {
   saveConversations();
   selectConversation(val, false)
 });
+
 // 观察 popupShow prop 的变化
 watch(() => props.sidebarNewChat, (val) => {
   //如果是来自sidebar触发的newChat事件，这里需要将选中数据解除，但是不需要通知父组件，通知由sidebar执行

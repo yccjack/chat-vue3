@@ -1,7 +1,7 @@
 <script setup>
-import SvgIcon from '../SvgIcon.vue';
 import MarkdownIt from "markdown-it";
 import hljs from "highlight.js";
+import "highlight.js/styles/github.css"; // 引入亮色主题
 const props = defineProps({
   speeches: {
     type: String,
