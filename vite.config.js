@@ -36,7 +36,7 @@ export default defineConfig({
         '@': path.resolve(__dirname, './src')
     }, define: {
         __APP_VERSION__: JSON.stringify(version),
-        __APP_API_RUI__: JSON.stringify('https://chat.gschaos.club/api'),
+        __APP_API_RUI__: JSON.stringify('http://127.0.0.1:8383'),
         __UPDATE_NODE__: JSON.stringify('["修复0.3.0版本的严重bug","修复解析代码bug","修复漏洞"]'),
     },
 })

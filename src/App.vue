@@ -18,12 +18,31 @@
               <div ref="chatContainer" class="react-scroll-to-bottom--css-krija-1n7m0yu">
                 <div class="flex flex-col items-center text-sm dark:bg-gray-800">
                   <!-- 对话item -->
-                  <conversationBox
-                      :conversation="conversation"
-                  ></conversationBox>
+                  <div  style="width: 100%" v-for="(conv, idx) in conversation" :key="idx">
+                    <div v-if="conv.speaker === 'human'"
+                         class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group dark:bg-gray-800">
+                      <human
+                      :speech="conv.speech"
+                      ></human>
+                    </div>
+                    <div  v-if="conv.speaker === 'ai'"
+                         class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group bg-gray-50 dark:bg-[#444654]">
+                      <!-- 判断是否是最后一个 ai 数据 -->
+                      <div v-if="idx === conversation.length - 1 && isAiReceive"
+                           class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group bg-gray-50 dark:bg-[#444654]">
+                        <!-- 临时变量渲染最新的 ai 数据 -->
+                        <ai :speeches="tempSpeeches" :loading="conv.loading"></ai>
+                      </div>
+                      <!-- 不是最后一个 ai 数据，正常渲染 -->
+                      <div v-else
+                           class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group bg-gray-50 dark:bg-[#444654]">
+                        <ai :speeches="conv.speeches" :loading="conv.loading"></ai>
+                      </div>
+                    </div>
+                    </div>
+
                   <div v-if="conversation.length === 0"
                        class="text-gray-800 w-full md:max-w-2xl lg:max-w-3xl md:h-full md:flex md:flex-col px-6 dark:text-gray-100">
-<!--                    <announcement @update-chat-msg="updateChatMsg"></announcement>-->
                     <maskBox
                         :characterData="character"
                         @update-chat-msg="updateChatMsg" />
@@ -130,22 +149,32 @@
               class="pointer-events-none fixed inset-0 z-[60] mx-auto my-2 flex max-w-[560px] flex-col items-stretch justify-start md:pb-5">
           </span>
   </div>
-
+  <!-- 只在 Update 被成功导入时才渲染 -->
+  <Suspense v-if="Update">
+    <template #default>
+      <component :is="Update"/>
+    </template>
+    <template #fallback>
+      <div>Loading...</div> <!-- 可选的加载提示 -->
+    </template>
+  </Suspense>
 
 </template>
 
 
 <script setup>
+import {isTauri} from "@tauri-apps/api/core";
 import mNav from "./components/mNav.vue";
 import sidebar from "./components/sidebar.vue";
 import maskBox from "./components/maskBox.vue";
-import conversationBox from "./components/conversationBox.vue";
+import Human from "./components/conversation/human.vue";
+import Ai from "./components/conversation/ai.vue";
+import modalA from "./components/modalA.vue";
 import {nextTick, onMounted, ref, watch, watchEffect} from "vue";
 import './assets/index.css'
 import 'highlight.js/styles/github.css';
-import modalA from "./components/modalA.vue";
 import axios from 'axios';
-import clipboard from 'vue-clipboard3'; // 默认导入
+import clipboard from 'vue-clipboard3';
 
 const appVersion = ref(__APP_VERSION__);
 const deskApp = ref("https://gschaos.club/update_file/Y-Chat_0.2.6_x64_en-US.msi");
@@ -163,13 +192,13 @@ const convLoading = ref(false);
 const isShowGoBottom = ref(false);
 const inputChat = ref("");
 const cid = ref("");
-//如果用户使用滚轮，则停止向下自动滚动
-const isUserScrolling = ref(false);
-const isAutoScrolling = ref(true);
-const lastScrollTop = ref(0);
 const {toClipboard} = clipboard();
 const character = ref([])
+const tempSpeeches = ref("")
+const isAiReceive = ref(false)
+const codeTmp = ref("");
 
+const Update = ref(null);
 watchEffect(() => {
 
 });
@@ -228,11 +257,10 @@ function getCharacterInfo(){
 }
 // vueCopy 方法
 const vueCopy = (node) => {
-  const code = node.getElementsByTagName("code")[0].innerHTML;
+  const code = unescapeHtml(node.getElementsByTagName("code")[0].innerHTML);
   // 使用 toClipboard 来复制文本
   toClipboard(code)
       .then(() => {
-
         const svg = `<svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
@@ -247,6 +275,11 @@ const vueCopy = (node) => {
         console.log('复制失败', err);
       });
 };
+// 函数：将HTML实体转义字符恢复为实际的HTML字符
+function unescapeHtml(escapedStr) {
+  var doc = new DOMParser().parseFromString(escapedStr, "text/html");
+  return doc.documentElement.textContent || doc.documentElement.innerText;
+}
 
 function initConvs(convs) {
   for (let i = 0; i < convs.length; i++) {
@@ -254,7 +287,7 @@ function initConvs(convs) {
     if (conv.speaker === "human") {
       continue
     }
-    conv["idx"] = conv["speeches"].length - 1;
+    conv["idx"] = 0;
   }
   return convs;
 }
@@ -268,7 +301,7 @@ function chatRepeat() {
   rconv["idx"] = rconv["suitable"].length;
   rconv["loading"] = true;
   rconv["suitable"].push(0);
-  rconv["speeches"].push("");
+  rconv["speeches"]="";
   try {
     var idx = rconv.idx;
     // 使用 Axios 发送 GET 请求，接收流式数据
@@ -289,18 +322,16 @@ function chatRepeat() {
           if (done) {
             rconv["loading"] = false;
             convLoading.value = false;
-            isUserScrolling.value = false
             conversation.value[conversation.value.length - 1] = rconv;
             return;
           }
           const chunk = decoder.decode(value, {stream: true});
           // 直接更新 speeches 数组的第一个元素，确保响应式
           rconv.speeches[idx] += chunk;
-          if(rconv.speeches[0].length%20===0){
+          if(rconv.speeches.length%20===0){
             // 替换整个 speeches 数组，确保响应式
             conversation.value[conversation.value.length - 1] = rconv;
           }
-          isAutoScrolling.value = true;
           handleScrollBottom();
           readStream();
         });
@@ -347,13 +378,12 @@ function send() {
     "loading": true,
     "speaker": "ai",
     "suitable": [0],
-    "speeches": [""],
+    "speeches": "",
     "characterId": currentCharacter.value
   }
   conversation.value.push(conv)
-
+  tempSpeeches.value="";
   // 滚动到最下面
-  isAutoScrolling.value = true;
   handleScrollBottom();
 
   try {
@@ -370,26 +400,25 @@ function send() {
       // 处理流式数据
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
+      isAiReceive.value=true
       const readStream = () => {
         reader.read().then(({done, value}) => {
           if (done) {
             conv["loading"] = false;
             convLoading.value = false;
-            isUserScrolling.value = false
             // 替换整个 speeches 数组，确保响应式
-            conversation.value[conversation.value.length - 1].speeches = [
-              conv.speeches[0]
-            ];
+            conv.speeches = tempSpeeches.value
+            isAiReceive.value=false
             return;
           }
           const chunk = decoder.decode(value, {stream: true});
           // 直接更新 speeches 数组的第一个元素，确保响应式
-          conv.speeches[0] = conv.speeches[0] + chunk;
-          if(conv.speeches[0].length%20===0){
+          codeTmp.value+=chunk;
+
+          if(codeTmp.value.length%20===0){
             // 替换整个 speeches 数组，确保响应式
-            conversation.value[conversation.value.length - 1].speeches = [
-              conv.speeches[0]
-            ];
+            tempSpeeches.value +=  codeTmp.value;
+            codeTmp.value=""
           }
           if (first) {
             var newConv = {
@@ -403,7 +432,6 @@ function send() {
             // 修正拼写错误
             first = false; // 标记为非首次
           }
-          isAutoScrolling.value = true;
           handleScrollBottom();
           readStream();
         });
@@ -443,14 +471,9 @@ function selectConversation(conv, loadConv = false) {
       .then((result) => {
         var resp = result.data;
         var content = resp.data;
-
         cid.value = conv.id;
         conversation.value = initConvs(content.conversation.convs)
-        isAutoScrolling.value = true;
         handleScrollBottom();
-        setTimeout(() => {
-          isScrollAndNotBottom();
-        }, 300)
       })
       .catch((err) => {
       });
@@ -479,54 +502,13 @@ const chatContainer = ref(null)
 function handleScrollBottom() {
   nextTick(() => {
     // 确保 chatContainer.value 已经被正确设置
-    if (chatContainer.value && !isUserScrolling.value) {
+    if (chatContainer.value ) {
       let scrollElem = chatContainer.value;
-      const currentScrollTop = scrollElem.scrollTop;
       scrollElem.scrollTo({top: scrollElem.scrollHeight, behavior: 'smooth'});
-      // 更新 lastScrollTop
-      lastScrollTop.value = scrollElem.scrollTop;
     }
   });
 }
 
-// 监听用户的滚动事件
-const onScroll = () => {
-  // 获取当前滚动位置
-  let scrollElem = chatContainer.value;
-  const currentScrollTop = scrollElem.scrollTop;
-  if (currentScrollTop < lastScrollTop.value) {
-    // 用户向上滚动，停止自动滚动
-    isUserScrolling.value = true;
-    isAutoScrolling.value = false;
-  }
-  // 更新 lastScrollTop
-  lastScrollTop.value = currentScrollTop;
-  // 延时重置标志位
-  clearTimeout(window.scrollTimeout);
-  window.scrollTimeout = setTimeout(() => {
-    isUserScrolling.value = false; // 停止滚动一段时间后，允许自动滚动
-  }, 10000); // 10秒后重置标志位
-};
-
-function isScrollAndNotBottom() {
-  let chatDivEle = chatContainer.value;
-  if (!chatDivEle) {
-    return;
-  }
-
-  if (chatDivEle.scrollHeight <= chatDivEle.clientHeight) {
-    isShowGoBottom.value = false;
-    return;
-  }
-  const scrollTop = chatDivEle.scrollTop;
-  const windowHeight = chatDivEle.clientHeight;
-  const scrollHeight = chatDivEle.scrollHeight;
-  if (scrollTop + windowHeight >= scrollHeight - 50) {
-    isShowGoBottom.value = false;
-    return;
-  }
-  isShowGoBottom.value = true;
-}
 
 function updateTheme(arg) {
   theme.value = arg
@@ -543,21 +525,20 @@ watch(chatMsg, (newVal, oldVal) => {
 });
 
 onMounted(async () => {
+  if (isTauri()) {
+    import("./components/Update.vue").then((module) => {
+      Update.value = module.default;
+    });
+  }
   apiUrl.value = __APP_API_RUI__;
   // 从 localStorage 获取 popupShow 状态
   const savedPopupShow = localStorage.getItem(`popupShow${__APP_VERSION__}`);
   // 如果 savedPopupShow 不存在，表示是第一次弹窗
   popupShow.value = savedPopupShow !== 'true';
-
   loadId();
   loadAvatar();
-  let chatDivEle = chatContainer.value;
-  chatDivEle.addEventListener('scroll', isScrollAndNotBottom, true)
   deskApp.value = `https://gschaos.club/update_file/Y-Chat_${appVersion.value}_x64_zh-CN.msi`
   window.copy = vueCopy
-  if (chatContainer.value) {
-    chatContainer.value.addEventListener('scroll', onScroll);
-  }
   getCharacterInfo();
 });
 
