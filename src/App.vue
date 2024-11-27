@@ -85,7 +85,7 @@
                   </button>
 
                 </div>
-                <div
+                <div v-if="canInput"
                     class="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
             <textarea v-model="chatMsg"
                       ref="inputChat"
@@ -184,27 +184,43 @@ const title = ref("新的对话")
 const popupShow = ref(false);
 const avatarIdx = ref(1);
 const pushNewConv = ref({});
+//聊天列表
 const conversation = ref([]);
+//聊天内容
 const chatMsg = ref('');
+//当前选择的角色
 const currentCharacter = ref(-1);
+//对话标题
 const chatTitle = ref('新的对话');
+//加载标识，控制发送
 const convLoading = ref(false);
+//回到底部标识
 const isShowGoBottom = ref(false);
+
+const isAtBottom = ref(true);
+//输入的内容
 const inputChat = ref("");
+//聊天的id
 const cid = ref("");
+//复制页面
 const {toClipboard} = clipboard();
-const character = ref([])
-const tempSpeeches = ref("")
-const isAiReceive = ref(false)
-
+//角色列表
+const character = ref([]);
+//最新的ai流式数据，用于页面节点的渲染，防止去循环里面遍历渲染
+const tempSpeeches = ref("");
+//是否正在接受ai流式输入
+const isAiReceive = ref(false);
+//能否直接输入，
+const canInput =ref(true);
+//动态组件
 const Update = ref(null);
-watchEffect(() => {
-
-});
+// 是否允许自动滚动
+const shouldScroll = ref(true);
 
 function updateChatMsg(message,character) {
   chatMsg.value = message; // 将子组件传递的值赋值给父组件的 chatMsg
   currentCharacter.value=character
+  canInput.value=true
 }
 
 function autoResize() {
@@ -219,7 +235,6 @@ function stopChat() {
         var rconv = conversation.value[conversation.value.length - 1];
         rconv["loading"] = false;
         convLoading.value = false;
-        isUserScrolling.value = false
       })
       .catch((err) => {
         console.error(err)
@@ -229,15 +244,17 @@ function stopChat() {
 
 function changeHeight() {
   var elem = inputChat.value;
-  elem.style.height = '24px';
-  var scrollHeight = elem.scrollHeight;
-  if (24 >= scrollHeight || chatMsg.value.length === 0) {
-    resetHeight();
-    return;
-  }
+  if(elem&&elem.style){
+    elem.style.height = '24px';
+    var scrollHeight = elem.scrollHeight;
+    if (24 >= scrollHeight || chatMsg.value.length === 0) {
+      resetHeight();
+      return;
+    }
 
-  elem.style.removeProperty("overflow-y")
-  elem.style.height = scrollHeight + 'px';
+    elem.style.removeProperty("overflow-y")
+    elem.style.height = scrollHeight + 'px';
+  }
 }
 
 function resetHeight() {
@@ -314,9 +331,9 @@ function chatRepeat() {
       headers: {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
       },
-      data:{
-        character:conversation[0].characterId?conversation[0].characterId:""
-      }
+      body: JSON.stringify({
+        character:currentCharacter.value
+      })
     }).then(response => {
       // 处理流式数据
       const reader = response.body.getReader();
@@ -453,6 +470,7 @@ function newChat() {
   if (conversation.value.length === 0) {
     return
   }
+  canInput.value=false
   chatTitle.value = "新的对话";
   loadId()
 }
@@ -496,6 +514,9 @@ function loadAvatar() {
 const chatContainer = ref(null)
 
 function handleScrollBottom() {
+  if(!shouldScroll.value){
+    return;
+  }
   nextTick(() => {
     // 确保 chatContainer.value 已经被正确设置
     if (chatContainer.value ) {
@@ -504,10 +525,47 @@ function handleScrollBottom() {
     }
   });
 }
+function isScrollAndNotBottom() {
+  let chatDivEle = chatContainer.value;
+  if (!chatDivEle) {
+    return;
+  }
+
+  if (chatDivEle.scrollHeight <= chatDivEle.clientHeight) {
+    isShowGoBottom.value = false;
+    return;
+  }
+
+  const scrollTop = chatDivEle.scrollTop;
+  const windowHeight = chatDivEle.clientHeight;
+  const scrollHeight = chatDivEle.scrollHeight;
+  if (scrollTop + windowHeight >= scrollHeight - 50) {
+    isShowGoBottom.value = false;
+    return;
+  }
+
+  isShowGoBottom.value = true;
+}
 
 
 function updateTheme(arg) {
   theme.value = arg
+}
+
+// 滚动事件监听
+function handleScrollEvent() {
+  const scrollElem = chatContainer.value;
+  if (!scrollElem) return;
+
+  // 判断用户是否滚动到容器底部
+  const isAtBottom =
+      scrollElem.scrollHeight - scrollElem.clientHeight - scrollElem.scrollTop < 10;
+
+  if (isAtBottom) {
+    shouldScroll.value = true; // 恢复自动滚动
+  } else {
+    shouldScroll.value = false; // 暂停自动滚动
+  }
 }
 
 watch(chatMsg, (newVal, oldVal) => {
@@ -531,6 +589,11 @@ onMounted(async () => {
   const savedPopupShow = localStorage.getItem(`popupShow${__APP_VERSION__}`);
   // 如果 savedPopupShow 不存在，表示是第一次弹窗
   popupShow.value = savedPopupShow !== 'true';
+  let chatDivEle = chatContainer.value;
+  chatDivEle.addEventListener('scroll', isScrollAndNotBottom, true);
+  if (chatContainer.value) {
+    chatContainer.value.addEventListener("scroll", handleScrollEvent);
+  }
   loadId();
   loadAvatar();
   deskApp.value = `https://gschaos.club/update_file/Y-Chat_${appVersion.value}_x64_zh-CN.msi`
