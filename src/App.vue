@@ -196,7 +196,6 @@ const {toClipboard} = clipboard();
 const character = ref([])
 const tempSpeeches = ref("")
 const isAiReceive = ref(false)
-const codeTmp = ref("");
 
 const Update = ref(null);
 watchEffect(() => {
@@ -286,6 +285,11 @@ function initConvs(convs) {
     var conv = convs[i];
     if (conv.speaker === "human") {
       continue
+    }
+    if(conv.speaker === "ai"){
+       if(conv.speeches instanceof Array){
+         conv.speeches = conv.speeches[0]
+       }
     }
     conv["idx"] = 0;
   }
@@ -413,13 +417,7 @@ function send() {
           }
           const chunk = decoder.decode(value, {stream: true});
           // 直接更新 speeches 数组的第一个元素，确保响应式
-          codeTmp.value+=chunk;
-
-          if(codeTmp.value.length%20===0){
-            // 替换整个 speeches 数组，确保响应式
-            tempSpeeches.value +=  codeTmp.value;
-            codeTmp.value=""
-          }
+          tempSpeeches.value +=  chunk;
           if (first) {
             var newConv = {
               "id": cid.value,
