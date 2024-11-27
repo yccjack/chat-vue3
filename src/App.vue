@@ -324,18 +324,16 @@ function chatRepeat() {
       const readStream = () => {
         reader.read().then(({done, value}) => {
           if (done) {
-            rconv["loading"] = false;
+            conv["loading"] = false;
             convLoading.value = false;
-            conversation.value[conversation.value.length - 1] = rconv;
+            // 替换整个 speeches 数组，确保响应式
+            conv.speeches = tempSpeeches.value
+            isAiReceive.value=false
             return;
           }
           const chunk = decoder.decode(value, {stream: true});
           // 直接更新 speeches 数组的第一个元素，确保响应式
-          rconv.speeches[idx] += chunk;
-          if(rconv.speeches.length%20===0){
-            // 替换整个 speeches 数组，确保响应式
-            conversation.value[conversation.value.length - 1] = rconv;
-          }
+          tempSpeeches.value +=  chunk;
           handleScrollBottom();
           readStream();
         });
