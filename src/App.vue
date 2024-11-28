@@ -163,7 +163,10 @@
 
 
 <script setup>
-import {isTauri} from "@tauri-apps/api/core";
+import { Window } from '@tauri-apps/api/window'; // 导入 appWindow 实例
+import { listen } from '@tauri-apps/api/event'; // 导入事件监听
+
+import {isTauri,invoke} from "@tauri-apps/api/core";
 import mNav from "./components/mNav.vue";
 import sidebar from "./components/sidebar.vue";
 import maskBox from "./components/maskBox.vue";
@@ -216,7 +219,19 @@ const canInput =ref(true);
 const Update = ref(null);
 // 是否允许自动滚动
 const shouldScroll = ref(true);
+let closeConfirmed = false;
 
+const appWindow = Window; // 获取当前窗口实例
+// 监听后端事件
+listen("show-close-dialog", async () => {
+  const userChoice = confirm("是否最小化窗口？选择取消将直接退出。");
+  if (userChoice) {
+    await appWindow.minimize(); // 最小化窗口
+  } else {
+    closeConfirmed = true;
+    await appWindow.close(); // 关闭窗口
+  }
+});
 function updateChatMsg(message,character) {
   chatMsg.value = message; // 将子组件传递的值赋值给父组件的 chatMsg
   currentCharacter.value=character

@@ -1,6 +1,14 @@
-// Prevents additional console window on Windows in release, DO NOT REMOVE!!
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+use tauri::{AppHandle, Manager, Runtime, WindowEvent};
 
 fn main() {
-    app_lib::run();
+    tauri::Builder::default()
+        .on_window_event(|event| {
+            if let WindowEvent::CloseRequested { api, .. } = event.event() {
+                let window = event.window();
+                api.prevent_close(); // 阻止关闭
+                window.minimize().unwrap(); // 最小化窗口
+            }
+        })
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
 }
