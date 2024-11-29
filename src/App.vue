@@ -171,7 +171,7 @@ import maskBox from "./components/maskBox.vue";
 import Human from "./components/conversation/human.vue";
 import Ai from "./components/conversation/ai.vue";
 import modalA from "./components/modalA.vue";
-import {nextTick, onMounted, ref, watch, watchEffect} from "vue";
+import {nextTick, onMounted, ref, watch,reactive } from "vue";
 import './assets/index.css'
 import 'highlight.js/styles/github.css';
 import axios from 'axios';
@@ -214,7 +214,7 @@ const isAiReceive = ref(false);
 //能否直接输入，
 const canInput =ref(true);
 //动态组件
-const Update = ref(null);
+const Update = reactive(null);
 // 是否允许自动滚动
 const shouldScroll = ref(true);
 
