@@ -88,7 +88,6 @@ const mdHtml = computed(() => {
   return mdToHtml(props.speeches); // 调用 mdToHtml 方法
 });
 function mdToHtml(md) {
-  console.log("更新")
   if (md === "") {
     return "<p></p>"
   }

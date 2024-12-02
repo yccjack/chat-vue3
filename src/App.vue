@@ -5,7 +5,16 @@
     <div class="overflow-hidden w-full h-full relative">
 
       <div class="flex h-full flex-1 flex-col md:pl-[260px]">
+<!--        <Suspense>-->
+<!--          <template #default>-->
+<!--            <WinTools /> &lt;!&ndash; 异步组件 &ndash;&gt;-->
+<!--          </template>-->
+<!--          <template #fallback>-->
+<!--            <p>加载中...</p>-->
+<!--          </template>-->
+<!--        </Suspense>-->
         <sidebar
+            v-if="isInitialized"
             :title_chat="chatTitle"
             :newConv="pushNewConv"
             :conversationLen="conversation.length"
@@ -131,6 +140,7 @@
         <div class="flex h-full min-h-0 flex-col ">
           <div class="scrollbar-trigger flex h-full w-full flex-1 items-start ">
             <mNav
+                v-if="isInitialized"
                 :newConv="pushNewConv"
                 :characterId="currentCharacter"
                 :conversationLen="conversation.length"
@@ -177,9 +187,10 @@ import 'highlight.js/styles/github.css';
 import axios from 'axios';
 import clipboard from 'vue-clipboard3';
 
+
 const appVersion = ref(__APP_VERSION__);
 const deskApp = ref("https://gschaos.club/update_file/Y-Chat_0.2.6_x64_en-US.msi");
-const apiUrl = ref();
+const apiUrl = ref(__APP_API_RUI__);
 const theme = ref('light');
 const title = ref("新的对话")
 const popupShow = ref(false);
@@ -215,6 +226,7 @@ const canInput =ref(true);
 const Update = reactive(Object);
 // 是否允许自动滚动
 const shouldScroll = ref(true);
+const isInitialized = ref(false);
 
 
 
@@ -487,7 +499,7 @@ function selectConversation(conv, loadConv = false) {
         var resp = result.data;
         var content = resp.data;
         cid.value = conv.id;
-        conversation.value = initConvs(content.conversation.convs)
+        conversation.value = initConvs(content.conversation.convs);
         handleScrollBottom();
       })
       .catch((err) => {
@@ -581,6 +593,7 @@ watch(chatMsg, (newVal, oldVal) => {
 
 onMounted(async () => {
   await nextTick(() => {
+    isInitialized.value=true
     if (isTauri()) {
       import("./components/Update.vue")
           .then((module) => {
@@ -593,7 +606,7 @@ onMounted(async () => {
     }
   })
 
-  apiUrl.value = __APP_API_RUI__;
+
   // 从 localStorage 获取 popupShow 状态
   const savedPopupShow = localStorage.getItem(`popupShow${__APP_VERSION__}`);
   // 如果 savedPopupShow 不存在，表示是第一次弹窗
