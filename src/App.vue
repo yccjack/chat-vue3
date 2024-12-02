@@ -214,7 +214,7 @@ const isAiReceive = ref(false);
 //能否直接输入，
 const canInput =ref(true);
 //动态组件
-const Update = reactive(null);
+const Update = reactive({});
 // 是否允许自动滚动
 const shouldScroll = ref(true);
 
@@ -582,11 +582,19 @@ watch(chatMsg, (newVal, oldVal) => {
 });
 
 onMounted(async () => {
-  if (isTauri()) {
-    import("./components/Update.vue").then((module) => {
-      Update.value = module.default;
-    });
-  }
+  await nextTick(() => {
+    if (isTauri()) {
+      import("./components/Update.vue")
+          .then((module) => {
+            Update.value = module.default;
+          })
+          .catch((error) => {
+            console.error("Error loading Update component:", error);
+          });
+
+    }
+  })
+
   apiUrl.value = __APP_API_RUI__;
   // 从 localStorage 获取 popupShow 状态
   const savedPopupShow = localStorage.getItem(`popupShow${__APP_VERSION__}`);

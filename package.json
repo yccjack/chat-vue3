@@ -1,7 +1,7 @@
 {
   "name": "y-chat",
   "private": true,
-  "version": "0.4.4",
+  "version": "0.4.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -16,6 +16,7 @@
     "@better-scroll/core": "^2.3.1",
     "@better-scroll/pull-down": "^2.3.1",
     "@tauri-apps/api": "^2.0.3",
+    "@tauri-apps/cli": "^2.1.0",
     "@tauri-apps/plugin-process": "^2.0.0",
     "@tauri-apps/plugin-updater": "^2.0.0",
     "ant-design-vue": "^4.0.7",
