@@ -1,7 +1,8 @@
 <script setup>
 import MarkdownIt from "markdown-it";
 import hljs from "highlight.js";
-import "highlight.js/styles/github.css"; // 引入亮色主题
+import "highlight.js/styles/github.css";
+import {computed} from "vue"; // 引入亮色主题
 const props = defineProps({
   speeches: {
     type: String,
@@ -12,7 +13,6 @@ const props = defineProps({
     default: false
   },
 });
-
 
 function renderCodeBlock(code, codeHtml, language = "") {
   return `<div class="bg-black mb-4 rounded-md">
@@ -82,8 +82,13 @@ function countAndConcat(str, substr) {
   // 根据判断结果返回相应的字符串
   return isOdd ? str + "\n" + substr : str;
 }
-
+// 使用 computed 来包裹 mdToHtml
+const mdHtml = computed(() => {
+  console.log("mdToHtml 被调用");
+  return mdToHtml(props.speeches); // 调用 mdToHtml 方法
+});
 function mdToHtml(md) {
+  console.log("更新")
   if (md === "") {
     return "<p></p>"
   }

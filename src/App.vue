@@ -197,8 +197,6 @@ const chatTitle = ref('新的对话');
 const convLoading = ref(false);
 //回到底部标识
 const isShowGoBottom = ref(false);
-
-const isAtBottom = ref(true);
 //输入的内容
 const inputChat = ref("");
 //聊天的id
@@ -214,7 +212,7 @@ const isAiReceive = ref(false);
 //能否直接输入，
 const canInput =ref(true);
 //动态组件
-const Update = reactive({});
+const Update = reactive(Object);
 // 是否允许自动滚动
 const shouldScroll = ref(true);
 
