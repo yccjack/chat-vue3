@@ -3,6 +3,7 @@
     <!-- 弹窗 -->
     <modalA :popupShow="popupShow" @close="popupShow = false"></modalA>
     <div class="overflow-hidden w-full h-full relative">
+
       <div class="flex h-full flex-1 flex-col md:pl-[260px]">
         <sidebar
             :title_chat="chatTitle"
@@ -170,7 +171,7 @@ import maskBox from "./components/maskBox.vue";
 import Human from "./components/conversation/human.vue";
 import Ai from "./components/conversation/ai.vue";
 import modalA from "./components/modalA.vue";
-import {nextTick, onMounted, ref, watch, watchEffect} from "vue";
+import {nextTick, onMounted, ref, watch,reactive } from "vue";
 import './assets/index.css'
 import 'highlight.js/styles/github.css';
 import axios from 'axios';
@@ -213,9 +214,11 @@ const isAiReceive = ref(false);
 //能否直接输入，
 const canInput =ref(true);
 //动态组件
-const Update = ref(null);
+const Update = reactive({});
 // 是否允许自动滚动
 const shouldScroll = ref(true);
+
+
 
 function updateChatMsg(message,character) {
   chatMsg.value = message; // 将子组件传递的值赋值给父组件的 chatMsg
@@ -579,11 +582,19 @@ watch(chatMsg, (newVal, oldVal) => {
 });
 
 onMounted(async () => {
-  if (isTauri()) {
-    import("./components/Update.vue").then((module) => {
-      Update.value = module.default;
-    });
-  }
+  await nextTick(() => {
+    if (isTauri()) {
+      import("./components/Update.vue")
+          .then((module) => {
+            Update.value = module.default;
+          })
+          .catch((error) => {
+            console.error("Error loading Update component:", error);
+          });
+
+    }
+  })
+
   apiUrl.value = __APP_API_RUI__;
   // 从 localStorage 获取 popupShow 状态
   const savedPopupShow = localStorage.getItem(`popupShow${__APP_VERSION__}`);

@@ -2,8 +2,8 @@
   <h1
       class="text-4xl font-semibold text-center mt-6 sm:mt-[20vh] ml-auto mr-auto mb-10 sm:mb-16 flex gap-2 items-center justify-center">
     角色</h1>
-  <div class="flex gap-3 items-center m-auto text-lg font-normal md:flex-col md:gap-2">
-    <button  @click="inputChat('你好')"
+  <div class="flex gap-3 items-center m-auto text-lg font-normal md:flex-col md:gap-2" style="margin-bottom: 10px">
+    <button  @click="inputChat('')"
             class="bg-gray-50 dark:bg-white/5 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900"
             style="white-space: nowrap; display: inline-block;">
       <span class="text-orange-500"> 直接开始 →</span>
