@@ -15,11 +15,11 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
 
-        let open = MenuItemBuilder::new("打开").accelerator("Ctrl+Shift+O").build(app)?;
-        let save = MenuItemBuilder::new("保存").accelerator("Ctrl+Shift+S").build(app)?;
-        let exit = MenuItemBuilder::new("退出").build(app);
-        let undo = MenuItemBuilder::new("撤销").build(app)?;
-        let redo = MenuItemBuilder::new("重做").build(app)?;
+        let _open = MenuItemBuilder::new("打开").accelerator("Ctrl+Shift+O").build(app)?;
+        let _save = MenuItemBuilder::new("保存").accelerator("Ctrl+Shift+S").build(app)?;
+        let _exit = MenuItemBuilder::new("退出").build(app);
+        let _undo = MenuItemBuilder::new("撤销").build(app)?;
+        let _redo = MenuItemBuilder::new("重做").build(app)?;
 
        let toggle = MenuItemBuilder::with_id("toggle", "Toggle").build(app)?;
         let check = CheckMenuItemBuilder::new("Mark").build(app)?;
@@ -27,20 +27,19 @@ pub fn run() {
             .item(&PredefinedMenuItem::copy(app, None)?) // 添加复制菜单项
             .item(&PredefinedMenuItem::paste(app, None)?) // 添加粘贴菜单项
             .separator() // 添加分隔符
-            .items(&[&toggle,&check,&exit]) // 添加自定义菜单项
+            .items(&[&toggle,&check]) // 添加自定义菜单项
             .build()?;
-        let menu = MenuBuilder::new(app).items(&[&file_menu]).build()?;
-//         // 创建 "编辑" 子菜单
-//         let edit_menu = SubmenuBuilder::new(app, "编辑")
-//             .items(&[&undo,&redo]) // 添加自定义菜单项
-//             .build()?;
+        // 创建 "编辑" 子菜单
+        let edit_menu = SubmenuBuilder::new(app, "编辑")
+            .items(&[&_undo,&_redo]) // 添加自定义菜单项
+            .build()?;
 
-        // 创建主菜单
-//         let menu = MenuBuilder::new(app)
-//             .item(&file_menu) // 添加文件菜单
-//             .item(&edit_menu) // 添加编辑菜单
-//             .build()?;
-
+        let menu = MenuBuilder::new(app)
+            .item(&file_menu) // 添加文件菜单
+            .item(&edit_menu) // 添加编辑菜单
+            .build()?;
+            // 设置菜单到应用
+            app.set_menu(menu)?;
         app.on_menu_event(move |app, event| {
             if event.id() == check.id() {
                 println!("`check` triggered, do something! is checked? {}", check.is_checked().unwrap());
