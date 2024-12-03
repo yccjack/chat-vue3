@@ -243,6 +243,10 @@ const props = defineProps({
   characterId: {
     type: Number,
     default: -1
+  } ,
+  initAl: {
+    type: Boolean,
+    default: false
   }
 });
 const emit = defineEmits(['update_parent_new_chat', 'update_parent_openSidebar', "clear_current_chat", "update_theme"]);
@@ -250,8 +254,15 @@ const conversations = ref([]);
 const theme = ref('light');
 const oldConv = ref(null);
 const deskApp = ref("");
-const apiUrl = ref();
+const apiUrl = ref(__APP_API_RUI__);
 
+
+watch(() =>props.initAl, (newVal) => {
+  console.log(newVal)
+  if (newVal===true) {
+    loadConversations();
+  }
+});
 function changeTheme(newTheme) {
   theme.value = newTheme;
   const html = document.documentElement; // 获取 <html> 元素
@@ -358,10 +369,7 @@ function selectConversation(conv, loadConv) {
   if (!loadConv) {
     return;
   }
-  // 使用 nextTick 确保父组件已经渲染完毕
-  nextTick(() => {
-    emit('update_parent_openSidebar', conv, loadConv);
-  });
+  emit('update_parent_openSidebar', conv, loadConv);
 }
 
 //触发新对话，
@@ -407,15 +415,12 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e =
   changeTheme(newTheme);
 });
 onMounted(async () => {
-
-  apiUrl.value = __APP_API_RUI__;
   deskApp.value = `https://gschaos.club/update_file/Y-Chat_${appVersion.value}_x64_zh-CN.msi`
   let theme = detectSystemTheme();
   if(!theme){
     theme = localStorage.getItem("theme") || "light";
   }
   changeTheme(theme);
-  loadConversations();
 });
 </script>
 <style scoped lang="scss">

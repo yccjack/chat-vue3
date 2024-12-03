@@ -50,6 +50,7 @@
                     <div style="width:320px"
                          class="flex h-full flex-1 items-start border-white/20">
                       <mNav
+                          :initAl="props.initAl"
                           :newConv="props.newConv"
                           :conversationLen="props.conversationLen"
                           :sidebarNewChat=sidebarNewChat
@@ -93,6 +94,10 @@ const props = defineProps({
   title_chat: {
     type: String,
     default: '新的对话'
+  },
+  initAl: {
+    type: Boolean,
+    default: false
   }
 });
 

@@ -15,6 +15,7 @@
 <!--        </Suspense>-->
         <sidebar
             v-if="isInitialized"
+            :initAl="isInitialized"
             :title_chat="chatTitle"
             :newConv="pushNewConv"
             :conversationLen="conversation.length"
@@ -23,7 +24,7 @@
         ></sidebar>
         <main class="relative h-full w-full transition-width flex flex-col overflow-hidden items-stretch flex-1">
           <!-- 聊天窗 -->
-          <div class="flex-1 overflow-hidden">
+          <div class="flex-1 overflow-hidden" v-if="isInitialized">
             <div class="react-scroll-to-bottom--css-ncqif-79elbk h-full dark:bg-gray-800">
               <div ref="chatContainer" class="react-scroll-to-bottom--css-krija-1n7m0yu">
                 <div class="flex flex-col items-center text-sm dark:bg-gray-800">
@@ -140,7 +141,7 @@
         <div class="flex h-full min-h-0 flex-col ">
           <div class="scrollbar-trigger flex h-full w-full flex-1 items-start ">
             <mNav
-                v-if="isInitialized"
+                :initAl="isInitialized"
                 :newConv="pushNewConv"
                 :characterId="currentCharacter"
                 :conversationLen="conversation.length"
@@ -226,6 +227,7 @@ const canInput =ref(true);
 const Update = reactive(Object);
 // 是否允许自动滚动
 const shouldScroll = ref(true);
+
 const isInitialized = ref(false);
 
 
@@ -606,7 +608,7 @@ onMounted(async () => {
     }
   })
 
-
+  getCharacterInfo();
   // 从 localStorage 获取 popupShow 状态
   const savedPopupShow = localStorage.getItem(`popupShow${__APP_VERSION__}`);
   // 如果 savedPopupShow 不存在，表示是第一次弹窗
@@ -620,7 +622,8 @@ onMounted(async () => {
   loadAvatar();
   deskApp.value = `https://gschaos.club/update_file/Y-Chat_${appVersion.value}_x64_zh-CN.msi`
   window.copy = vueCopy
-  getCharacterInfo();
+
+
 });
 
 </script>
