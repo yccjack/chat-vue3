@@ -1,5 +1,4 @@
 <script setup>
-import {getCurrentWindow} from '@tauri-apps/api/window';
 import {Menu, MenuItem, Submenu} from '@tauri-apps/api/menu';
 import {listen} from '@tauri-apps/api/event';
 
@@ -42,13 +41,11 @@ async function createMenu() {
     id: 'main-menu',
     items: [fileMenu, editMenu],
   });
-
   console.log('菜单创建成功', menu);
 }
 
 createMenu();
 
-await getCurrentWindow().close();
 </script>
 <template>
   <div>

@@ -1,6 +1,12 @@
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
+#![cfg_attr(
+    all(not(debug_assertions), target_os = "windows"),
+    windows_subsystem = "windows"
+)]
 use tauri::{AppHandle, Manager};
+use tauri::{Builder, generate_context, menu::{CheckMenuItemBuilder,MenuBuilder, MenuItemBuilder, SubmenuBuilder, PredefinedMenuItem}};
+
 pub fn run() {
+
     tauri::Builder::default()
             .plugin(tauri_plugin_single_instance::init(|app, args, cwd| {
                 let _ = show_window(app);
@@ -8,6 +14,40 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
+
+        let open = MenuItemBuilder::new("打开").accelerator("Ctrl+Shift+O").build(app)?;
+        let save = MenuItemBuilder::new("保存").accelerator("Ctrl+Shift+S").build(app)?;
+        let exit = MenuItemBuilder::new("退出").build(app);
+        let undo = MenuItemBuilder::new("撤销").build(app)?;
+        let redo = MenuItemBuilder::new("重做").build(app)?;
+
+       let toggle = MenuItemBuilder::with_id("toggle", "Toggle").build(app)?;
+        let check = CheckMenuItemBuilder::new("Mark").build(app)?;
+        let file_menu = SubmenuBuilder::new(app, "系统")
+            .item(&PredefinedMenuItem::copy(app, None)?) // 添加复制菜单项
+            .item(&PredefinedMenuItem::paste(app, None)?) // 添加粘贴菜单项
+            .separator() // 添加分隔符
+            .items(&[&toggle,&check,&exit]) // 添加自定义菜单项
+            .build()?;
+        let menu = MenuBuilder::new(app).items(&[&file_menu]).build()?;
+//         // 创建 "编辑" 子菜单
+//         let edit_menu = SubmenuBuilder::new(app, "编辑")
+//             .items(&[&undo,&redo]) // 添加自定义菜单项
+//             .build()?;
+
+        // 创建主菜单
+//         let menu = MenuBuilder::new(app)
+//             .item(&file_menu) // 添加文件菜单
+//             .item(&edit_menu) // 添加编辑菜单
+//             .build()?;
+
+        app.on_menu_event(move |app, event| {
+            if event.id() == check.id() {
+                println!("`check` triggered, do something! is checked? {}", check.is_checked().unwrap());
+            } else if event.id() == "toggle" {
+                println!("toggle triggered!");
+            }
+        });
             if cfg!(debug_assertions) {
                 app.handle().plugin(
                     tauri_plugin_log::Builder::default()

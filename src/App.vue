@@ -5,16 +5,15 @@
     <div class="overflow-hidden w-full h-full relative">
 
       <div class="flex h-full flex-1 flex-col md:pl-[260px]">
-<!--        <Suspense>-->
-<!--          <template #default>-->
-<!--            <WinTools /> &lt;!&ndash; 异步组件 &ndash;&gt;-->
-<!--          </template>-->
-<!--          <template #fallback>-->
-<!--            <p>加载中...</p>-->
-<!--          </template>-->
-<!--        </Suspense>-->
+        <Suspense>
+          <template #default>
+            <WinTools /> <!-- 异步组件 -->
+          </template>
+          <template #fallback>
+            <p>加载中...</p>
+          </template>
+        </Suspense>
         <sidebar
-            v-if="isInitialized"
             :initAl="isInitialized"
             :title_chat="chatTitle"
             :newConv="pushNewConv"
@@ -187,6 +186,7 @@ import './assets/index.css'
 import 'highlight.js/styles/github.css';
 import axios from 'axios';
 import clipboard from 'vue-clipboard3';
+import WinTools from "./components/winTools.vue";
 
 
 const appVersion = ref(__APP_VERSION__);
