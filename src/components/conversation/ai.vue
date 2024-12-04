@@ -84,7 +84,6 @@ function countAndConcat(str, substr) {
 }
 // 使用 computed 来包裹 mdToHtml
 const mdHtml = computed(() => {
-  console.log("mdToHtml 被调用");
   return mdToHtml(props.speeches); // 调用 mdToHtml 方法
 });
 function mdToHtml(md) {

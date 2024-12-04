@@ -22,7 +22,7 @@
     justify-content: flex-end;
     position: fixed;
     top: 0;
-    left: 0;
+    left: 260px;
     right: 0;
 }
 .titlebar-button {
@@ -42,7 +42,7 @@
 .fixed-content {
     position: fixed;  /* 固定定位 */
     top: 0;
-    left: 0;
+    left: 260px;
     right: 0;
     background: black;
     z-index: 10;  /* 确保其在其他内容之上 */
@@ -52,10 +52,84 @@
 
 /* 第二个div，限制高度并允许滚动 */
 .scrollable-content {
-    top: 30px;  /* 根据第一个div的高度调整间距，避免重叠 */
+    top: 120px;  /* 根据第一个div的高度调整间距，避免重叠 */
     bottom: 0;  /* 使其占据剩余的空间 */
     left: 0;
     right: 0;
     overflow-y: auto;  /* 纵向滚动 */
-    padding: 20px;
+    padding: 40px;
+}
+
+
+/* From Uiverse.io by 00Kubi */
+.card {
+    width: 400px;
+    height: 180px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 30px;
+    gap: 13px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.062);
+}
+
+#cookieSvg {
+    width: 50px;
+}
+
+#cookieSvg g path {
+    fill: rgb(97, 81, 81);
+}
+
+.cookieHeading {
+    font-size: 1.2em;
+    font-weight: 800;
+    color: rgb(26, 26, 26);
+}
+
+.cookieDescription {
+    text-align: center;
+    font-size: 0.7em;
+    font-weight: 600;
+    color: rgb(99, 99, 99);
+}
+
+.cookieDescription a {
+    --tw-text-opacity: 1;
+    color: rgb(59 130 246);
+}
+
+.cookieDescription a:hover {
+    -webkit-text-decoration-line: underline;
+    text-decoration-line: underline;
+}
+
+.buttonContainer {
+    display: flex;
+    gap: 20px;
+    flex-direction: row;
+}
+
+.acceptButton {
+    width: 80px;
+    height: 30px;
+    background-color: #d3b5be;
+    transition-duration: .2s;
+    border: none;
+    color: rgb(241, 241, 241);
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px -1px #977ef3, 0 2px 4px -1px #aff3db;
+    transition: all .6s ease;
+}
+.acceptButton:hover {
+    background-color: #9173ff;
+    box-shadow: 0 10px 15px -3px #977ef3, 0 4px 6px -2px #977ef3;
+    transition-duration: .2s;
 }

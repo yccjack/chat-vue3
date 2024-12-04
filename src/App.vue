@@ -1,11 +1,5 @@
 <template>
-  <div  class="fixed-content ">
-    <!-- 只在 Update 被成功导入时才渲染 -->
-<!--    <Suspense v-if="Update">-->
-<!--      <template #default>-->
-<!--        <component :is="Update"/>-->
-<!--      </template>-->
-<!--    </Suspense>-->
+  <div  class="fixed-content md:pl-[260px]">
     <Suspense>
       <template #default>
         <WinTools /> <!-- 异步组件 -->
@@ -170,7 +164,12 @@
               class="pointer-events-none fixed inset-0 z-[60] mx-auto my-2 flex max-w-[560px] flex-col items-stretch justify-start md:pb-5">
           </span>
   </div>
-
+  <!-- 只在 Update 被成功导入时才渲染 -->
+      <Suspense v-if="Update">
+        <template #default>
+          <component :is="Update"/>
+        </template>
+      </Suspense>
 
 </template>
 
@@ -226,7 +225,7 @@ const isAiReceive = ref(false);
 //能否直接输入，
 const canInput =ref(true);
 //动态组件
-const Update = reactive(Object);
+const Update = ref(Object);
 // 是否允许自动滚动
 const shouldScroll = ref(true);
 
@@ -599,9 +598,11 @@ onMounted(async () => {
   await nextTick(() => {
     isInitialized.value=true
     if (isTauri()) {
+      console.log("加载Update插件")
       import("./components/Update.vue")
           .then((module) => {
             Update.value = module.default;
+            console.log("加载Update插件成功")
           })
           .catch((error) => {
             console.error("Error loading Update component:", error);

@@ -258,7 +258,6 @@ const apiUrl = ref(__APP_API_RUI__);
 
 
 watch(() =>props.initAl, (newVal) => {
-  console.log(newVal)
   if (newVal===true) {
     loadConversations();
   }
