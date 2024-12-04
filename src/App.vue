@@ -1,18 +1,28 @@
 <template>
+  <div  class="fixed-content ">
+    <!-- 只在 Update 被成功导入时才渲染 -->
+<!--    <Suspense v-if="Update">-->
+<!--      <template #default>-->
+<!--        <component :is="Update"/>-->
+<!--      </template>-->
+<!--    </Suspense>-->
+    <Suspense>
+      <template #default>
+        <WinTools /> <!-- 异步组件 -->
+      </template>
+      <template #fallback>
+      </template>
+    </Suspense>
+  </div>
+
   <div id="__next">
     <!-- 弹窗 -->
     <modalA :popupShow="popupShow" @close="popupShow = false"></modalA>
+
     <div class="overflow-hidden w-full h-full relative">
 
-      <div class="flex h-full flex-1 flex-col md:pl-[260px]">
-        <Suspense>
-          <template #default>
-            <WinTools /> <!-- 异步组件 -->
-          </template>
-          <template #fallback>
-            <p>加载中...</p>
-          </template>
-        </Suspense>
+      <div class="flex h-full flex-1 flex-col md:pl-[260px] scrollable-content">
+
         <sidebar
             :initAl="isInitialized"
             :title_chat="chatTitle"
@@ -160,15 +170,7 @@
               class="pointer-events-none fixed inset-0 z-[60] mx-auto my-2 flex max-w-[560px] flex-col items-stretch justify-start md:pb-5">
           </span>
   </div>
-  <!-- 只在 Update 被成功导入时才渲染 -->
-  <Suspense v-if="Update">
-    <template #default>
-      <component :is="Update"/>
-    </template>
-    <template #fallback>
-      <div>Loading...</div> <!-- 可选的加载提示 -->
-    </template>
-  </Suspense>
+
 
 </template>
 

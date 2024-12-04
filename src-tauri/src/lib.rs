@@ -38,8 +38,8 @@ pub fn run() {
             .item(&file_menu) // 添加文件菜单
             .item(&edit_menu) // 添加编辑菜单
             .build()?;
-            // 设置菜单到应用
-            app.set_menu(menu)?;
+            // 设置菜单到应用 菜单是用js自定义菜单
+//             app.set_menu(menu)?;
         app.on_menu_event(move |app, event| {
             if event.id() == check.id() {
                 println!("`check` triggered, do something! is checked? {}", check.is_checked().unwrap());

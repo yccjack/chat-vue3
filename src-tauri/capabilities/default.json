@@ -3,7 +3,8 @@
   "identifier": "main-capability",
   "description": "Capability for the main window",
   "windows": ["main"],
-  "permissions": ["core:window:default",
+  "permissions": [
+    "core:window:default",
     "core:window:allow-start-dragging",
     "core:app:allow-app-hide",
     "core:window:allow-close",
@@ -14,7 +15,9 @@
     "core:resources:default",
     "core:menu:default",
     "core:tray:default",
-    "core:window:allow-set-title"
+    "core:window:allow-set-title",
+    "core:window:default",
+    "core:window:allow-start-dragging"
   ],
   "capabilities": [
 
