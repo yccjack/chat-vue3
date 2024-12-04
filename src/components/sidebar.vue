@@ -94,10 +94,6 @@ const props = defineProps({
   title_chat: {
     type: String,
     default: '新的对话'
-  },
-  initAl: {
-    type: Boolean,
-    default: false
   }
 });
 

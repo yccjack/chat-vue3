@@ -216,7 +216,7 @@
 <script setup>
 
 
-import {onMounted, ref, watch, nextTick} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import axios from "axios";
 import {isTauri} from "@tauri-apps/api/core";
 
@@ -243,10 +243,6 @@ const props = defineProps({
   characterId: {
     type: Number,
     default: -1
-  } ,
-  initAl: {
-    type: Boolean,
-    default: false
   }
 });
 const emit = defineEmits(['update_parent_new_chat', 'update_parent_openSidebar', "clear_current_chat", "update_theme"]);
@@ -256,12 +252,6 @@ const oldConv = ref(null);
 const deskApp = ref("");
 const apiUrl = ref(__APP_API_RUI__);
 
-
-watch(() =>props.initAl, (newVal) => {
-  if (newVal===true) {
-    loadConversations();
-  }
-});
 function changeTheme(newTheme) {
   theme.value = newTheme;
   const html = document.documentElement; // 获取 <html> 元素
@@ -311,20 +301,7 @@ function editTitle(idx, conv) {
 
 function loadConversations() {
   let convs = localStorage.getItem("conversations") || "[]";
-  let latestSelect = localStorage.getItem("conversations_latest_select");
-  let jsonData = JSON.parse(convs);
-  conversations.value = jsonData
-  if (latestSelect) {
-    for (let idx in jsonData) {
-      const conv = jsonData[idx];
-      if (latestSelect === conv.id) {
-        selectConversation(conv, true)
-        break
-      }
-    }
-
-  }
-
+  conversations.value = JSON.parse(convs)
 
 }
 
@@ -364,7 +341,6 @@ function selectConversation(conv, loadConv) {
   conv.selected = true
   oldConv.value = conv;
   document.title = conv.title || "Y-Chat";
-  localStorage.setItem("conversations_latest_select", conv.id);
   if (!loadConv) {
     return;
   }
@@ -420,6 +396,7 @@ onMounted(async () => {
     theme = localStorage.getItem("theme") || "light";
   }
   changeTheme(theme);
+  loadConversations();
 });
 </script>
 <style scoped lang="scss">

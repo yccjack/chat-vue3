@@ -1,5 +1,5 @@
 <template>
-  <div  class="fixed-content md:pl-[260px]">
+  <div v-if="isTauri()"  class="fixed-content md:pl-[260px]">
     <Suspense>
       <template #default>
         <WinTools /> <!-- 异步组件 -->
@@ -18,7 +18,6 @@
       <div class="flex h-full flex-1 flex-col md:pl-[260px] scrollable-content">
 
         <sidebar
-            :initAl="isInitialized"
             :title_chat="chatTitle"
             :newConv="pushNewConv"
             :conversationLen="conversation.length"
@@ -27,7 +26,7 @@
         ></sidebar>
         <main class="relative h-full w-full transition-width flex flex-col overflow-hidden items-stretch flex-1">
           <!-- 聊天窗 -->
-          <div class="flex-1 overflow-hidden" v-if="isInitialized">
+          <div class="flex-1 overflow-hidden">
             <div class="react-scroll-to-bottom--css-ncqif-79elbk h-full dark:bg-gray-800">
               <div ref="chatContainer" class="react-scroll-to-bottom--css-krija-1n7m0yu">
                 <div class="flex flex-col items-center text-sm dark:bg-gray-800">
@@ -144,7 +143,6 @@
         <div class="flex h-full min-h-0 flex-col ">
           <div class="scrollbar-trigger flex h-full w-full flex-1 items-start ">
             <mNav
-                :initAl="isInitialized"
                 :newConv="pushNewConv"
                 :characterId="currentCharacter"
                 :conversationLen="conversation.length"
@@ -164,12 +162,15 @@
               class="pointer-events-none fixed inset-0 z-[60] mx-auto my-2 flex max-w-[560px] flex-col items-stretch justify-start md:pb-5">
           </span>
   </div>
-  <!-- 只在 Update 被成功导入时才渲染 -->
-      <Suspense v-if="Update">
-        <template #default>
-          <component :is="Update"/>
-        </template>
-      </Suspense>
+  <div  v-if="isTauri()">
+    <!-- 只在 Update 被成功导入时才渲染 -->
+    <Suspense>
+      <template #default>
+        <Update />
+      </template>
+    </Suspense>
+  </div>
+
 
 </template>
 
@@ -188,6 +189,7 @@ import 'highlight.js/styles/github.css';
 import axios from 'axios';
 import clipboard from 'vue-clipboard3';
 import WinTools from "./components/winTools.vue";
+import Update from "./components/Update.vue";
 
 
 const appVersion = ref(__APP_VERSION__);
@@ -224,13 +226,8 @@ const tempSpeeches = ref("");
 const isAiReceive = ref(false);
 //能否直接输入，
 const canInput =ref(true);
-//动态组件
-const Update = ref(Object);
 // 是否允许自动滚动
 const shouldScroll = ref(true);
-
-const isInitialized = ref(false);
-
 
 
 function updateChatMsg(message,character) {
@@ -596,7 +593,6 @@ watch(chatMsg, (newVal, oldVal) => {
 
 onMounted(async () => {
   await nextTick(() => {
-    isInitialized.value=true
     if (isTauri()) {
       console.log("加载Update插件")
       import("./components/Update.vue")

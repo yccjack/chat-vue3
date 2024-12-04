@@ -47,7 +47,7 @@ const characters = ref(props.characterData); // 将 props.characterData 复制�
 const exMsg = ref('');
 
 // 输入消息并传递给父组件
-function inputChat(msg,character='') {
+function inputChat(msg,character=-1) {
   exMsg.value = msg;
   emit('update-chat-msg', exMsg.value,character); // 通过事件传递数据到父组件
 

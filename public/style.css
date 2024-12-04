@@ -44,7 +44,7 @@
     top: 0;
     left: 260px;
     right: 0;
-    background: black;
+    background: #ffffff;
     z-index: 10;  /* 确保其在其他内容之上 */
     padding: 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
