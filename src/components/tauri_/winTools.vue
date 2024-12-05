@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue';
 import { Window } from '@tauri-apps/api/window';
-
 // 创建一个 Window 实例
 const appWindow = new Window('main');
 

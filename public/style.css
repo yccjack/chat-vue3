@@ -125,11 +125,11 @@
     cursor: pointer;
     font-weight: 600;
     border-radius: 20px;
-    box-shadow: 0 4px 6px -1px #977ef3, 0 2px 4px -1px #aff3db;
+    box-shadow: 0 4px 6px -1px #ffffff, 0 2px 4px -1px #aff3db;
     transition: all .6s ease;
 }
 .acceptButton:hover {
-    background-color: #9173ff;
-    box-shadow: 0 10px 15px -3px #977ef3, 0 4px 6px -2px #977ef3;
+    background-color: #856464;
+    box-shadow: 0 10px 15px -3px #500404, 0 4px 6px -2px #170c0c;
     transition-duration: .2s;
 }

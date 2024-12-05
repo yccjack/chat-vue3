@@ -42,7 +42,7 @@ const marked = new MarkdownIt({
   typographer: true,        // 使用引号替换等
   highlight: (code, language) => {
     // 判断是否是HTML或JavaScript标签，如果是，直接返回原始内容
-    if (language === 'html') {
+    if (language === 'html' || language.includes("css")||language.includes("javascript")||language.includes("vue")) {
       let codeDis = escapeHtml(code)
       return renderCodeBlock(codeDis, codeDis, "bash");
     }

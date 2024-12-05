@@ -25,7 +25,6 @@
             @update_parent_openSidebar="selectConversation"
         ></sidebar>
         <main class="relative h-full w-full transition-width flex flex-col overflow-hidden items-stretch flex-1">
-          <date></date>
           <!-- 聊天窗 -->
           <div class="flex-1 overflow-hidden">
             <div class="react-scroll-to-bottom--css-ncqif-79elbk h-full dark:bg-gray-800">
@@ -192,8 +191,6 @@ import axios from 'axios';
 import clipboard from 'vue-clipboard3';
 import WinTools from "./components/tauri_/winTools.vue";
 import Update from "./components/tauri_/Update.vue";
-import Date from "./components/conversation/date.vue";
-
 
 const appVersion = ref(__APP_VERSION__);
 const deskApp = ref("https://gschaos.club/update_file/Y-Chat_0.2.6_x64_en-US.msi");
