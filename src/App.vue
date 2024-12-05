@@ -25,6 +25,7 @@
             @update_parent_openSidebar="selectConversation"
         ></sidebar>
         <main class="relative h-full w-full transition-width flex flex-col overflow-hidden items-stretch flex-1">
+          <date></date>
           <!-- 聊天窗 -->
           <div class="flex-1 overflow-hidden">
             <div class="react-scroll-to-bottom--css-ncqif-79elbk h-full dark:bg-gray-800">
@@ -83,6 +84,7 @@
           <!-- 底部输入 -->
           <div
               class="absolute bottom-0 left-0 w-full border-t md:border-t-0 dark:border-white/20 md:border-transparent md:dark:border-transparent md:bg-vert-light-gradient bg-white dark:bg-gray-800 md:!bg-transparent dark:md:bg-vert-dark-gradient">
+
             <form
                 class="stretch mx-2 flex flex-row gap-3 pt-2 last:mb-2 md:last:mb-6 lg:mx-auto lg:max-w-3xl lg:pt-6">
               <div class="relative flex h-full flex-1 md:flex-col">
@@ -177,19 +179,20 @@
 
 <script setup>
 import {isTauri} from "@tauri-apps/api/core";
-import mNav from "./components/mNav.vue";
-import sidebar from "./components/sidebar.vue";
-import maskBox from "./components/maskBox.vue";
+import mNav from "./components/nav/mNav.vue";
+import sidebar from "./components/nav/sidebar.vue";
+import maskBox from "./components/charater/maskBox.vue";
 import Human from "./components/conversation/human.vue";
 import Ai from "./components/conversation/ai.vue";
-import modalA from "./components/modalA.vue";
+import modalA from "./components/tauri_/modalA.vue";
 import {nextTick, onMounted, ref, watch,reactive } from "vue";
 import './assets/index.css'
 import 'highlight.js/styles/github.css';
 import axios from 'axios';
 import clipboard from 'vue-clipboard3';
-import WinTools from "./components/winTools.vue";
-import Update from "./components/Update.vue";
+import WinTools from "./components/tauri_/winTools.vue";
+import Update from "./components/tauri_/Update.vue";
+import Date from "./components/conversation/date.vue";
 
 
 const appVersion = ref(__APP_VERSION__);
@@ -595,11 +598,9 @@ watch(chatMsg, (newVal, oldVal) => {
 onMounted(async () => {
   await nextTick(() => {
     if (isTauri()) {
-      console.log("加载Update插件")
-      import("./components/Update.vue")
+      import("./components/tauri_/Update.vue")
           .then((module) => {
             Update.value = module.default;
-            console.log("加载Update插件成功")
           })
           .catch((error) => {
             console.error("Error loading Update component:", error);

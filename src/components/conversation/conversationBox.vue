@@ -133,7 +133,7 @@
 </template>
 <script setup>
 import {ref} from "vue";
-import imagePath from "../assets/imgs/human9.png";
+import imagePath from "../../assets/imgs/human9.png";
 import MarkdownIt from "markdown-it";
 import hljs from "highlight.js";
 import 'highlight.js/styles/github.css'; // 使用 GitHub 主题样式
