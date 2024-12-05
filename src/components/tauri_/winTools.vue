@@ -1,6 +1,18 @@
 <script setup>
-import { ref } from 'vue';
+import {nextTick, ref, watch,toRefs} from 'vue';
 import { Window } from '@tauri-apps/api/window';
+
+const props = defineProps({
+  //发生的新对话标题
+  theme: {
+    type: String,
+    default: "light"
+  },
+});
+const { theme } = toRefs(props);
+watch(theme, (newVal, oldVal) => {
+  console.log('Theme changed from', oldVal, 'to', newVal);
+});
 // 创建一个 Window 实例
 const appWindow = new Window('main');
 
@@ -37,7 +49,8 @@ const cancelAction = () => {
 </script>
 
 <template>
-  <div data-tauri-drag-region class="titlebar">
+  <div data-tauri-drag-region class="titlebar"    :class="{ 'bg-gray-800': theme==='dark', 'bg-white': theme==='light' }"
+  >
     <!-- 最小化按钮 -->
     <div
         class="titlebar-button"
@@ -95,7 +108,7 @@ const cancelAction = () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgb(252, 252, 252);
   display: flex;
   justify-content: center;
   align-items: center;
