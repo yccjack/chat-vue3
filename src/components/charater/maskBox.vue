@@ -42,13 +42,12 @@ const props = defineProps({
 });
 // 定义传递的事件
 const emit = defineEmits(['update-chat-msg']);
-const characters = ref([...props.characterData]); // 将 props.characterData 复制到 characters
+const characters = ref(props.characterData); // 将 props.characterData 复制到 characters
 // 定义响应式变量
 const exMsg = ref('');
 
 // 输入消息并传递给父组件
-function inputChat(msg,character='') {
-  console.log("触发点击")
+function inputChat(msg,character=-1) {
   exMsg.value = msg;
   emit('update-chat-msg', exMsg.value,character); // 通过事件传递数据到父组件
 

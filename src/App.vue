@@ -1,10 +1,22 @@
 <template>
+  <div v-if="isTauri()"  class="fixed-content md:pl-[260px]">
+    <Suspense>
+      <template #default>
+        <WinTools /> <!-- 异步组件 -->
+      </template>
+      <template #fallback>
+      </template>
+    </Suspense>
+  </div>
+
   <div id="__next">
     <!-- 弹窗 -->
     <modalA :popupShow="popupShow" @close="popupShow = false"></modalA>
+
     <div class="overflow-hidden w-full h-full relative">
 
-      <div class="flex h-full flex-1 flex-col md:pl-[260px]">
+      <div class="flex h-full flex-1 flex-col md:pl-[260px] scrollable-content">
+
         <sidebar
             :title_chat="chatTitle"
             :newConv="pushNewConv"
@@ -71,6 +83,7 @@
           <!-- 底部输入 -->
           <div
               class="absolute bottom-0 left-0 w-full border-t md:border-t-0 dark:border-white/20 md:border-transparent md:dark:border-transparent md:bg-vert-light-gradient bg-white dark:bg-gray-800 md:!bg-transparent dark:md:bg-vert-dark-gradient">
+
             <form
                 class="stretch mx-2 flex flex-row gap-3 pt-2 last:mb-2 md:last:mb-6 lg:mx-auto lg:max-w-3xl lg:pt-6">
               <div class="relative flex h-full flex-1 md:flex-col">
@@ -150,36 +163,38 @@
               class="pointer-events-none fixed inset-0 z-[60] mx-auto my-2 flex max-w-[560px] flex-col items-stretch justify-start md:pb-5">
           </span>
   </div>
-  <!-- 只在 Update 被成功导入时才渲染 -->
-  <Suspense v-if="Update">
-    <template #default>
-      <component :is="Update"/>
-    </template>
-    <template #fallback>
-      <div>Loading...</div> <!-- 可选的加载提示 -->
-    </template>
-  </Suspense>
+  <div  v-if="isTauri()">
+    <!-- 只在 Update 被成功导入时才渲染 -->
+    <Suspense>
+      <template #default>
+        <Update />
+      </template>
+    </Suspense>
+  </div>
+
 
 </template>
 
 
 <script setup>
 import {isTauri} from "@tauri-apps/api/core";
-import mNav from "./components/mNav.vue";
-import sidebar from "./components/sidebar.vue";
-import maskBox from "./components/maskBox.vue";
+import mNav from "./components/nav/mNav.vue";
+import sidebar from "./components/nav/sidebar.vue";
+import maskBox from "./components/charater/maskBox.vue";
 import Human from "./components/conversation/human.vue";
 import Ai from "./components/conversation/ai.vue";
-import modalA from "./components/modalA.vue";
+import modalA from "./components/tauri_/modalA.vue";
 import {nextTick, onMounted, ref, watch,reactive } from "vue";
 import './assets/index.css'
 import 'highlight.js/styles/github.css';
 import axios from 'axios';
 import clipboard from 'vue-clipboard3';
+import WinTools from "./components/tauri_/winTools.vue";
+import Update from "./components/tauri_/Update.vue";
 
 const appVersion = ref(__APP_VERSION__);
 const deskApp = ref("https://gschaos.club/update_file/Y-Chat_0.2.6_x64_en-US.msi");
-const apiUrl = ref();
+const apiUrl = ref(__APP_API_RUI__);
 const theme = ref('light');
 const title = ref("新的对话")
 const popupShow = ref(false);
@@ -197,8 +212,6 @@ const chatTitle = ref('新的对话');
 const convLoading = ref(false);
 //回到底部标识
 const isShowGoBottom = ref(false);
-
-const isAtBottom = ref(true);
 //输入的内容
 const inputChat = ref("");
 //聊天的id
@@ -213,11 +226,8 @@ const tempSpeeches = ref("");
 const isAiReceive = ref(false);
 //能否直接输入，
 const canInput =ref(true);
-//动态组件
-const Update = reactive({});
 // 是否允许自动滚动
 const shouldScroll = ref(true);
-
 
 
 function updateChatMsg(message,character) {
@@ -489,8 +499,9 @@ function selectConversation(conv, loadConv = false) {
         var resp = result.data;
         var content = resp.data;
         cid.value = conv.id;
-        conversation.value = initConvs(content.conversation.convs)
+        conversation.value = initConvs(content.conversation.convs);
         handleScrollBottom();
+        canInput.value=true;
       })
       .catch((err) => {
       });
@@ -584,7 +595,7 @@ watch(chatMsg, (newVal, oldVal) => {
 onMounted(async () => {
   await nextTick(() => {
     if (isTauri()) {
-      import("./components/Update.vue")
+      import("./components/tauri_/Update.vue")
           .then((module) => {
             Update.value = module.default;
           })
@@ -595,7 +606,7 @@ onMounted(async () => {
     }
   })
 
-  apiUrl.value = __APP_API_RUI__;
+  getCharacterInfo();
   // 从 localStorage 获取 popupShow 状态
   const savedPopupShow = localStorage.getItem(`popupShow${__APP_VERSION__}`);
   // 如果 savedPopupShow 不存在，表示是第一次弹窗
@@ -609,7 +620,8 @@ onMounted(async () => {
   loadAvatar();
   deskApp.value = `https://gschaos.club/update_file/Y-Chat_${appVersion.value}_x64_zh-CN.msi`
   window.copy = vueCopy
-  getCharacterInfo();
+
+
 });
 
 </script>

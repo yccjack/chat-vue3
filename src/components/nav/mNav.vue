@@ -216,7 +216,7 @@
 <script setup>
 
 
-import {onMounted, ref, watch, nextTick} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import axios from "axios";
 import {isTauri} from "@tauri-apps/api/core";
 
@@ -250,7 +250,7 @@ const conversations = ref([]);
 const theme = ref('light');
 const oldConv = ref(null);
 const deskApp = ref("");
-const apiUrl = ref();
+const apiUrl = ref(__APP_API_RUI__);
 
 function changeTheme(newTheme) {
   theme.value = newTheme;
@@ -301,20 +301,7 @@ function editTitle(idx, conv) {
 
 function loadConversations() {
   let convs = localStorage.getItem("conversations") || "[]";
-  let latestSelect = localStorage.getItem("conversations_latest_select");
-  let jsonData = JSON.parse(convs);
-  conversations.value = jsonData
-  if (latestSelect) {
-    for (let idx in jsonData) {
-      const conv = jsonData[idx];
-      if (latestSelect === conv.id) {
-        selectConversation(conv, true)
-        break
-      }
-    }
-
-  }
-
+  conversations.value = JSON.parse(convs)
 
 }
 
@@ -354,14 +341,10 @@ function selectConversation(conv, loadConv) {
   conv.selected = true
   oldConv.value = conv;
   document.title = conv.title || "Y-Chat";
-  localStorage.setItem("conversations_latest_select", conv.id);
   if (!loadConv) {
     return;
   }
-  // 使用 nextTick 确保父组件已经渲染完毕
-  nextTick(() => {
-    emit('update_parent_openSidebar', conv, loadConv);
-  });
+  emit('update_parent_openSidebar', conv, loadConv);
 }
 
 //触发新对话，
@@ -407,8 +390,6 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e =
   changeTheme(newTheme);
 });
 onMounted(async () => {
-
-  apiUrl.value = __APP_API_RUI__;
   deskApp.value = `https://gschaos.club/update_file/Y-Chat_${appVersion.value}_x64_zh-CN.msi`
   let theme = detectSystemTheme();
   if(!theme){
