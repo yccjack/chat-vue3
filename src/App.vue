@@ -501,6 +501,7 @@ function selectConversation(conv, loadConv = false) {
         cid.value = conv.id;
         conversation.value = initConvs(content.conversation.convs);
         handleScrollBottom();
+        canInput.value=true;
       })
       .catch((err) => {
       });
