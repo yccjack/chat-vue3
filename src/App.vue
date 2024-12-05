@@ -1,21 +1,15 @@
 <template>
-  <div v-if="isTauri()"  class="fixed-content md:pl-[260px]">
-    <Suspense>
-      <template #default>
-        <WinTools /> <!-- 异步组件 -->
-      </template>
-      <template #fallback>
-      </template>
-    </Suspense>
+  <div v-if="isTauri()"  class="fixed-content md:pl-[260px]" :class="{ 'bg-gray-800': theme==='dark', 'bg-white': theme==='light' }">
+    <win-tools :theme="theme"></win-tools>
   </div>
 
-  <div id="__next">
+  <div id="__next" class="niwu_card">
     <!-- 弹窗 -->
     <modalA :popupShow="popupShow" @close="popupShow = false"></modalA>
 
     <div class="overflow-hidden w-full h-full relative">
 
-      <div class="flex h-full flex-1 flex-col md:pl-[260px] scrollable-content">
+      <div class="flex h-full flex-1 flex-col md:pl-[260px] " :class="isTauri()? 'scrollable-content':'' " >
 
         <sidebar
             :title_chat="chatTitle"
@@ -184,7 +178,7 @@ import maskBox from "./components/charater/maskBox.vue";
 import Human from "./components/conversation/human.vue";
 import Ai from "./components/conversation/ai.vue";
 import modalA from "./components/tauri_/modalA.vue";
-import {nextTick, onMounted, ref, watch,reactive } from "vue";
+import {nextTick, onMounted, ref, watch } from "vue";
 import './assets/index.css'
 import 'highlight.js/styles/github.css';
 import axios from 'axios';
@@ -745,5 +739,8 @@ body {
   flex-wrap: wrap;
   gap: 1rem;
   width: 100%;
+}
+.niwu_card {
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 }
 </style>

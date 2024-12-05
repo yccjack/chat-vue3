@@ -57,7 +57,7 @@
     left: 0;
     right: 0;
     overflow-y: auto;  /* 纵向滚动 */
-    padding: 40px;
+    padding-top: 40px;
 }
 
 
@@ -65,7 +65,6 @@
 .card {
     width: 400px;
     height: 180px;
-    background-color: rgb(255, 255, 255);
     border-radius: 8px;
     display: flex;
     flex-direction: column;
