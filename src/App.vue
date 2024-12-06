@@ -161,7 +161,7 @@
     <!-- 只在 Update 被成功导入时才渲染 -->
     <Suspense>
       <template #default>
-        <Update />
+        <Update_new />
       </template>
     </Suspense>
   </div>
@@ -184,7 +184,7 @@ import 'highlight.js/styles/github.css';
 import axios from 'axios';
 import clipboard from 'vue-clipboard3';
 import WinTools from "./components/tauri_/winTools.vue";
-import Update from "./components/tauri_/Update.vue";
+import Update_new from "./components/tauri_/Update_new.vue";
 
 const appVersion = ref(__APP_VERSION__);
 const deskApp = ref("https://gschaos.club/update_file/Y-Chat_0.2.6_x64_en-US.msi");
@@ -222,6 +222,7 @@ const isAiReceive = ref(false);
 const canInput =ref(true);
 // 是否允许自动滚动
 const shouldScroll = ref(true);
+
 
 
 function updateChatMsg(message,character) {
@@ -587,19 +588,6 @@ watch(chatMsg, (newVal, oldVal) => {
 });
 
 onMounted(async () => {
-  await nextTick(() => {
-    if (isTauri()) {
-      import("./components/tauri_/Update.vue")
-          .then((module) => {
-            Update.value = module.default;
-          })
-          .catch((error) => {
-            console.error("Error loading Update component:", error);
-          });
-
-    }
-  })
-
   getCharacterInfo();
   // 从 localStorage 获取 popupShow 状态
   const savedPopupShow = localStorage.getItem(`popupShow${__APP_VERSION__}`);

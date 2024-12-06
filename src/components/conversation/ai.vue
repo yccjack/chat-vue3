@@ -44,7 +44,7 @@ const marked = new MarkdownIt({
     // 判断是否是HTML或JavaScript标签，如果是，直接返回原始内容
     if (language === 'html' || language.includes("css")||language.includes("javascript")||language.includes("vue")) {
       let codeDis = escapeHtml(code)
-      return renderCodeBlock(codeDis, codeDis, "bash");
+      return renderCodeBlock(codeDis, codeDis, language);
     }
     let codeHtml = language && hljs.getLanguage(language)
         ? hljs.highlight(code, {language}).value
