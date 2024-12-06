@@ -1,7 +1,7 @@
 {
   "name": "y-chat",
   "private": true,
-  "version": "0.4.7",
+  "version": "0.4.8",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -22,7 +22,6 @@
     "@tauri-apps/plugin-window-state": "~2",
     "@tauri-apps/plugin-fs": "~2.0.2",
     "@tauri-apps/plugin-autostart": "~2.0.0",
-    "ant-design-vue": "^4.0.7",
     "axios": "^1.7.7",
     "core-js": "^3.6.5",
     "github-markdown-css": "^5.7.0",
