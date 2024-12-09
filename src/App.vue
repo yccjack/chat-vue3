@@ -492,10 +492,16 @@ function newChat() {
 }
 
 function selectConversation(conv, loadConv = false) {
+
+
   chatTitle.value = conv.title || "Y-Chat";
   currentCharacter.value = conv.characterId || -1;
   if (!loadConv) {
     return;
+  }
+  let convs = localStorage.getItem(`conversation_map${conv.id}`) || "[]";
+  if(convs.length>0){
+
   }
   axios.get(`${apiUrl.value}/conv/${conv.id}`)
       .then((result) => {
