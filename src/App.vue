@@ -492,16 +492,15 @@ function newChat() {
 }
 
 function selectConversation(conv, loadConv = false) {
-
-
   chatTitle.value = conv.title || "Y-Chat";
   currentCharacter.value = conv.characterId || -1;
   if (!loadConv) {
     return;
   }
-  let convs = localStorage.getItem(`conversation_map${conv.id}`) || "[]";
-  if(convs.length>0){
-
+  let conversation_local = localStorage.getItem(`conversation_map${conv.id}`) || "[]";
+  if(conversation_local.length>2){
+    conversation.value = JSON.parse(conversation_local)
+    return;
   }
   axios.get(`${apiUrl.value}/conv/${conv.id}`)
       .then((result) => {
@@ -511,6 +510,7 @@ function selectConversation(conv, loadConv = false) {
         conversation.value = initConvs(content.conversation.convs);
         handleScrollBottom();
         canInput.value = true;
+        saveConversation();
       })
       .catch((err) => {
       });
