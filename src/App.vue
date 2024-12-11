@@ -24,6 +24,7 @@
           <div class="flex-1 overflow-hidden">
             <div class="react-scroll-to-bottom--css-ncqif-79elbk h-full dark:bg-gray-800">
               <div ref="chatContainer" class="react-scroll-to-bottom--css-krija-1n7m0yu">
+                <user-site ></user-site>
                 <div class="flex flex-col items-center text-sm dark:bg-gray-800">
                   <!-- 对话item -->
                   <div style="width: 100%" v-for="(conv, idx) in conversation" :key="idx">
@@ -186,6 +187,7 @@ import axios from 'axios';
 import clipboard from 'vue-clipboard3';
 import WinTools from "./components/tauri_/winTools.vue";
 import Update_new from "./components/tauri_/Update_new.vue";
+import UserSite from "./components/user/userSite.vue";
 
 const appVersion = ref(__APP_VERSION__);
 const deskApp = ref("https://gschaos.club/update_file/Y-Chat_0.2.6_x64_en-US.msi");
