@@ -1,6 +1,6 @@
 <script setup>
-import {nextTick, ref, watch,toRefs} from 'vue';
-import { Window } from '@tauri-apps/api/window';
+import {nextTick, ref, watch, toRefs} from 'vue';
+import {Window} from '@tauri-apps/api/window';
 
 const props = defineProps({
   //发生的新对话标题
@@ -9,7 +9,7 @@ const props = defineProps({
     default: "light"
   },
 });
-const { theme } = toRefs(props);
+const {theme} = toRefs(props);
 watch(theme, (newVal, oldVal) => {
   console.log('Theme changed from', oldVal, 'to', newVal);
 });
@@ -49,8 +49,9 @@ const cancelAction = () => {
 </script>
 
 <template>
-  <div data-tauri-drag-region class="titlebar"    :class="{ 'bg-gray-800': theme==='dark', 'bg-white': theme==='light' }"
+  <div data-tauri-drag-region class="titlebar" :class="{ 'bg-gray-800': theme==='dark', 'bg-white': theme==='light' }"
   >
+
     <!-- 最小化按钮 -->
     <div
         class="titlebar-button"

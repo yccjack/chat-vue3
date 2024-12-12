@@ -1,5 +1,6 @@
 <template>
-  <div v-if="isTauri()"  class="fixed-content md:pl-[260px]" :class="{ 'bg-gray-800': theme==='dark', 'bg-white': theme==='light' }">
+  <div v-if="isTauri()" class="fixed-content md:pl-[260px]"
+       :class="{ 'bg-gray-800': theme==='dark', 'bg-white': theme==='light' }">
     <win-tools :theme="theme"></win-tools>
   </div>
 
@@ -9,7 +10,7 @@
 
     <div class="overflow-hidden w-full h-full relative">
 
-      <div class="flex h-full flex-1 flex-col md:pl-[260px] " :class="isTauri()? 'scrollable-content':'' " >
+      <div class="flex h-full flex-1 flex-col md:pl-[260px] " :class="isTauri()? 'scrollable-content':'' ">
 
         <sidebar
             :title_chat="chatTitle"
@@ -23,16 +24,20 @@
           <div class="flex-1 overflow-hidden">
             <div class="react-scroll-to-bottom--css-ncqif-79elbk h-full dark:bg-gray-800">
               <div ref="chatContainer" class="react-scroll-to-bottom--css-krija-1n7m0yu">
+               <model-option
+               :models = models
+               @select-option="changeModel"
+               ></model-option>
                 <div class="flex flex-col items-center text-sm dark:bg-gray-800">
                   <!-- 对话item -->
-                  <div  style="width: 100%" v-for="(conv, idx) in conversation" :key="idx">
+                  <div style="width: 100%" v-for="(conv, idx) in conversation" :key="idx">
                     <div v-if="conv.speaker === 'human'"
                          class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group dark:bg-gray-800">
                       <human
-                      :speech="conv.speech"
+                          :speech="conv.speech"
                       ></human>
                     </div>
-                    <div  v-if="conv.speaker === 'ai'"
+                    <div v-if="conv.speaker === 'ai'"
                          class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group bg-gray-50 dark:bg-[#444654]">
                       <!-- 判断是否是最后一个 ai 数据 -->
                       <div v-if="idx === conversation.length - 1 && isAiReceive"
@@ -46,13 +51,13 @@
                         <ai :speeches="conv.speeches" :loading="conv.loading"></ai>
                       </div>
                     </div>
-                    </div>
+                  </div>
 
                   <div v-if="conversation.length === 0"
                        class="text-gray-800 w-full md:max-w-2xl lg:max-w-3xl md:h-full md:flex md:flex-col px-6 dark:text-gray-100">
                     <maskBox
                         :characterData="character"
-                        @update-chat-msg="updateChatMsg" />
+                        @update-chat-msg="updateChatMsg"/>
                   </div>
 
                   <div class="w-full h-32 md:h-48 flex-shrink-0"></div>
@@ -94,7 +99,7 @@
 
                 </div>
                 <div v-if="canInput"
-                    class="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
+                     class="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
             <textarea v-model="chatMsg"
                       ref="inputChat"
                       @keydown="judgeInput"
@@ -157,11 +162,11 @@
               class="pointer-events-none fixed inset-0 z-[60] mx-auto my-2 flex max-w-[560px] flex-col items-stretch justify-start md:pb-5">
           </span>
   </div>
-  <div  v-if="isTauri()">
+  <div v-if="isTauri()">
     <!-- 只在 Update 被成功导入时才渲染 -->
     <Suspense>
       <template #default>
-        <Update_new />
+        <Update_new/>
       </template>
     </Suspense>
   </div>
@@ -178,13 +183,15 @@ import maskBox from "./components/charater/maskBox.vue";
 import Human from "./components/conversation/human.vue";
 import Ai from "./components/conversation/ai.vue";
 import modalA from "./components/tauri_/modalA.vue";
-import {nextTick, onMounted, ref, watch } from "vue";
+import {nextTick, onMounted, ref, watch} from "vue";
 import './assets/index.css'
 import 'highlight.js/styles/github.css';
 import axios from 'axios';
 import clipboard from 'vue-clipboard3';
 import WinTools from "./components/tauri_/winTools.vue";
 import Update_new from "./components/tauri_/Update_new.vue";
+import UserSite from "./components/user/userSite.vue";
+import ModelOption from "./components/user/ModelOption.vue";
 
 const appVersion = ref(__APP_VERSION__);
 const deskApp = ref("https://gschaos.club/update_file/Y-Chat_0.2.6_x64_en-US.msi");
@@ -219,16 +226,19 @@ const tempSpeeches = ref("");
 //是否正在接受ai流式输入
 const isAiReceive = ref(false);
 //能否直接输入，
-const canInput =ref(true);
+const canInput = ref(true);
 // 是否允许自动滚动
 const shouldScroll = ref(true);
 
 
+const models = ref([]);
+const currentModel = ref("gpt-4o-mini");
 
-function updateChatMsg(message,character) {
+
+function updateChatMsg(message, character) {
   chatMsg.value = message; // 将子组件传递的值赋值给父组件的 chatMsg
-  currentCharacter.value=character
-  canInput.value=true
+  currentCharacter.value = character
+  canInput.value = true
 }
 
 function autoResize() {
@@ -252,7 +262,7 @@ function stopChat() {
 
 function changeHeight() {
   var elem = inputChat.value;
-  if(elem&&elem.style){
+  if (elem && elem.style) {
     elem.style.height = '24px';
     var scrollHeight = elem.scrollHeight;
     if (24 >= scrollHeight || chatMsg.value.length === 0) {
@@ -270,15 +280,17 @@ function resetHeight() {
   elem.style.height = '24px';
   elem.style["overflow-y"] = 'hidden';
 }
-function getCharacterInfo(){
+
+function getCharacterInfo() {
   axios.post(`${apiUrl.value}/chat/character`, {})
       .then((result) => {
-        character.value=result.data.data
+        character.value = result.data.data
       })
       .catch((err) => {
         console.error(err)
       });
 }
+
 // vueCopy 方法
 const vueCopy = (node) => {
   const code = unescapeHtml(node.getElementsByTagName("code")[0].innerHTML);
@@ -299,6 +311,7 @@ const vueCopy = (node) => {
         console.log('复制失败', err);
       });
 };
+
 // 函数：将HTML实体转义字符恢复为实际的HTML字符
 function unescapeHtml(escapedStr) {
   var doc = new DOMParser().parseFromString(escapedStr, "text/html");
@@ -311,10 +324,10 @@ function initConvs(convs) {
     if (conv.speaker === "human") {
       continue
     }
-    if(conv.speaker === "ai"){
-       if(conv.speeches instanceof Array){
-         conv.speeches = conv.speeches[0]
-       }
+    if (conv.speaker === "ai") {
+      if (conv.speeches instanceof Array) {
+        conv.speeches = conv.speeches[0]
+      }
     }
     conv["idx"] = 0;
   }
@@ -326,12 +339,12 @@ function chatRepeat() {
     return
   }
   convLoading.value = true;
-  isAiReceive.value=true;
+  isAiReceive.value = true;
   var rconv = conversation.value[conversation.value.length - 1];
   rconv["idx"] = rconv["suitable"].length;
   rconv["loading"] = true;
   rconv["suitable"].push(0);
-  rconv["speeches"]="";
+  rconv["speeches"] = "";
   try {
     // 使用 Axios 发送 GET 请求，接收流式数据
     fetch(`${apiUrl.value}/chat/repeat/${cid.value}`, {
@@ -340,7 +353,8 @@ function chatRepeat() {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
       },
       body: JSON.stringify({
-        character:currentCharacter.value
+        character: currentCharacter.value,
+        model:currentModel.value
       })
     }).then(response => {
       // 处理流式数据
@@ -353,12 +367,12 @@ function chatRepeat() {
             convLoading.value = false;
             // 替换整个 speeches 数组，确保响应式
             rconv.speeches = tempSpeeches.value
-            isAiReceive.value=false
+            isAiReceive.value = false
             return;
           }
           const chunk = decoder.decode(value, {stream: true});
           // 直接更新 speeches 数组的第一个元素，确保响应式
-          tempSpeeches.value +=  chunk;
+          tempSpeeches.value += chunk;
           handleScrollBottom();
           readStream();
         });
@@ -409,7 +423,7 @@ function send() {
     "characterId": currentCharacter.value
   }
   conversation.value.push(conv)
-  tempSpeeches.value="";
+  tempSpeeches.value = "";
   // 滚动到最下面
   handleScrollBottom();
 
@@ -421,26 +435,28 @@ function send() {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
       }, body: JSON.stringify({
         prompt: chat_msg,
-        character: conv.characterId
+        character: conv.characterId,
+        model:currentModel.value
       })
     }).then(response => {
       // 处理流式数据
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
-      isAiReceive.value=true
+      isAiReceive.value = true
       const readStream = () => {
         reader.read().then(({done, value}) => {
           if (done) {
             conv["loading"] = false;
             convLoading.value = false;
             // 替换整个 speeches 数组，确保响应式
-            conv.speeches = tempSpeeches.value
-            isAiReceive.value=false
+            conv.speeches = tempSpeeches.value;
+            isAiReceive.value = false;
+            saveConversation();
             return;
           }
           const chunk = decoder.decode(value, {stream: true});
           // 直接更新 speeches 数组的第一个元素，确保响应式
-          tempSpeeches.value +=  chunk;
+          tempSpeeches.value += chunk;
           if (first) {
             var newConv = {
               "id": cid.value,
@@ -474,11 +490,15 @@ function generateConvTitle(conv) {
   selectConversation(conv, false);
 }
 
+function saveConversation() {
+  localStorage.setItem("conversation_map" + cid.value, JSON.stringify(conversation.value));
+}
+
 function newChat() {
   if (conversation.value.length === 0) {
     return
   }
-  canInput.value=false
+  canInput.value = false
   chatTitle.value = "新的对话";
   loadId()
 }
@@ -489,6 +509,11 @@ function selectConversation(conv, loadConv = false) {
   if (!loadConv) {
     return;
   }
+  let conversation_local = localStorage.getItem(`conversation_map${conv.id}`) || "[]";
+  if(conversation_local.length>2){
+    conversation.value = JSON.parse(conversation_local)
+    return;
+  }
   axios.get(`${apiUrl.value}/conv/${conv.id}`)
       .then((result) => {
         var resp = result.data;
@@ -496,7 +521,8 @@ function selectConversation(conv, loadConv = false) {
         cid.value = conv.id;
         conversation.value = initConvs(content.conversation.convs);
         handleScrollBottom();
-        canInput.value=true;
+        canInput.value = true;
+        saveConversation();
       })
       .catch((err) => {
       });
@@ -523,17 +549,18 @@ function loadAvatar() {
 const chatContainer = ref(null)
 
 function handleScrollBottom() {
-  if(!shouldScroll.value){
+  if (!shouldScroll.value) {
     return;
   }
   nextTick(() => {
     // 确保 chatContainer.value 已经被正确设置
-    if (chatContainer.value ) {
+    if (chatContainer.value) {
       let scrollElem = chatContainer.value;
       scrollElem.scrollTo({top: scrollElem.scrollHeight, behavior: 'smooth'});
     }
   });
 }
+
 function isScrollAndNotBottom() {
   let chatDivEle = chatContainer.value;
   if (!chatDivEle) {
@@ -565,16 +592,8 @@ function updateTheme(arg) {
 function handleScrollEvent() {
   const scrollElem = chatContainer.value;
   if (!scrollElem) return;
-
   // 判断用户是否滚动到容器底部
-  const isAtBottom =
-      scrollElem.scrollHeight - scrollElem.clientHeight - scrollElem.scrollTop < 10;
-
-  if (isAtBottom) {
-    shouldScroll.value = true; // 恢复自动滚动
-  } else {
-    shouldScroll.value = false; // 暂停自动滚动
-  }
+  shouldScroll.value = scrollElem.scrollHeight - scrollElem.clientHeight - scrollElem.scrollTop < 10;
 }
 
 watch(chatMsg, (newVal, oldVal) => {
@@ -586,9 +605,24 @@ watch(chatMsg, (newVal, oldVal) => {
     })
   }
 });
+function getModels() {
+  axios.post(`${apiUrl.value}/get_chat_list`, {})
+      .then((result) => {
+        models.value=result.data.data[0]
+      })
+      .catch((err) => {
+        console.error(err)
+      });
 
+}
+
+function changeModel(arg){
+  currentModel.value=arg;
+  console.log(arg);
+}
 onMounted(async () => {
   getCharacterInfo();
+  getModels()
   // 从 localStorage 获取 popupShow 状态
   const savedPopupShow = localStorage.getItem(`popupShow${__APP_VERSION__}`);
   // 如果 savedPopupShow 不存在，表示是第一次弹窗
@@ -728,6 +762,7 @@ body {
   gap: 1rem;
   width: 100%;
 }
+
 .niwu_card {
   box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 }
