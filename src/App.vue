@@ -24,7 +24,10 @@
           <div class="flex-1 overflow-hidden">
             <div class="react-scroll-to-bottom--css-ncqif-79elbk h-full dark:bg-gray-800">
               <div ref="chatContainer" class="react-scroll-to-bottom--css-krija-1n7m0yu">
-                <user-site ></user-site>
+               <model-option
+               :models = models
+               @select-option="changeModel"
+               ></model-option>
                 <div class="flex flex-col items-center text-sm dark:bg-gray-800">
                   <!-- 对话item -->
                   <div style="width: 100%" v-for="(conv, idx) in conversation" :key="idx">
@@ -188,6 +191,7 @@ import clipboard from 'vue-clipboard3';
 import WinTools from "./components/tauri_/winTools.vue";
 import Update_new from "./components/tauri_/Update_new.vue";
 import UserSite from "./components/user/userSite.vue";
+import ModelOption from "./components/user/ModelOption.vue";
 
 const appVersion = ref(__APP_VERSION__);
 const deskApp = ref("https://gschaos.club/update_file/Y-Chat_0.2.6_x64_en-US.msi");
@@ -225,6 +229,10 @@ const isAiReceive = ref(false);
 const canInput = ref(true);
 // 是否允许自动滚动
 const shouldScroll = ref(true);
+
+
+const models = ref([]);
+const currentModel = ref("gpt-4o-mini");
 
 
 function updateChatMsg(message, character) {
@@ -345,7 +353,8 @@ function chatRepeat() {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
       },
       body: JSON.stringify({
-        character: currentCharacter.value
+        character: currentCharacter.value,
+        model:currentModel.value
       })
     }).then(response => {
       // 处理流式数据
@@ -426,7 +435,8 @@ function send() {
         'Content-Type': 'application/json' // 设置为你接口要求的Content-Type
       }, body: JSON.stringify({
         prompt: chat_msg,
-        character: conv.characterId
+        character: conv.characterId,
+        model:currentModel.value
       })
     }).then(response => {
       // 处理流式数据
@@ -595,9 +605,24 @@ watch(chatMsg, (newVal, oldVal) => {
     })
   }
 });
+function getModels() {
+  axios.post(`${apiUrl.value}/get_chat_list`, {})
+      .then((result) => {
+        models.value=result.data.data[0]
+      })
+      .catch((err) => {
+        console.error(err)
+      });
 
+}
+
+function changeModel(arg){
+  currentModel.value=arg;
+  console.log(arg);
+}
 onMounted(async () => {
   getCharacterInfo();
+  getModels()
   // 从 localStorage 获取 popupShow 状态
   const savedPopupShow = localStorage.getItem(`popupShow${__APP_VERSION__}`);
   // 如果 savedPopupShow 不存在，表示是第一次弹窗
