@@ -1,5 +1,6 @@
 <script setup>
 import { ref,onMounted,onUnmounted } from "vue";
+import {isTauri} from "@tauri-apps/api/core";
 const props = defineProps({
   models: { type: Array, default: [] }
 });
@@ -41,12 +42,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="custom-select-wrapper">
-    <!-- 圆形按钮 -->
-
+  <div class="custom-select-wrapper"
+       :style="{ top: isTauri() ? '60px' : '20px' }" >
     <button class="circle-btn" @click="toggleOptions"
             :title="selectedValue || '请选择'"
-    >模型</button>
+    >{{selectedValue || '切换模型'}}</button>
 
     <!-- 自定义选项列表 -->
     <ul
@@ -75,12 +75,10 @@ onUnmounted(() => {
 /* 自定义下拉框容器 */
 .custom-select-wrapper {
   position: fixed;         /* 固定位置 */
-  top: 20px;               /* 距离顶部80px */
+  transition: top 0.3s ease; /* 可选：添加动画过渡效果 */
   right: 20px;             /* 距离右侧20px */
   z-index: 1000;
 }
-
-
 /* 自定义选项列表样式 */
 .options-list {
   position: absolute;      /* 相对于父容器定位 */
@@ -122,6 +120,10 @@ button {
   border: 1px solid #e8e8e8;
   transition: all 0.3s;
   box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+  white-space: nowrap; /* 禁止换行 */
+  overflow: hidden;    /* 隐藏超出部分 */
+  text-overflow: ellipsis; /* 显示省略号 */
+  max-width: 100px;
 }
 
 button:hover {

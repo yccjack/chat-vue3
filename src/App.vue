@@ -190,7 +190,6 @@ import axios from 'axios';
 import clipboard from 'vue-clipboard3';
 import WinTools from "./components/tauri_/winTools.vue";
 import Update_new from "./components/tauri_/Update_new.vue";
-import UserSite from "./components/user/userSite.vue";
 import ModelOption from "./components/user/ModelOption.vue";
 
 const appVersion = ref(__APP_VERSION__);
@@ -341,10 +340,12 @@ function chatRepeat() {
   convLoading.value = true;
   isAiReceive.value = true;
   var rconv = conversation.value[conversation.value.length - 1];
+  var say = conversation.value[conversation.value.length - 2];
   rconv["idx"] = rconv["suitable"].length;
   rconv["loading"] = true;
   rconv["suitable"].push(0);
   rconv["speeches"] = "";
+  tempSpeeches.value="";
   try {
     // 使用 Axios 发送 GET 请求，接收流式数据
     fetch(`${apiUrl.value}/chat/repeat/${cid.value}`, {
@@ -354,7 +355,8 @@ function chatRepeat() {
       },
       body: JSON.stringify({
         character: currentCharacter.value,
-        model:currentModel.value
+        model:currentModel.value,
+        prompt:say["speech"]
       })
     }).then(response => {
       // 处理流式数据
