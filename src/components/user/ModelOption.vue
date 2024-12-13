@@ -2,7 +2,12 @@
 import { ref,onMounted,onUnmounted } from "vue";
 import {isTauri} from "@tauri-apps/api/core";
 const props = defineProps({
-  models: { type: Array, default: [] }
+  models: { type: Array, default: []
+  },
+  currentTheme:{
+    type: String,
+    default: "dark"
+  }
 });
 // 控制点击外部关闭下拉框
 const dropdown = ref(null);
@@ -44,7 +49,7 @@ onUnmounted(() => {
 <template>
   <div class="custom-select-wrapper"
        :style="{ top: isTauri() ? '60px' : '20px' }" >
-    <button class="circle-btn" @click="toggleOptions"
+    <button  @click="toggleOptions"
             :title="selectedValue || '请选择'"
     >{{selectedValue || '切换模型'}}</button>
 
@@ -57,6 +62,7 @@ onUnmounted(() => {
       <li
           v-for="(model, idx) in models" :key="idx"
           class="option-item"
+          :class="{ 'bg-gray-800': currentTheme==='dark', 'nav-bk': currentTheme==='light' }"
           @click="selectOption(model.id)"
       >{{ model.id }}
       </li>
@@ -111,15 +117,13 @@ onUnmounted(() => {
 }
 /* From Uiverse.io by adamgiebl */
 button {
-  color: #090909;
+
   padding: 0.7em 1.7em;
   font-size: 10px;
   border-radius: 0.5em;
-  background: #fdfdfd;
   cursor: pointer;
-  border: 1px solid #e8e8e8;
+  border: 1px solid #082d7e;
   transition: all 0.3s;
-  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
   white-space: nowrap; /* 禁止换行 */
   overflow: hidden;    /* 隐藏超出部分 */
   text-overflow: ellipsis; /* 显示省略号 */
@@ -127,7 +131,7 @@ button {
 }
 
 button:hover {
-  border: 1px solid white;
+  border: 1px solid #e00707;
 }
 
 button:active {
