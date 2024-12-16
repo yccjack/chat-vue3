@@ -622,7 +622,7 @@ function getModels() {
 
 function changeModel(arg){
   currentModel.value=arg;
-  console.log(arg);
+  localStorage.setItem("currentModel",currentModel.value);
 }
 onMounted(async () => {
   getCharacterInfo();

@@ -18,6 +18,8 @@ const showOptions = ref(false);
 // 当前选中的值
 const selectedValue = ref("");
 
+const  currentLocalModel = ref('gpt-4o-mini')
+
 // 切换选项列表显示
 const toggleOptions = () => {
   event.stopPropagation(); // 阻止事件冒泡
@@ -38,6 +40,8 @@ const handleClickOutside = (event) => {
 };
 
 onMounted(() => {
+  currentLocalModel.value = localStorage.getItem("currentModel")||'gpt-4o-mini';
+  emit('select-option', currentLocalModel.value); // 触发事件，将选中的数据传递给父组件
   document.addEventListener('click', handleClickOutside); // 添加全局点击事件监听
 });
 
@@ -50,8 +54,9 @@ onUnmounted(() => {
   <div class="custom-select-wrapper"
        :style="{ top: isTauri() ? '60px' : '20px' }" >
     <button  @click="toggleOptions"
-            :title="selectedValue || '请选择'"
-    >{{selectedValue || '切换模型'}}</button>
+            :title="selectedValue || currentLocalModel"
+             :class="{ 'bg-gray-600': currentTheme==='dark', 'nav-bk': currentTheme==='light' }"
+    >{{selectedValue || currentLocalModel}}</button>
 
     <!-- 自定义选项列表 -->
     <ul
@@ -117,7 +122,6 @@ onUnmounted(() => {
 }
 /* From Uiverse.io by adamgiebl */
 button {
-
   padding: 0.7em 1.7em;
   font-size: 10px;
   border-radius: 0.5em;
