@@ -1,7 +1,8 @@
 <script setup>
-import {nextTick, ref, watch, toRefs} from 'vue';
+import { ref, watch, toRefs} from 'vue';
 import {Window} from '@tauri-apps/api/window';
-
+import { TrayIcon } from '@tauri-apps/api/tray';
+import { defaultWindowIcon } from '@tauri-apps/api/app';
 const props = defineProps({
   //发生的新对话标题
   theme: {
@@ -9,6 +10,11 @@ const props = defineProps({
     default: "light"
   },
 });
+
+const options = {
+  icon: await defaultWindowIcon(),
+};
+const tray = await TrayIcon.new(options);
 const {theme} = toRefs(props);
 watch(theme, (newVal, oldVal) => {
   console.log('Theme changed from', oldVal, 'to', newVal);

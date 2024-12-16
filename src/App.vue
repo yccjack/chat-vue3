@@ -1,7 +1,17 @@
 <template>
   <div v-if="isTauri()" class="fixed-content md:pl-[260px]"
        :class="{ 'bg-gray-800': theme==='dark', 'bg-white': theme==='light' }">
-    <win-tools :theme="theme"></win-tools>
+    <template>
+      <Suspense>
+        <template #default>
+          <WinTools theme="light" />
+        </template>
+        <template #fallback>
+          <div>Loading...</div> <!-- 可以自定义一个加载状态 -->
+        </template>
+      </Suspense>
+    </template>
+
   </div>
 
   <div id="__next" class="niwu_card">
@@ -193,6 +203,7 @@ import clipboard from 'vue-clipboard3';
 import WinTools from "./components/tauri_/winTools.vue";
 import Update_new from "./components/tauri_/Update_new.vue";
 import ModelOption from "./components/user/ModelOption.vue";
+import {createTray } from "./js/request.js";
 
 const appVersion = ref(__APP_VERSION__);
 const deskApp = ref("https://gschaos.club/update_file/Y-Chat_0.2.6_x64_en-US.msi");
@@ -234,6 +245,8 @@ const shouldScroll = ref(true);
 
 const models = ref([]);
 const currentModel = ref("gpt-4o-mini");
+
+
 
 
 function updateChatMsg(message, character) {
@@ -640,7 +653,6 @@ onMounted(async () => {
   loadAvatar();
   deskApp.value = `https://gschaos.club/update_file/Y-Chat_${appVersion.value}_x64_zh-CN.msi`
   window.copy = vueCopy
-
 
 });
 
