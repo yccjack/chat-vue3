@@ -3,6 +3,7 @@ import { ref, watch, toRefs} from 'vue';
 import {Window} from '@tauri-apps/api/window';
 import { TrayIcon } from '@tauri-apps/api/tray';
 import { defaultWindowIcon } from '@tauri-apps/api/app';
+import { Menu } from '@tauri-apps/api/menu';
 const props = defineProps({
   //发生的新对话标题
   theme: {
@@ -11,8 +12,18 @@ const props = defineProps({
   },
 });
 
+const menu = await Menu.new({
+  items: [
+    {
+      id: 'quit',
+      text: '退出',
+    },
+  ],
+});
 const options = {
   icon: await defaultWindowIcon(),
+  menu,
+  menuOnLeftClick: true,
 };
 const tray = await TrayIcon.new(options);
 const {theme} = toRefs(props);
