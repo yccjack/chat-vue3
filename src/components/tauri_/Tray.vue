@@ -3,13 +3,12 @@ import { TrayIcon } from '@tauri-apps/api/tray';
 import { defaultWindowIcon } from '@tauri-apps/api/app';
 import { Menu } from '@tauri-apps/api/menu';
 import {getCurrentWindow } from '@tauri-apps/api/window';
-
 const appWin = getCurrentWindow();
 const menu = await Menu.new({
   items: [
     {
       id: 'open',
-      text: '打开主界面',
+      text: '打开主界面[ctrl+alt+q]',
       action: () => {
         const visible = appWin.isVisible();
         if (visible){
@@ -22,6 +21,7 @@ const menu = await Menu.new({
       id: 'quit',
       text: '退出',
       action: () => {
+        localStorage.removeItem("canTray");
         tray.close();
         appWin.close();
       },

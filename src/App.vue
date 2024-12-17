@@ -204,7 +204,6 @@ import clipboard from 'vue-clipboard3';
 import WinTools from "./components/tauri_/winTools.vue";
 import Update_new from "./components/tauri_/Update_new.vue";
 import ModelOption from "./components/user/ModelOption.vue";
-import {createTray } from "./js/request.js";
 import Tray from "./components/tauri_/Tray.vue";
 
 const appVersion = ref(__APP_VERSION__);

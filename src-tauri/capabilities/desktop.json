@@ -33,6 +33,10 @@
     "core:window:allow-minimize",
     "core:app:allow-default-window-icon",
     "core:window:allow-hide",
-    "core:window:allow-show"
+    "core:window:allow-show",
+    "global-shortcut:default",
+    "global-shortcut:allow-is-registered",
+    "global-shortcut:allow-register",
+    "global-shortcut:allow-unregister"
   ]
 }
