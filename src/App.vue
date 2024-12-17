@@ -1,7 +1,18 @@
 <template>
+
+  <div v-if="isTauri()">
+    <!-- 只在 Update 被成功导入时才渲染 -->
+    <Suspense>
+      <template #default>
+        <tray></tray>
+      </template>
+    </Suspense>
+  </div>
+
   <div v-if="isTauri()" class="fixed-content md:pl-[260px]"
        :class="{ 'bg-gray-800': theme==='dark', 'bg-white': theme==='light' }">
-    <win-tools :theme="theme"></win-tools>
+    <win-tools
+        :theme="theme" />
   </div>
 
   <div id="__next" class="niwu_card">
@@ -45,12 +56,12 @@
                       <div v-if="idx === conversation.length - 1 && isAiReceive"
                            class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group bg-gray-50 dark:bg-[#444654]">
                         <!-- 临时变量渲染最新的 ai 数据 -->
-                        <ai :speeches="tempSpeeches" :loading="conv.loading"></ai>
+                        <ai :speeches="tempSpeeches" :loading="conv.loading" :model-version="currentModel"></ai>
                       </div>
                       <!-- 不是最后一个 ai 数据，正常渲染 -->
                       <div v-else
                            class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group bg-gray-50 dark:bg-[#444654]">
-                        <ai :speeches="conv.speeches" :loading="conv.loading"></ai>
+                        <ai :speeches="conv.speeches" :loading="conv.loading" :model-version="currentModel"></ai>
                       </div>
                     </div>
                   </div>
@@ -193,6 +204,7 @@ import clipboard from 'vue-clipboard3';
 import WinTools from "./components/tauri_/winTools.vue";
 import Update_new from "./components/tauri_/Update_new.vue";
 import ModelOption from "./components/user/ModelOption.vue";
+import Tray from "./components/tauri_/Tray.vue";
 
 const appVersion = ref(__APP_VERSION__);
 const deskApp = ref("https://gschaos.club/update_file/Y-Chat_0.2.6_x64_en-US.msi");
@@ -234,6 +246,8 @@ const shouldScroll = ref(true);
 
 const models = ref([]);
 const currentModel = ref("gpt-4o-mini");
+
+
 
 
 function updateChatMsg(message, character) {
@@ -640,7 +654,6 @@ onMounted(async () => {
   loadAvatar();
   deskApp.value = `https://gschaos.club/update_file/Y-Chat_${appVersion.value}_x64_zh-CN.msi`
   window.copy = vueCopy
-
 
 });
 

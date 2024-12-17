@@ -9,7 +9,7 @@
         <p class="text-gray-900">检测到新版本，是否立即更新?</p>
         <div style="color: #2e95d3">
           <ul>
-            <li>最新版本： {{ update.version }}, 发布时间： {{formatDate(update.date) }}</li>
+            <li>最新版本： {{ update.version?update.version:'' }}, 发布时间： {{update.version?formatDate(update.date):'' }}</li>
             
           </ul>
         </div>
@@ -32,6 +32,7 @@ import {check} from "@tauri-apps/plugin-updater";
 import {relaunch} from "@tauri-apps/plugin-process";
 import {onMounted, ref} from "vue";
 import {getName, getTauriVersion} from "@tauri-apps/api/app";
+import {isTauri} from "@tauri-apps/api/core";
 const appName = ref();
 const tauriVersion = ref();
 const open = ref(false);
@@ -45,7 +46,7 @@ const visible = ref(true);
 const init = async () => {
   appName.value = await getName();
   tauriVersion.value = await getTauriVersion();
-  if(update){
+  if(update===true){
     visible.value=true
   }
 };
