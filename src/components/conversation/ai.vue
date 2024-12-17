@@ -12,6 +12,10 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  modelVersion:{
+    type: String,
+    default: "GPT4-MINI"
+  }
 });
 
 function renderCodeBlock(code, codeHtml, language = "") {
@@ -117,7 +121,7 @@ function mdToHtml(md) {
             </span>
             <span class="button-text">
               <span>Powered By</span>
-              <span>GPT4-MINI</span>
+              <span>{{props.modelVersion}}</span>
             </span>
           </button>
         </div>

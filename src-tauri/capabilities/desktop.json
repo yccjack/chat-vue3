@@ -31,6 +31,8 @@
     "core:window:allow-unmaximize",
     "core:window:allow-unminimize",
     "core:window:allow-minimize",
-    "core:app:allow-default-window-icon"
+    "core:app:allow-default-window-icon",
+    "core:window:allow-hide",
+    "core:window:allow-show"
   ]
 }

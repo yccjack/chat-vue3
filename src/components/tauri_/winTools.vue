@@ -1,7 +1,6 @@
 <script setup>
 import { ref, watch, toRefs} from 'vue';
 import {Window} from '@tauri-apps/api/window';
-
 const props = defineProps({
   //发生的新对话标题
   theme: {
@@ -21,7 +20,7 @@ const showModal = ref(false);
 
 // 处理最小化操作
 const handleMinimize = () => {
-  appWindow.minimize();
+  appWindow.hide();
   showModal.value = false;  // 关闭弹窗
 };
 

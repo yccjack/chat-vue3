@@ -56,12 +56,12 @@
                       <div v-if="idx === conversation.length - 1 && isAiReceive"
                            class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group bg-gray-50 dark:bg-[#444654]">
                         <!-- 临时变量渲染最新的 ai 数据 -->
-                        <ai :speeches="tempSpeeches" :loading="conv.loading"></ai>
+                        <ai :speeches="tempSpeeches" :loading="conv.loading" :model-version="currentModel"></ai>
                       </div>
                       <!-- 不是最后一个 ai 数据，正常渲染 -->
                       <div v-else
                            class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group bg-gray-50 dark:bg-[#444654]">
-                        <ai :speeches="conv.speeches" :loading="conv.loading"></ai>
+                        <ai :speeches="conv.speeches" :loading="conv.loading" :model-version="currentModel"></ai>
                       </div>
                     </div>
                   </div>
