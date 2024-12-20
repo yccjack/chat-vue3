@@ -21,7 +21,8 @@
 
     <div class="overflow-hidden w-full h-full relative">
 
-      <div class="flex h-full flex-1 flex-col md:pl-[260px] " :class="isTauri()? 'scrollable-content':'' ">
+      <div class="flex h-full flex-1 flex-col md:pl-[260px] "
+           :class="{ 'bg-gray-800': theme==='dark', 'nav-bk': theme==='light' }">
 
         <sidebar
             :title_chat="chatTitle"
