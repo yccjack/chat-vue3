@@ -48,14 +48,16 @@
                       </button>
                     </div>
                     <div style="width:320px"
-                         class="flex h-full flex-1 items-start border-white/20">
+                         class="flex h-full flex-1 items-start border-white/20"
+                         :class="{ 'bg-gray-800': theme==='dark', 'nav-bk': theme==='light' }"
+                    >
                       <mNav
-                          :initAl="props.initAl"
                           :newConv="props.newConv"
                           :conversationLen="props.conversationLen"
                           :sidebarNewChat=sidebarNewChat
                           @update_parent_new_chat="newChat"
                           @update_parent_openSidebar="notifyParentUpdateSelect"
+                          @update_theme = "updateCurrentTheme"
                       ></mNav>
                     </div>
                   </div>
@@ -96,7 +98,7 @@ const props = defineProps({
     default: '新的对话'
   }
 });
-
+const theme = ref('light');
 onMounted(async () => {
   chatTitle.value = props.title_chat
 });
@@ -110,6 +112,11 @@ const emit = defineEmits(['update_parent_new_chat', 'update_parent_openSidebar']
 function notifyParentUpdateSelect(conv, loadConv) {
   emit("update_parent_openSidebar", conv, loadConv)
   closeShowSlide()
+}
+
+
+function updateCurrentTheme(conv) {
+ theme.value=conv;
 }
 
 function newChat() {
