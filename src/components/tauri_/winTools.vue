@@ -9,6 +9,7 @@ const props = defineProps({
     default: "light"
   },
 });
+
 const {theme} = toRefs(props);
 watch(theme, (newVal, oldVal) => {
   console.log('Theme changed from', oldVal, 'to', newVal);
