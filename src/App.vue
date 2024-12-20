@@ -79,7 +79,7 @@
 
                 <transition name="el-fade-in-linear">
                   <!-- 回到底部 -->
-                  <button v-show="isShowGoBottom" @click="handleScrollBottom"
+                  <button v-show="isShowGoBottom" @click="scrollLatest"
                           class="cursor-pointer absolute right-6 bottom-[124px] md:bottom-[120px] z-10 rounded-full border border-gray-200 bg-gray-50 text-gray-600 dark:border-white/10 dark:bg-white/10 dark:text-gray-200">
                     <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
                          stroke-linejoin="round" class="h-4 w-4 m-1" height="1em" width="1em"
@@ -566,6 +566,12 @@ function loadAvatar() {
 const chatContainer = ref(null)
 
 function handleScrollBottom() {
+  if (!shouldScroll.value) {
+    return;
+  }
+  scrollLatest();
+}
+function scrollLatest(){
   nextTick(() => {
     // 确保 chatContainer.value 已经被正确设置
     if (chatContainer.value) {
@@ -591,10 +597,9 @@ function isScrollAndNotBottom() {
   const scrollHeight = chatDivEle.scrollHeight;
   if (scrollTop + windowHeight >= scrollHeight - 50) {
     isShowGoBottom.value = false;
-    shouldScroll.value=true;
     return;
   }
-  shouldScroll.value=true;
+
   isShowGoBottom.value = true;
 }
 
@@ -608,7 +613,7 @@ function handleScrollEvent() {
   const scrollElem = chatContainer.value;
   if (!scrollElem) return;
   // 判断用户是否滚动到容器底部
-  shouldScroll.value = scrollElem.scrollHeight - scrollElem.clientHeight - scrollElem.scrollTop < 1;
+  shouldScroll.value = scrollElem.scrollHeight - scrollElem.clientHeight - scrollElem.scrollTop < 10;
 }
 
 watch(chatMsg, (newVal, oldVal) => {
