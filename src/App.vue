@@ -567,9 +567,6 @@ function loadAvatar() {
 const chatContainer = ref(null)
 
 function handleScrollBottom() {
-  if (!shouldScroll.value) {
-    return;
-  }
   nextTick(() => {
     // 确保 chatContainer.value 已经被正确设置
     if (chatContainer.value) {
@@ -595,9 +592,10 @@ function isScrollAndNotBottom() {
   const scrollHeight = chatDivEle.scrollHeight;
   if (scrollTop + windowHeight >= scrollHeight - 50) {
     isShowGoBottom.value = false;
+    shouldScroll.value=true;
     return;
   }
-
+  shouldScroll.value=true;
   isShowGoBottom.value = true;
 }
 
@@ -611,7 +609,7 @@ function handleScrollEvent() {
   const scrollElem = chatContainer.value;
   if (!scrollElem) return;
   // 判断用户是否滚动到容器底部
-  shouldScroll.value = scrollElem.scrollHeight - scrollElem.clientHeight - scrollElem.scrollTop < 10;
+  shouldScroll.value = scrollElem.scrollHeight - scrollElem.clientHeight - scrollElem.scrollTop < 1;
 }
 
 watch(chatMsg, (newVal, oldVal) => {
