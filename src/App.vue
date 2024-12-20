@@ -111,7 +111,7 @@
                   </button>
 
                 </div>
-                <div v-if="canInput"
+                <div
                      class="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
             <textarea v-model="chatMsg"
                       ref="inputChat"
@@ -238,8 +238,6 @@ const character = ref([]);
 const tempSpeeches = ref("");
 //是否正在接受ai流式输入
 const isAiReceive = ref(false);
-//能否直接输入，
-const canInput = ref(true);
 // 是否允许自动滚动
 const shouldScroll = ref(true);
 
@@ -253,7 +251,6 @@ const currentModel = ref("gpt-4o-mini");
 function updateChatMsg(message, character) {
   chatMsg.value = message; // 将子组件传递的值赋值给父组件的 chatMsg
   currentCharacter.value = character
-  canInput.value = true
 }
 
 function autoResize() {
@@ -516,7 +513,6 @@ function newChat() {
   if (conversation.value.length === 0) {
     return
   }
-  canInput.value = false
   chatTitle.value = "新的对话";
   loadId()
 }
@@ -524,6 +520,9 @@ function newChat() {
 function selectConversation(conv, loadConv = false) {
   chatTitle.value = conv.title || "Y-Chat";
   currentCharacter.value = conv.characterId || -1;
+  if(conv.id){
+    cid.value=conv.id;
+  }
   if (!loadConv) {
     return;
   }
@@ -539,7 +538,6 @@ function selectConversation(conv, loadConv = false) {
         cid.value = conv.id;
         conversation.value = initConvs(content.conversation.convs);
         handleScrollBottom();
-        canInput.value = true;
         saveConversation();
       })
       .catch((err) => {
