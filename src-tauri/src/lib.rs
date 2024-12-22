@@ -73,7 +73,16 @@ pub fn run() {
 }
 fn show_window(app: &AppHandle) {
     let windows = app.webview_windows();
+   // 查找第一个窗口
+     if let Some(window) = windows.values().next() {
+         // 显示窗口
+         window.show().expect("Can't show window");
 
+         // 在需要的时候可以设置窗口焦点
+         window.set_focus().expect("Can't bring window to focus");
+     } else {
+         panic!("Sorry, no window found");
+     }
     windows
         .values()
         .next()
