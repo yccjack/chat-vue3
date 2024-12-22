@@ -22,8 +22,8 @@
     <div class="overflow-hidden w-full h-full relative">
 
       <div class="flex h-full flex-1 flex-col md:pl-[260px] "
-           :class="{ 'bg-gray-800': theme==='dark', 'nav-bk': theme==='light' }">
-
+           :class="isTauri()? 'scrollable-content':'' ">
+        <div :class="{ 'bg-gray-800': theme==='dark', 'nav-bk': theme==='light' }">
         <sidebar
             :title_chat="chatTitle"
             :newConv="pushNewConv"
@@ -31,6 +31,7 @@
             @update_parent_new_chat="newChat"
             @update_parent_openSidebar="selectConversation"
         ></sidebar>
+        </div>
         <main class="relative h-full w-full transition-width flex flex-col overflow-hidden items-stretch flex-1">
           <!-- 聊天窗 -->
           <div class="flex-1 overflow-hidden">
