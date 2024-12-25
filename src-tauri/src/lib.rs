@@ -4,61 +4,60 @@
 )]
 use tauri::{
     generate_context,
+    Emitter,
     menu::{
-        CheckMenuItemBuilder, MenuBuilder, MenuItemBuilder, PredefinedMenuItem, SubmenuBuilder,
+       Menu, MenuItem
     },
-    Builder,
+    tray::{TrayIconBuilder,MouseButton, MouseButtonState, TrayIconEvent}
 };
 use tauri::{AppHandle, Manager};
 
 pub fn run() {
     tauri::Builder::default()
-        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(tauri_plugin_global_shortcut::Builder::new()
+        .with_handler(|app, shortcut,cwd| {
+                show_window(app);
+              }).build())
         .plugin(tauri_plugin_single_instance::init(|app, args, cwd| {
             let _ = show_window(app);
         }))
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
-            let _open = MenuItemBuilder::new("打开")
-                .accelerator("Ctrl+Shift+O")
-                .build(app)?;
-            let _save = MenuItemBuilder::new("保存")
-                .accelerator("Ctrl+Shift+S")
-                .build(app)?;
-            let _exit = MenuItemBuilder::new("退出").build(app);
-            let _undo = MenuItemBuilder::new("撤销").build(app)?;
-            let _redo = MenuItemBuilder::new("重做").build(app)?;
-
-            let toggle = MenuItemBuilder::with_id("toggle", "Toggle").build(app)?;
-            let check = CheckMenuItemBuilder::new("Mark").build(app)?;
-            let file_menu = SubmenuBuilder::new(app, "系统")
-                .item(&PredefinedMenuItem::copy(app, None)?) // 添加复制菜单项
-                .item(&PredefinedMenuItem::paste(app, None)?) // 添加粘贴菜单项
-                .separator() // 添加分隔符
-                .items(&[&toggle, &check]) // 添加自定义菜单项
-                .build()?;
-            // 创建 "编辑" 子菜单
-            let edit_menu = SubmenuBuilder::new(app, "编辑")
-                .items(&[&_undo, &_redo]) // 添加自定义菜单项
-                .build()?;
-
-            let menu = MenuBuilder::new(app)
-                .item(&file_menu) // 添加文件菜单
-                .item(&edit_menu) // 添加编辑菜单
-                .build()?;
-            // 设置菜单到应用 菜单是用js自定义菜单
-            //             app.set_menu(menu)?;
-            app.on_menu_event(move |app, event| {
-                if event.id() == check.id() {
-                    println!(
-                        "`check` triggered, do something! is checked? {}",
-                        check.is_checked().unwrap()
-                    );
-                } else if event.id() == "toggle" {
-                    println!("toggle triggered!");
+            let webview = app.get_webview_window("main").unwrap();
+            webview.eval("localStorage.removeItem('canTray');")?;
+            let quit_i = MenuItem::with_id(app, "quit", "退出", true, None::<&str>)?;
+            let open_i = MenuItem::with_id(app, "open", "打开[Ctrl+Alt+Q]", true, None::<&str>)?;
+            let menu = Menu::with_items(app, &[&open_i,&quit_i])?;
+             let tray = TrayIconBuilder::new().on_menu_event(|app, event| match event.id.as_ref() {
+                "quit" => {
+                  app.exit(0);
+                },
+                "open" =>{
+                 show_window(app);
                 }
-            });
+                _ => {
+
+                }
+              })
+              .on_tray_icon_event(|tray, event| match event {
+                                     TrayIconEvent::Click {
+                                       button: MouseButton::Left,
+                                       ..
+                                     } => {
+                                       let app = tray.app_handle();
+                                       if let Some(window) = app.get_webview_window("main") {
+                                         let _ = window.show();
+                                         let _ = window.set_focus();
+                                       }
+                                     }
+                                     _ => {
+                                     }
+                                   })
+             .icon(app.default_window_icon().unwrap().clone())
+               .menu(&menu)
+               .menu_on_left_click(true)
+            .build(app)?;
             if cfg!(debug_assertions) {
                 app.handle().plugin(
                     tauri_plugin_log::Builder::default()
