@@ -1,7 +1,8 @@
 <script setup>
 import { ref, watch, toRefs} from 'vue';
-import {Window} from '@tauri-apps/api/window';
-import { register } from '@tauri-apps/plugin-global-shortcut';
+import {getCurrentWindow} from '@tauri-apps/api/window';
+import { register,isRegistered,unregister } from '@tauri-apps/plugin-global-shortcut';
+
 const props = defineProps({
   //发生的新对话标题
   theme: {
@@ -9,24 +10,28 @@ const props = defineProps({
     default: "light"
   },
 });
-
+const shot_cut='CommandOrControl+Alt+Q';
 const {theme} = toRefs(props);
 watch(theme, (newVal, oldVal) => {
   console.log('Theme changed from', oldVal, 'to', newVal);
 });
+if(isRegistered(shot_cut)){
+  console.log("已注册快捷键")
+  unregister(shot_cut)
+}
+  register(shot_cut, () => {
+    const visible = appWindow.isVisible();
+    if (visible) {
+      appWindow.show();
+      appWindow.setFocus();
+    } else {
+      appWindow.show();
+    }
+  });
 
-register('CommandOrControl+Alt+Q', () => {
-  const visible = appWindow.isVisible();
-  if (visible) {
-    appWindow.show();
-    appWindow.setFocus();
-  } else {
-    appWindow.show();
-  }
-});
 
 // 创建一个 Window 实例
-const appWindow = new Window('main');
+const appWindow = getCurrentWindow();
 
 // 控制弹窗显示的状态
 const showModal = ref(false);
@@ -65,7 +70,6 @@ const confirmClose = () => {
 const cancelAction = () => {
   showModal.value = false;  // 关闭弹窗
 };
-
 </script>
 
 <template>

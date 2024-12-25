@@ -1,14 +1,5 @@
 <template>
 
-  <div v-if="isTauri()">
-    <!-- 只在 Update 被成功导入时才渲染 -->
-    <Suspense>
-      <template #default>
-        <tray></tray>
-      </template>
-    </Suspense>
-  </div>
-
   <div v-if="isTauri()" class="fixed-content md:pl-[260px]"
        :class="{ 'bg-gray-800': theme==='dark', 'bg-white': theme==='light' }">
     <win-tools
@@ -206,7 +197,6 @@ import clipboard from 'vue-clipboard3';
 import WinTools from "./components/tauri_/winTools.vue";
 import Update_new from "./components/tauri_/Update_new.vue";
 import ModelOption from "./components/user/ModelOption.vue";
-import Tray from "./components/tauri_/Tray.vue";
 
 const appVersion = ref(__APP_VERSION__);
 const deskApp = ref("https://gschaos.club/update_file/Y-Chat_0.2.6_x64_en-US.msi");
