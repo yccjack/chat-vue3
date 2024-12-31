@@ -492,7 +492,7 @@ function generateConvTitle(conv) {
   //如果服务器响应报文中没有指明事件，默认触发message事件
   var humanSpeek = conversation.value[conversation.value.length - 2].speech
   if (humanSpeek) {
-    conv.title = humanSpeek.substring(0, 10);
+    conv.title = humanSpeek.substring(0, 60);
   }
   selectConversation(conv, false);
 }
