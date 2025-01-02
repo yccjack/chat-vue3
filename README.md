@@ -1,4 +1,4 @@
-# Vue 3 + Vite + ChatGpt
+# Vue 3 + Vite + ChatGpt + Tauri2
 
 
 ## Web端
