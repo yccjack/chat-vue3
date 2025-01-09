@@ -51,8 +51,10 @@ onUnmounted(() => {
 </script>
 
 <template>
+
   <div class="custom-select-wrapper"
        :style="{ top: isTauri() ? '60px' : '20px' }" >
+
     <button  @click="toggleOptions"
             :title="selectedValue || currentLocalModel"
              :class="{ 'bg-gray-600': currentTheme==='dark', 'nav-bk': currentTheme==='light' }"
