@@ -201,6 +201,9 @@ function flowSystemTheme(isFlow) {
    localStorage.setItem("isFlowSystemTheme",isFlowSystemTheme.value);
 }
 function clearConversations() {
+  if(conversations.value.length<=0){
+    return;
+  }
   const conversationIds = conversations.value.map(conversation => conversation.id);
   const data = {
     "ids": conversationIds
