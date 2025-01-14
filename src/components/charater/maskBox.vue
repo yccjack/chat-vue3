@@ -3,7 +3,7 @@
       class="text-4xl font-semibold text-center mt-6 sm:mt-[20vh] ml-auto mr-auto mb-10 sm:mb-16 flex gap-2 items-center justify-center">
     角色</h1>
   <div class="flex gap-3 items-center m-auto text-lg font-normal md:flex-col md:gap-2" style="margin-bottom: 10px">
-    <button  @click="inputChat('')"
+    <button  @click="hesitation(-1)"
             class="bg-gray-50 dark:bg-white/5 p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-900"
             style="white-space: nowrap; display: inline-block;">
       <span class="text-orange-500"> 直接开始 →</span>
@@ -41,7 +41,7 @@ const props = defineProps({
   },
 });
 // 定义传递的事件
-const emit = defineEmits(['update-chat-msg']);
+const emit = defineEmits(['update-chat-msg','update-hesitation']);
 const characters = ref(props.characterData); // 将 props.characterData 复制到 characters
 // 定义响应式变量
 const exMsg = ref('');
@@ -50,6 +50,13 @@ const exMsg = ref('');
 function inputChat(msg,character=-1) {
   exMsg.value = msg;
   emit('update-chat-msg', exMsg.value,character); // 通过事件传递数据到父组件
+
+}
+
+// 输入消息并传递给父组件
+function hesitation(character=-1) {
+  exMsg.value = '有什么可以帮你的吗？';
+  emit('update-hesitation', exMsg.value,character); // 通过事件传递数据到父组件
 
 }
 
