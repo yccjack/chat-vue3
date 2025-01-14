@@ -546,6 +546,7 @@ function selectConversation(conv, loadConv = false) {
   let conversation_local = localStorage.getItem(`conversation_map${conv.id}`) || "[]";
   if(conversation_local.length>2){
     conversation.value = JSON.parse(conversation_local)
+    console.log(conversation.value)
     return;
   }
   axios.get(`${apiUrl.value}/conv/${conv.id}`)

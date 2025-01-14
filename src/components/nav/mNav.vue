@@ -205,7 +205,7 @@ function clearConversations() {
     localStorage.removeItem("conversation_map" + conversation.id);
   });
   axios.post(`${apiUrl.value}/chat/clear`, data)
-      .then((result) => {
+      .then((result) => {s
 
       })
       .catch((err) => {

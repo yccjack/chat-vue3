@@ -18,7 +18,7 @@ const props = defineProps({
   },
   cTime:{
     type:String,
-    default: new Date().toLocaleString()
+    default: ''
   }
 });
 function renderCodeBlock(code, codeHtml, language = "") {
