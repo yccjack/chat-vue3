@@ -29,11 +29,11 @@
             <div class="react-scroll-to-bottom--css-ncqif-79elbk h-full dark:bg-gray-800">
               <div ref="chatContainer" class="react-scroll-to-bottom--css-krija-1n7m0yu">
                 <!-- 模型选择 -->
-               <model-option
+               <ModelOption
                :models = models
                :currentTheme = theme
                @select-option="changeModel"
-               ></model-option>
+               ></ModelOption>
                 <div class="flex flex-col items-center text-sm dark:bg-gray-800">
                   <!-- 对话item -->
                   <div style="width: 100%" v-for="(conv, idx) in conversation" :key="idx">
@@ -41,6 +41,7 @@
                          class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group dark:bg-gray-800">
                       <human
                           :speech="conv.speech"
+                          :c-time="conv.createTime"
                       ></human>
                     </div>
                     <div v-if="conv.speaker === 'ai'"
@@ -49,12 +50,12 @@
                       <div v-if="idx === conversation.length - 1 && isAiReceive"
                            class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group bg-gray-50 dark:bg-[#444654]">
                         <!-- 临时变量渲染最新的 ai 数据 -->
-                        <ai :speeches="tempSpeeches" :loading="conv.loading" :model-version="currentModel"></ai>
+                        <ai :speeches="tempSpeeches"  :loading="conv.loading" :c-time="conv.createTime" :model-version="currentModel"></ai>
                       </div>
                       <!-- 不是最后一个 ai 数据，正常渲染 -->
                       <div v-else
                            class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group bg-gray-50 dark:bg-[#444654]">
-                        <ai :speeches="conv.speeches" :loading="conv.loading" :model-version="currentModel"></ai>
+                        <ai :speeches="conv.speeches" :loading="conv.loading" :c-time="conv.createTime" :model-version="currentModel"></ai>
                       </div>
                     </div>
                   </div>
@@ -63,7 +64,9 @@
                        class="text-gray-800 w-full md:max-w-2xl lg:max-w-3xl md:h-full md:flex md:flex-col px-6 dark:text-gray-100">
                     <maskBox
                         :characterData="character"
-                        @update-chat-msg="updateChatMsg"/>
+                        @update-chat-msg="updateChatMsg"
+                        @update-hesitation="hesitation"
+                    />
                   </div>
 
                   <div class="w-full h-32 md:h-48 flex-shrink-0"></div>
@@ -197,6 +200,7 @@ import clipboard from 'vue-clipboard3';
 import WinTools from "./components/tauri_/winTools.vue";
 import Update_new from "./components/tauri_/Update_new.vue";
 import ModelOption from "./components/user/ModelOption.vue";
+import UserSite from "./components/user/userSite.vue";
 
 const appVersion = ref(__APP_VERSION__);
 const deskApp = ref("https://gschaos.club/update_file/Y-Chat_0.2.6_x64_en-US.msi");
@@ -238,11 +242,31 @@ const models = ref([]);
 const currentModel = ref("gpt-4o-mini");
 
 
-
-
 function updateChatMsg(message, character) {
-  chatMsg.value = message; // 将子组件传递的值赋值给父组件的 chatMsg
+  chatMsg.value = message;
   currentCharacter.value = character
+}
+
+//直接开始需要将ai的第一句话设置为message
+function hesitation(message, character) {
+  var conv = {
+    "idx": 0,
+    "loading": true,
+    "speaker": "ai",
+    "suitable": [0],
+    "speeches": message,
+    "characterId": character,
+    "createTime": new Date().toLocaleString()
+  }
+  conversation.value.push(conv);
+  currentCharacter.value = character;
+  let newConv = {
+    "id": cid.value,
+    "title": message,
+    "characterId": currentCharacter.value
+  };
+  pushNewConv.value = newConv
+  selectConversation(newConv, false);
 }
 
 function autoResize() {
@@ -418,7 +442,8 @@ function send() {
 
   conversation.value.push({
     "speaker": "human",
-    "speech": chat_msg
+    "speech": chat_msg,
+    "createTime": new Date().toLocaleString()
   })
 
   var conv = {
@@ -427,13 +452,13 @@ function send() {
     "speaker": "ai",
     "suitable": [0],
     "speeches": "",
-    "characterId": currentCharacter.value
+    "characterId": currentCharacter.value,
+    "createTime": new Date().toLocaleString()
   }
   conversation.value.push(conv)
   tempSpeeches.value = "";
   // 滚动到最下面
   handleScrollBottom();
-
   try {
     // 使用 Axios 发送 GET 请求，接收流式数据
     fetch(`${apiUrl.value}/chat/${cid.value}`, {

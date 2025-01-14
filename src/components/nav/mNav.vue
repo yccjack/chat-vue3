@@ -193,14 +193,10 @@ function changeTheme(newTheme) {
   localStorage.setItem('theme', newTheme);
   emit("update_theme", newTheme)
 }
-
-//主题跟随系统
-function flowSystemTheme(isFlow) {
-  console.log(isFlow)
-  isFlowSystemTheme.value = isFlow;
-   localStorage.setItem("isFlowSystemTheme",isFlowSystemTheme.value);
-}
 function clearConversations() {
+  if(conversations.value.length<=0){
+    return;
+  }
   const conversationIds = conversations.value.map(conversation => conversation.id);
   const data = {
     "ids": conversationIds
@@ -208,7 +204,7 @@ function clearConversations() {
   conversations.value.map(conversation => {
     localStorage.removeItem("conversation_map" + conversation.id);
   });
-  axios.post(`https://${apiUrl.value}/chat/clear`, data)
+  axios.post(`${apiUrl.value}/chat/clear`, data)
       .then((result) => {
 
       })
@@ -243,7 +239,7 @@ function editTitle(idx, conv) {
 function loadConversations() {
   let convs = localStorage.getItem("conversations") || "[]";
   conversations.value = JSON.parse(convs)
-
+  console.log("conv="+conversations.value+"localConvs="+convs)
 }
 
 function changeConvTitle(idx, conv) {

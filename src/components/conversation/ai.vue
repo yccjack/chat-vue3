@@ -15,9 +15,12 @@ const props = defineProps({
   modelVersion:{
     type: String,
     default: "GPT4-MINI"
+  },
+  cTime:{
+    type:String,
+    default: new Date().toLocaleString()
   }
 });
-
 function renderCodeBlock(code, codeHtml, language = "") {
   return `<div class="bg-black mb-4 rounded-md">
     <div class="code_header flex items-center  text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans">
@@ -75,21 +78,6 @@ marked.renderer.rules.fence = (tokens, idx) => {
   const language = token.info.trim();
   return marked.options.highlight(token.content, language);
 };
-
-function countAndConcat(str, substr) {
-  // 使用正则表达式的全局匹配来查找子字符串
-  const matches = str.match(new RegExp(substr, 'g'));
-
-  // 判断子字符串的个数是奇数还是偶数
-  const count = matches ? matches.length : 0;
-  const isOdd = count % 2 === 1;
-  // 根据判断结果返回相应的字符串
-  return isOdd ? str + "\n" + substr : str;
-}
-// 使用 computed 来包裹 mdToHtml
-const mdHtml = computed(() => {
-  return mdToHtml(props.speeches); // 调用 mdToHtml 方法
-});
 function mdToHtml(md) {
   if (md === "") {
     return "<p></p>"
@@ -135,6 +123,7 @@ function mdToHtml(md) {
                :class="{ 'result-streaming': props.loading }"
                class="markdown prose w-full break-words dark:prose-invert light">
           </div>
+          <span class="text-gray-400 text-[10px]">{{props.cTime}}</span>
         </div>
       </div>
     </div>

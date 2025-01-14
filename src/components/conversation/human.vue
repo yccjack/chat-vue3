@@ -8,6 +8,10 @@ const props = defineProps({
     type: String,
     default: ""
   },
+  cTime: {
+    type: String,
+    default: new Date().toLocaleString()
+  }
 });
 </script>
 
@@ -42,6 +46,7 @@ const props = defineProps({
           </SvgIcon>
         </button>
       </div>
+      <span class="text-gray-400 text-[10px]">{{props.cTime}}</span>
       <div class="flex justify-between"></div>
     </div>
   </div>

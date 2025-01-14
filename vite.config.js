@@ -37,6 +37,6 @@ export default defineConfig({
     }, define: {
         __APP_VERSION__: JSON.stringify(version),
         __APP_API_RUI__: JSON.stringify('https://chat.gschaos.club/api'),
-        __UPDATE_NODE__: JSON.stringify('["增加托盘功能","增加快捷键","修复漏洞","增加模型选择功能"]'),
+        __UPDATE_NODE__: JSON.stringify('["优化左边菜单","内置用户功能[未开启]"]'),
     },
 })
