@@ -10,7 +10,7 @@ const props = defineProps({
   },
   cTime: {
     type: String,
-    default: new Date().toLocaleString()
+    default: ''
   }
 });
 </script>
