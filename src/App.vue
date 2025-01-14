@@ -29,11 +29,11 @@
             <div class="react-scroll-to-bottom--css-ncqif-79elbk h-full dark:bg-gray-800">
               <div ref="chatContainer" class="react-scroll-to-bottom--css-krija-1n7m0yu">
                 <!-- 模型选择 -->
-               <user-site
+               <ModelOption
                :models = models
                :currentTheme = theme
                @select-option="changeModel"
-               ></user-site>
+               ></ModelOption>
                 <div class="flex flex-col items-center text-sm dark:bg-gray-800">
                   <!-- 对话item -->
                   <div style="width: 100%" v-for="(conv, idx) in conversation" :key="idx">
