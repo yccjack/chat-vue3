@@ -260,13 +260,13 @@ function hesitation(message, character) {
   }
   conversation.value.push(conv);
   currentCharacter.value = character;
-  let newConv = {
-    "id": cid.value,
-    "title": message,
-    "characterId": currentCharacter.value
-  };
-  pushNewConv.value = newConv
-  selectConversation(newConv, false);
+  // let newConv = {
+  //   "id": cid.value,
+  //   "title": message,
+  //   "characterId": currentCharacter.value
+  // };
+  // pushNewConv.value = newConv
+  // selectConversation(newConv, false);
 }
 
 function autoResize() {
@@ -438,7 +438,7 @@ function send() {
   var chat_msg = chatMsg.value;
   chatMsg.value = ""
 
-  var first = conversation.value.length === 0;
+  var first = conversation.value.length === 0 || conversation.value[0].speaker==="ai";
 
   conversation.value.push({
     "speaker": "human",
