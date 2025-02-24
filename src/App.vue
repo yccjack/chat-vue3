@@ -136,7 +136,7 @@
               </div>
             </form>
             <div class="px-3 pt-2 pb-3 text-center text-xs text-black/50 dark:text-white/50 md:px-4 md:pt-3 md:pb-6">
-              <a href="https://gitee.com/MIEAPP/chatai-vue" target="_blank" rel="noreferrer"
+              <a href="https://github.com/yccjack/chat-vue3" target="_blank" rel="noreferrer"
                  class="underline"> chatAi </a> 仅供学习 AI 使用。<span style="color: #00e0e0"> 当前版本：{{
                 appVersion
               }}</span>
