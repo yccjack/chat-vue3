@@ -184,9 +184,9 @@ watchEffect(() => {
 
 });
 
-function updateChatMsg(message,character) {
+function updateChatMsg(message, character) {
   chatMsg.value = message; // 将子组件传递的值赋值给父组件的 chatMsg
-  currentCharacter.value=character
+  currentCharacter.value = character
 }
 
 function autoResize() {
@@ -227,15 +227,17 @@ function resetHeight() {
   elem.style.height = '24px';
   elem.style["overflow-y"] = 'hidden';
 }
-function getCharacterInfo(){
+
+function getCharacterInfo() {
   axios.post(`${apiUrl.value}/chat/character`, {})
       .then((result) => {
-        character.value=result.data.data
+        character.value = result.data.data
       })
       .catch((err) => {
         console.error(err)
       });
 }
+
 // vueCopy 方法
 const vueCopy = (node) => {
   const code = node.getElementsByTagName("code")[0].innerHTML;
