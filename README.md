@@ -1,4 +1,4 @@
-# Vue 3 + Vite + ChatGpt + Tauri2
+# Vue 3 + Vite + ChatGpt
 
 
 ## Web端
@@ -10,6 +10,4 @@
 ---
 ## 客户端
 ![img.png](md/img_client.png)
-
-## 后端
-[ychat_py](https://github.com/yccjack/ychat_py.git)
+## 
